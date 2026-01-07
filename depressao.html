@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rastreio de Depressão (PHQ-9) | Dr. Eduardo Pokk</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <style>
+        /* ESTILO VISUAL PADRÃO (Cinza - Depressão) */
+        :root { --primary: #0f172a; --accent: #475569; --bg: #f8fafc; --text: #334155; --white: #ffffff; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg); color: var(--text); line-height: 1.6; min-height: 100vh; display: flex; flex-direction: column; }
+        header { background: var(--white); padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; }
+        .brand { font-weight: 800; font-size: 1.1rem; color: var(--primary); text-decoration: none; }
+        .brand span { color: var(--accent); }
+        .back-link { font-size: 0.9rem; color: #64748b; text-decoration: none; display: flex; align-items: center; gap: 5px; }
+        .main-container { flex: 1; display: flex; align-items: center; justify-content: center; padding: 40px 20px; }
+        .quiz-box { background: var(--white); width: 100%; max-width: 700px; padding: 40px; border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); text-align: center; border: 1px solid #e2e8f0; }
+        .btn-primary { background: var(--accent); color: white; padding: 15px 40px; border-radius: 8px; border: none; font-size: 1.1rem; font-weight: 600; cursor: pointer; transition: background 0.2s; width: 100%; }
+        .hidden { display: none; }
+        .fade-in { animation: fadeIn 0.5s ease-in; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        /* Alerta de Risco */
+        .risk-alert { background: #fef2f2; border: 1px solid #fecaca; color: #991b1b; padding: 20px; border-radius: 8px; text-align: left; margin-bottom: 20px; display: none; }
+        /* Componentes Quiz */
+        .progress-container { width: 100%; height: 8px; background: #e2e8f0; border-radius: 4px; margin-bottom: 30px; display: none; }
+        .progress-fill { height: 100%; background: var(--accent); width: 0%; border-radius: 4px; transition: width 0.4s ease; }
+        .step-indicator { font-size: 0.8rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; display: none; }
+        .options-grid { display: flex; flex-direction: column; gap: 12px; }
+        .option-btn { padding: 18px 20px; border: 2px solid #e2e8f0; background: var(--white); border-radius: 10px; cursor: pointer; font-size: 1rem; color: var(--primary); font-weight: 500; text-align: left; transition: all 0.2s; display: flex; align-items: center; gap: 10px; }
+        .option-btn:hover { border-color: var(--accent); background: #f1f5f9; color: var(--accent); transform: translateX(5px); }
+        footer { text-align: center; padding: 20px; font-size: 0.8rem; color: #94a3b8; border-top: 1px solid #e2e8f0; background: var(--white); }
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="index.html" class="brand">Eduardo Pokk <span>PSI</span></a>
+        <a href="dashboard.html" class="back-link"><i class="fa-solid fa-chevron-left"></i> Voltar ao Dashboard</a>
+    </header>
+
+    <div class="main-container">
+        <div id="intro-screen" class="quiz-box fade-in">
+            <div style="font-size: 2.5rem; color: var(--accent); margin-bottom: 20px;"><i class="fa-solid fa-cloud-rain"></i></div>
+            <h1>Rastreio de Depressão (PHQ-9)</h1>
+            <p>Protocolo clínico para mensurar a severidade de sintomas depressivos.</p>
+            
+            <div style="font-size: 0.85rem; background: #f1f5f9; padding: 10px; border-radius: 6px; color: #64748B; margin-bottom: 20px;">
+                <i class="fa-solid fa-user-doctor"></i> Supervisão: Dr. Eduardo Pokk (CRP 06/73583)
+            </div>
+            
+            <button class="btn-primary" onclick="startQuiz()">Começar Rastreio</button>
+        </div>
+
+        <div id="quiz-screen" class="quiz-box hidden">
+            <div class="step-indicator" id="step-text">...</div>
+            <div class="progress-container"><div class="progress-fill" id="progress-bar"></div></div>
+            <h2 id="question-text">...</h2>
+            <div class="options-grid" id="options-container"></div>
+        </div>
+
+        <div id="processing-screen" class="quiz-box hidden">
+            <i class="fa-solid fa-circle-notch fa-spin" style="font-size: 3rem; color: var(--accent); margin-bottom: 20px;"></i>
+            <h2>Processando...</h2>
+        </div>
+
+        <div id="result-screen" class="quiz-box hidden">
+            <div style="font-size: 3rem; color: #16a34a; margin-bottom: 20px;"><i class="fa-solid fa-file-contract"></i></div>
+            <h1>Dossiê Pronto</h1>
+            
+            <div id="suicide-risk" class="risk-alert">
+                <strong><i class="fa-solid fa-triangle-exclamation"></i> Atenção Prioritária</strong>
+                Você indicou pensamentos sobre "estar melhor morto". O CVV atende gratuitamente pelo <strong>número 188</strong> (24h).
+            </div>
+
+            <p>Sua análise clínica foi gerada com sucesso.</p>
+            <button class="btn-primary" onclick="generatePremiumPDF()">
+                <i class="fa-solid fa-download"></i> BAIXAR DOSSIÊ COMPLETO
+            </button>
+        </div>
+    </div>
+
+    <footer>Supervisão Técnica: Eduardo Pokk | Psicólogo CRP 06/73583</footer>
+
+    <script>
+        // SIMULAÇÃO LOGIN
+        const currentUser = {
+            name: localStorage.getItem('user_name') || "Paciente Identificado (Login)"
+        };
+
+        const questions = [
+            { text: "Pouco interesse ou prazer em fazer as coisas." },
+            { text: "Sentir-se triste, deprimido(a) ou sem esperança." },
+            { text: "Dificuldade para dormir ou dormir demais." },
+            { text: "Cansado(a) ou com pouca energia." },
+            { text: "Pouco apetite ou comer em excesso." },
+            { text: "Sentir-se mal consigo mesmo(a) ou fracassado(a)." },
+            { text: "Dificuldade para se concentrar." },
+            { text: "Lentidão ou agitação motora." },
+            { text: "Pensar em se ferir ou que seria melhor estar morto(a)." }
+        ];
+
+        const options = [{ label: "Nenhuma vez", value: 0 }, { label: "Vários dias", value: 1 }, { label: "Mais da metade", value: 2 }, { label: "Quase todos os dias", value: 3 }];
+        let currentQ = 0, totalScore = 0, q9Score = 0;
+
+        function startQuiz() { 
+            document.getElementById('intro-screen').classList.add('hidden'); 
+            document.getElementById('quiz-screen').classList.remove('hidden'); 
+            document.querySelector('.progress-container').style.display = 'block'; 
+            document.querySelector('.step-indicator').style.display = 'block'; 
+            renderQuestion(); 
+        }
+
+        function renderQuestion() { 
+            document.getElementById('question-text').innerText = questions[currentQ].text; 
+            document.getElementById('step-text').innerText = `QUESTÃO ${currentQ + 1} DE ${questions.length}`; 
+            document.getElementById('progress-bar').style.width = `${((currentQ) / questions.length) * 100}%`; 
+            const container = document.getElementById('options-container'); 
+            container.innerHTML = ''; 
+            options.forEach(opt => { 
+                const btn = document.createElement('div'); 
+                btn.className = 'option-btn fade-in'; 
+                btn.innerHTML = `<div style="width:12px;height:12px;border:2px solid #cbd5e1;border-radius:50%;"></div> ${opt.label}`; 
+                btn.onclick = () => handleAnswer(opt.value); 
+                container.appendChild(btn); 
+            }); 
+        }
+
+        function handleAnswer(val) { 
+            totalScore += val; 
+            if(currentQ === 8) q9Score = val; 
+            if (currentQ < questions.length - 1) { currentQ++; setTimeout(renderQuestion, 200); } 
+            else { finishQuiz(); } 
+        }
+
+        function finishQuiz() { 
+            document.getElementById('quiz-screen').classList.add('hidden'); 
+            document.getElementById('processing-screen').classList.remove('hidden'); 
+            setTimeout(() => { 
+                document.getElementById('processing-screen').classList.add('hidden'); 
+                document.getElementById('result-screen').classList.remove('hidden'); 
+                if(q9Score>0) document.getElementById('suicide-risk').style.display='block'; 
+            }, 2000); 
+        }
+
+        // --- MOTOR PDF PREMIUM ---
+        async function generatePremiumPDF() {
+            if (!window.jspdf) { alert("Erro JS PDF"); return; }
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF({ format: 'a4', unit: 'mm' });
+            const pageWidth = 210, pageHeight = 297, margin = 20;
+            
+            const colPrimary = [15, 23, 42]; 
+            const colAccent = [71, 85, 105]; 
+            const colBg = [241, 245, 249]; 
+
+            let severity = "MÍNIMA";
+            let colorRGB = [22, 163, 74];
+            let isHigh = false;
+
+            if (totalScore <= 4) { severity = "MÍNIMA / AUSENTE"; colorRGB = [22, 163, 74]; }
+            else if (totalScore <= 9) { severity = "DEPRESSÃO LEVE"; colorRGB = [234, 179, 8]; }
+            else if (totalScore <= 14) { severity = "DEPRESSÃO MODERADA"; colorRGB = [249, 115, 22]; isHigh = true; }
+            else if (totalScore <= 19) { severity = "MODERADA GRAVE"; colorRGB = [220, 38, 38]; isHigh = true; }
+            else { severity = "DEPRESSÃO GRAVE"; colorRGB = [127, 29, 29]; isHigh = true; }
+
+            function drawHeader(p) {
+                doc.setFillColor(...colAccent); doc.rect(0, 0, 8, pageHeight, 'F');
+                doc.setFont("helvetica", "bold"); doc.setFontSize(12); doc.setTextColor(...colPrimary);
+                doc.text("Eduardo Pokk | PSI", margin, 15);
+                doc.setFontSize(8); doc.setTextColor(100);
+                doc.text("CRP 06/73583", margin, 20);
+                
+                doc.setFontSize(10); doc.setTextColor(0);
+                doc.text(`Paciente: ${currentUser.name}`, margin, 30);
+
+                doc.setFontSize(8); doc.setTextColor(100);
+                doc.text(`Emissão: ${new Date().toLocaleDateString()}`, pageWidth-margin-30, 15);
+                doc.setDrawColor(200); doc.line(margin, 35, pageWidth-margin, 35);
+            }
+            function drawFooter(p) {
+                doc.setFontSize(8); doc.setTextColor(150);
+                doc.text(`Página ${p} - ${currentUser.name}`, pageWidth/2, pageHeight-10, {align:'center'});
+                doc.text("Documento informativo. Não substitui laudo médico.", margin, pageHeight-10);
+            }
+
+            // PÁGINA 1
+            doc.setFillColor(...colBg); doc.rect(0,0,pageWidth,pageHeight,'F');
+            doc.setFillColor(...colPrimary); doc.circle(pageWidth/2, 100, 25, 'F');
+            doc.setTextColor(255); doc.setFontSize(30); doc.text("PHQ-9", pageWidth/2, 103, {align:'center'});
+            
+            doc.setFont("helvetica", "bold"); doc.setFontSize(26); doc.setTextColor(...colPrimary);
+            doc.text("DOSSIÊ DE RASTREIO", pageWidth/2, 140, {align:'center'});
+            doc.text("DEPRESSÃO", pageWidth/2, 152, {align:'center'});
+            
+            doc.setFont("helvetica", "normal"); doc.setFontSize(14); doc.setTextColor(...colAccent);
+            doc.text("Protocolo de Monitoramento de Humor", pageWidth/2, 165, {align:'center'});
+            
+            // Alerta Risco
+            if(q9Score > 0) {
+                doc.setDrawColor(220, 38, 38); doc.setLineWidth(1); doc.setFillColor(254, 242, 242);
+                doc.rect(margin, 200, pageWidth-(margin*2), 30, 'FD');
+                doc.setTextColor(220, 38, 38); doc.setFont("helvetica", "bold"); doc.setFontSize(12);
+                doc.text("ATENÇÃO: MARCADOR DE RISCO IDENTIFICADO", pageWidth/2, 210, {align:'center'});
+                doc.setTextColor(0); doc.setFont("helvetica", "normal"); doc.setFontSize(10);
+                doc.text("Relato de ideação. Recomendamos busca imediata por suporte (CVV 188).", pageWidth/2, 220, {align:'center'});
+            }
+            
+            doc.setFontSize(12); doc.setTextColor(50);
+            doc.text(`Paciente: ${currentUser.name}`, pageWidth/2, 230, { align: 'center' });
+
+            // PÁGINA 2
+            doc.addPage(); drawHeader(2);
+            let cy = 50;
+            doc.setFont("helvetica", "bold"); doc.setFontSize(16); doc.setTextColor(...colPrimary);
+            doc.text("1. ANÁLISE QUANTITATIVA", margin, cy);
+            cy += 15;
+
+            doc.setFillColor(255, 255, 255); doc.setDrawColor(...colorRGB); doc.setTextColor(...colorRGB);
+            doc.rect(margin, cy, pageWidth-(margin*2), 25, 'D'); 
+            doc.setFontSize(14); doc.text(severity, pageWidth/2, cy+16, {align:'center'});
+            
+            cy += 40;
+            doc.setFont("helvetica", "bold"); doc.setTextColor(...colPrimary); doc.setFontSize(11);
+            doc.text("Escala de Severidade:", margin, cy);
+            
+            cy += 10;
+            doc.setFillColor(230); doc.rect(margin, cy, 170, 10, 'F');
+            doc.setFillColor(...colorRGB); doc.rect(margin, cy, (totalScore/27)*170, 10, 'F');
+            doc.text(`Score: ${totalScore}/27`, margin, cy+18);
+
+            drawFooter(2);
+
+            // PÁGINA 3
+            doc.addPage(); drawHeader(3);
+            cy = 50;
+            doc.setFont("helvetica", "bold"); doc.setFontSize(16); doc.setTextColor(...colPrimary);
+            doc.text("2. INTERPRETAÇÃO CLÍNICA", margin, cy);
+            cy += 10;
+            doc.setFont("helvetica", "normal"); doc.setFontSize(11); doc.setTextColor(50);
+
+            let txt = "";
+            if(isHigh) {
+                txt = "Seus resultados indicam impacto significativo no humor (Anedonia). A depressão não é apenas tristeza, é a perda da vitalidade biológica.\n\n" +
+                "1. Visão de Túnel: O cérebro tem dificuldade química em acessar memórias felizes ou projetar futuro.\n" +
+                "2. Ciclo da Inércia: A falta de energia não é preguiça, é sintoma. Quanto menos se faz, menos energia se produz.";
+            } else {
+                txt = "Seus resultados estão dentro da normalidade ou indicam leve oscilação de humor, comum na vida cotidiana. Mantenha rotinas saudáveis de sono e exercício.";
+            }
+            let lines = doc.splitTextToSize(txt, pageWidth-(margin*2));
+            doc.text(lines, margin, cy+5);
+
+            if(isHigh) {
+                let by = cy + (lines.length*6) + 15;
+                doc.setFillColor(241, 245, 249); doc.setDrawColor(...colAccent);
+                doc.rect(margin, by, pageWidth-(margin*2), 35, 'FD');
+                doc.setFont("helvetica", "bold"); doc.setTextColor(...colAccent);
+                doc.text("INVESTIGAÇÃO DE CAUSA RAIZ", margin+5, by+8);
+                doc.setFont("helvetica", "normal"); doc.setTextColor(0); doc.setFontSize(10);
+                let cross = "Em adultos funcionais, a depressão muitas vezes é o colapso final de um Burnout não tratado ou da exaustão de 'mascarar' um TDAH/Autismo por décadas. Investigue a raiz nos outros testes.";
+                doc.text(doc.splitTextToSize(cross, pageWidth-(margin*2)-10), margin+5, by+16);
+            }
+            drawFooter(3);
+
+            // PÁGINA 4
+            doc.addPage(); drawHeader(4);
+            cy = 50;
+            doc.setFont("helvetica", "bold"); doc.setFontSize(16); doc.setTextColor(...colPrimary);
+            doc.text("3. ESTRATÉGIAS", margin, cy);
+            cy += 15;
+            doc.setFont("helvetica", "normal"); doc.setFontSize(11); doc.setTextColor(50);
+            let strat = "1. Ativação Comportamental: Ação antes da motivação. Faça sem vontade.\n" +
+            "2. Regra dos 5 Minutos: Comprometa-se a fazer a tarefa por apenas 5 min.\n" +
+            "3. Exposição à Luz: Regular o ciclo circadiano é crucial para a produção de serotonina.";
+            doc.text(strat, margin, cy);
+
+            cy += 50;
+            doc.setDrawColor(22, 163, 74); doc.setLineWidth(1);
+            doc.rect(margin, cy, pageWidth-(margin*2), 50);
+            doc.setFillColor(22, 163, 74); doc.circle(margin+15, cy+25, 8, 'F');
+            doc.setTextColor(255); doc.setFontSize(14); doc.text("!", margin+14, cy+28);
+            
+            doc.setTextColor(22, 163, 74); doc.setFont("helvetica", "bold"); 
+            doc.text("GUIA DE TRATAMENTO", margin+30, cy+15);
+            doc.setTextColor(0); doc.setFont("helvetica", "normal"); doc.setFontSize(11);
+            doc.text("A ansiedade e a depressão andam juntas em 60% dos casos.", margin+30, cy+25);
+            doc.setFont("helvetica", "bold");
+            doc.text("'Tratamento da Ansiedade - Da estabilização à Integração'", margin+30, cy+35);
+            doc.setFont("helvetica", "normal");
+            doc.text("Autor: Eduardo Pokk", margin+30, cy+42);
+
+            drawFooter(4);
+            doc.save(`Dossie_Depressao_${currentUser.name.replace(/\s/g, '_')}.pdf`);
+        }
+    </script>
+</body>
+</html>

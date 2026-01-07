@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Área do Cliente | Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* Reutilizando estilo base */
+        :root { --primary: #0f172a; --bg: #f1f5f9; --white: #ffffff; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg); color: #334155; margin: 0; }
+
+        header { background: var(--primary); padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; color: white; }
+        .brand { font-weight: 800; font-size: 1.1rem; color: white; text-decoration: none; }
+        .user-info { display: flex; align-items: center; gap: 10px; font-size: 0.9rem; }
+        
+        .container { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
+        h1 { margin-bottom: 30px; color: var(--primary); }
+        p.subtitle { color: #64748b; margin-top: -20px; margin-bottom: 40px; }
+
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+        
+        .card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); transition: 0.3s; border-left: 5px solid #cbd5e1; display: flex; flex-direction: column; justify-content: space-between; }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 10px 15px rgba(0,0,0,0.1); }
+        
+        /* Cores de Identificação Visual */
+        .card.tdah { border-left-color: #2563eb; }
+        .card.tea { border-left-color: #7c3aed; }
+        .card.ahsd { border-left-color: #d97706; }
+        .card.ansiedade { border-left-color: #0ea5e9; }
+        .card.depressao { border-left-color: #475569; }
+        .card.burnout { border-left-color: #ea580c; }
+        
+        .card h3 { margin-top: 0; display: flex; justify-content: space-between; align-items: center; font-size: 1.2rem; }
+        .card p { font-size: 0.95rem; color: #64748b; margin-bottom: 25px; line-height: 1.5; }
+        
+        .btn-start { display: block; width: 100%; padding: 12px 20px; background: #f1f5f9; color: #0f172a; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 0.9rem; transition: 0.2s; text-align: center; }
+        .btn-start:hover { background: var(--primary); color: white; }
+
+        /* Ajuste responsivo */
+        @media (max-width: 600px) {
+            header { flex-direction: column; gap: 10px; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="index.html" class="brand">Eduardo Pokk <span style="font-weight: 300;">| Área de Testes</span></a>
+        <div class="user-info">
+            <i class="fa-solid fa-circle-user"></i> Acesso Liberado
+        </div>
+    </header>
+
+    <div class="container">
+        <h1>Seus Rastreios Disponíveis</h1>
+        <p class="subtitle">Selecione uma ferramenta abaixo para iniciar sua investigação clínica.</p>
+        
+        <div class="grid">
+            <div class="card tdah">
+                <div>
+                    <h3>TDAH Adulto <i class="fa-solid fa-brain" style="color:#2563eb;"></i></h3>
+                    <p>Avaliação de sintomas de Desatenção e Hiperatividade com base na escala ASRS-18.</p>
+                </div>
+                <a href="tdah.html" class="btn-start">Iniciar Teste</a>
+            </div>
+
+            <div class="card tea">
+                <div>
+                    <h3>Autismo (TEA) <i class="fa-solid fa-puzzle-piece" style="color:#7c3aed;"></i></h3>
+                    <p>Rastreio de traços do espectro, sensibilidade sensorial e camuflagem social (RAADS-14).</p>
+                </div>
+                <a href="tea.html" class="btn-start">Iniciar Teste</a>
+            </div>
+
+            <div class="card ahsd">
+                <div>
+                    <h3>Altas Habilidades <i class="fa-solid fa-lightbulb" style="color:#d97706;"></i></h3>
+                    <p>Investigação de superdotação, tédio crônico e dupla excepcionalidade.</p>
+                </div>
+                <a href="ahsd.html" class="btn-start">Iniciar Teste</a>
+            </div>
+
+            <div class="card ansiedade">
+                <div>
+                    <h3>Ansiedade (TAG) <i class="fa-solid fa-bolt" style="color:#0ea5e9;"></i></h3>
+                    <p>Mapeamento de níveis de tensão e preocupação excessiva (GAD-7).</p>
+                </div>
+                <a href="ansiedade.html" class="btn-start">Iniciar Teste</a>
+            </div>
+
+            <div class="card depressao">
+                <div>
+                    <h3>Depressão <i class="fa-solid fa-cloud-rain" style="color:#475569;"></i></h3>
+                    <p>Avaliação de humor, energia vital e anedonia (Escala PHQ-9).</p>
+                </div>
+                <a href="depressao.html" class="btn-start">Iniciar Teste</a>
+            </div>
+
+            <div class="card burnout">
+                <div>
+                    <h3>Burnout <i class="fa-solid fa-battery-empty" style="color:#ea580c;"></i></h3>
+                    <p>Mensuração de exaustão física e emocional ligada à rotina (CBI).</p>
+                </div>
+                <a href="burnout.html" class="btn-start">Iniciar Teste</a>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

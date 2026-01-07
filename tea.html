@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rastreio TEA Adulto | Dr. Eduardo Pokk</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <style>
+        /* ESTILO VISUAL PADRÃO (Roxo - TEA) */
+        :root { --primary: #0f172a; --accent: #7c3aed; --bg: #f8fafc; --text: #334155; --white: #ffffff; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg); color: var(--text); line-height: 1.6; min-height: 100vh; display: flex; flex-direction: column; }
+        header { background: var(--white); padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; }
+        .brand { font-weight: 800; font-size: 1.1rem; color: var(--primary); text-decoration: none; }
+        .brand span { color: var(--accent); }
+        .back-link { font-size: 0.9rem; color: #64748b; text-decoration: none; display: flex; align-items: center; gap: 5px; }
+        .main-container { flex: 1; display: flex; align-items: center; justify-content: center; padding: 40px 20px; }
+        .quiz-box { background: var(--white); width: 100%; max-width: 700px; padding: 40px; border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); text-align: center; border: 1px solid #e2e8f0; }
+        .btn-primary { background: var(--accent); color: white; padding: 15px 40px; border-radius: 8px; border: none; font-size: 1.1rem; font-weight: 600; cursor: pointer; transition: background 0.2s; width: 100%; }
+        .hidden { display: none; }
+        .fade-in { animation: fadeIn 0.5s ease-in; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        /* Componentes Quiz */
+        .progress-container { width: 100%; height: 8px; background: #e2e8f0; border-radius: 4px; margin-bottom: 30px; display: none; }
+        .progress-fill { height: 100%; background: var(--accent); width: 0%; border-radius: 4px; transition: width 0.4s ease; }
+        .step-indicator { font-size: 0.8rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; display: none; }
+        .options-grid { display: flex; flex-direction: column; gap: 12px; }
+        .option-btn { padding: 18px 20px; border: 2px solid #e2e8f0; background: var(--white); border-radius: 10px; cursor: pointer; font-size: 1rem; color: var(--primary); font-weight: 500; text-align: left; transition: all 0.2s; display: flex; align-items: center; gap: 10px; }
+        .option-btn:hover { border-color: var(--accent); background: #f5f3ff; color: var(--accent); transform: translateX(5px); }
+        footer { text-align: center; padding: 20px; font-size: 0.8rem; color: #94a3b8; border-top: 1px solid #e2e8f0; background: var(--white); }
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="index.html" class="brand">Eduardo Pokk <span>PSI</span></a>
+        <a href="dashboard.html" class="back-link"><i class="fa-solid fa-chevron-left"></i> Voltar ao Dashboard</a>
+    </header>
+
+    <div class="main-container">
+        <div id="intro-screen" class="quiz-box fade-in">
+            <div style="font-size: 2.5rem; color: var(--accent); margin-bottom: 20px;"><i class="fa-solid fa-puzzle-piece"></i></div>
+            <h1>Rastreio de Autismo (TEA)</h1>
+            <p>Protocolo RAADS-14 para Adultos. Foco em Nível 1 e Camuflagem.</p>
+            
+            <div style="font-size: 0.85rem; background: #f1f5f9; padding: 10px; border-radius: 6px; color: #64748B; margin-bottom: 20px;">
+                <i class="fa-solid fa-user-doctor"></i> Supervisão: Dr. Eduardo Pokk (CRP 06/73583)
+            </div>
+            
+            <button class="btn-primary" onclick="startQuiz()">Iniciar Protocolo</button>
+        </div>
+
+        <div id="quiz-screen" class="quiz-box hidden">
+            <div class="step-indicator" id="step-text">...</div>
+            <div class="progress-container"><div class="progress-fill" id="progress-bar"></div></div>
+            <h2 id="question-text">...</h2>
+            <div class="options-grid" id="options-container"></div>
+        </div>
+
+        <div id="processing-screen" class="quiz-box hidden">
+            <i class="fa-solid fa-circle-notch fa-spin" style="font-size: 3rem; color: var(--accent); margin-bottom: 20px;"></i>
+            <h2>Analisando Padrões...</h2>
+        </div>
+
+        <div id="result-screen" class="quiz-box hidden">
+            <div style="font-size: 3rem; color: #16a34a; margin-bottom: 20px;"><i class="fa-solid fa-file-contract"></i></div>
+            <h1>Dossiê Gerado</h1>
+            <p>Seu relatório técnico sobre TEA está pronto.</p>
+            <button class="btn-primary" onclick="generatePremiumPDF()">
+                <i class="fa-solid fa-download"></i> BAIXAR DOSSIÊ COMPLETO
+            </button>
+        </div>
+    </div>
+
+    <footer>Supervisão Técnica: Eduardo Pokk | Psicólogo CRP 06/73583</footer>
+
+    <script>
+        // SIMULAÇÃO LOGIN
+        const currentUser = {
+            name: localStorage.getItem('user_name') || "Paciente Identificado (Login)"
+        };
+
+        const questions = [
+            { text: "É muito difícil para mim entender o que os outros estão pensando ou sentindo se eles não me disserem claramente.", domain: "Mentalização" },
+            { text: "Certas texturas (roupas/alimentos) ou barulhos me incomodam muito mais do que aos outros.", domain: "Sensorial" },
+            { text: "Eu prefiro sair sozinho do que com outras pessoas.", domain: "Social" },
+            { text: "Tenho dificuldade em saber a hora de falar ou falo demais sobre meus interesses.", domain: "Social" },
+            { text: "Entendo as coisas 'ao pé da letra' e tenho dificuldade com sarcasmo.", domain: "Mentalização" },
+            { text: "Sinto que preciso 'atuar' ou usar uma máscara para parecer normal em público.", domain: "Social" },
+            { text: "Fico extremamente ansioso ou irritado quando minha rotina muda.", domain: "Sensorial" },
+            { text: "Quando gosto de um assunto, leio tudo sobre ele a ponto de esquecer o resto.", domain: "Mentalização" },
+            { text: "Dizem que sou 'sem filtro' ou rude sem eu ter intenção.", domain: "Mentalização" },
+            { text: "Faço movimentos repetitivos (balançar, estalar dedos) quando nervoso.", domain: "Sensorial" },
+            { text: "Tenho dificuldade em manter amigos, mesmo tentando.", domain: "Social" },
+            { text: "Noto padrões ou sons que outros ignoram.", domain: "Sensorial" },
+            { text: "Me sinto exausto após eventos sociais.", domain: "Social" },
+            { text: "Tenho interesses muito específicos e intensos.", domain: "Mentalização" }
+        ];
+
+        const options = [{ label: "Verdadeiro agora e quando jovem", value: 3 }, { label: "Verdadeiro apenas agora", value: 2 }, { label: "Verdadeiro apenas quando jovem", value: 1 }, { label: "Nunca", value: 0 }];
+        let currentQ = 0, userAnswers = [];
+
+        function startQuiz() { 
+            document.getElementById('intro-screen').classList.add('hidden'); 
+            document.getElementById('quiz-screen').classList.remove('hidden'); 
+            document.querySelector('.progress-container').style.display = 'block'; 
+            document.querySelector('.step-indicator').style.display = 'block'; 
+            renderQuestion(); 
+        }
+
+        function renderQuestion() { 
+            document.getElementById('question-text').innerText = questions[currentQ].text; 
+            document.getElementById('step-text').innerText = `PERGUNTA ${currentQ + 1} DE ${questions.length}`; 
+            document.getElementById('progress-bar').style.width = `${((currentQ) / questions.length) * 100}%`; 
+            const container = document.getElementById('options-container'); 
+            container.innerHTML = ''; 
+            options.forEach(opt => { 
+                const btn = document.createElement('div'); 
+                btn.className = 'option-btn fade-in'; 
+                btn.innerHTML = `<div style="width:12px;height:12px;border:2px solid #cbd5e1;border-radius:50%;"></div> ${opt.label}`; 
+                btn.onclick = () => handleAnswer(opt.value); 
+                container.appendChild(btn); 
+            }); 
+        }
+
+        function handleAnswer(val) { 
+            userAnswers.push(val); 
+            if (currentQ < questions.length - 1) { currentQ++; setTimeout(renderQuestion, 200); } 
+            else { finishQuiz(); } 
+        }
+
+        function finishQuiz() { 
+            document.getElementById('quiz-screen').classList.add('hidden'); 
+            document.getElementById('processing-screen').classList.remove('hidden'); 
+            setTimeout(() => { 
+                document.getElementById('processing-screen').classList.add('hidden'); 
+                document.getElementById('result-screen').classList.remove('hidden'); 
+            }, 2000); 
+        }
+
+        async function generatePremiumPDF() {
+            if (!window.jspdf) { alert("Erro JS PDF"); return; }
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF({ format: 'a4', unit: 'mm' });
+            const pageWidth = 210, pageHeight = 297, margin = 20;
+            
+            const colPrimary = [15, 23, 42]; 
+            const colAccent = [124, 58, 237]; 
+            const colBg = [250, 245, 255]; 
+
+            let totalScore = 0, socScore = 0, senScore = 0, menScore = 0;
+            userAnswers.forEach((ans, i) => {
+                totalScore += ans;
+                if(questions[i].domain === "Social") socScore += ans;
+                if(questions[i].domain === "Sensorial") senScore += ans;
+                if(questions[i].domain === "Mentalização") menScore += ans;
+            });
+            const isPositive = totalScore >= 14;
+
+            function drawHeader(p) {
+                doc.setFillColor(...colAccent); doc.rect(0, 0, 8, pageHeight, 'F');
+                doc.setFont("helvetica", "bold"); doc.setFontSize(12); doc.setTextColor(...colPrimary);
+                doc.text("Eduardo Pokk | PSI", margin, 15);
+                doc.setFontSize(8); doc.setTextColor(100);
+                doc.text("CRP 06/73583", margin, 20);
+                
+                doc.setFontSize(10); doc.setTextColor(0);
+                doc.text(`Paciente: ${currentUser.name}`, margin, 30);
+
+                doc.setFontSize(8); doc.setTextColor(100);
+                doc.text(`Emissão: ${new Date().toLocaleDateString()}`, pageWidth-margin-30, 15);
+                doc.setDrawColor(200); doc.line(margin, 35, pageWidth-margin, 35);
+            }
+            function drawFooter(p) {
+                doc.setFontSize(8); doc.setTextColor(150);
+                doc.text(`Página ${p} - ${currentUser.name}`, pageWidth/2, pageHeight-10, {align:'center'});
+                doc.text("Documento informativo. Não substitui laudo médico.", margin, pageHeight-10);
+            }
+
+            // PÁGINA 1
+            doc.setFillColor(...colBg); doc.rect(0,0,pageWidth,pageHeight,'F');
+            doc.setFillColor(...colPrimary); doc.circle(pageWidth/2, 100, 25, 'F');
+            doc.setTextColor(255); doc.setFontSize(30); doc.text("TEA", pageWidth/2, 103, {align:'center'});
+            
+            doc.setFont("helvetica", "bold"); doc.setFontSize(26); doc.setTextColor(...colPrimary);
+            doc.text("DOSSIÊ DE RASTREIO", pageWidth/2, 140, {align:'center'});
+            doc.text("NEUROPSICOLÓGICO", pageWidth/2, 152, {align:'center'});
+            
+            doc.setFont("helvetica", "normal"); doc.setFontSize(14); doc.setTextColor(...colAccent);
+            doc.text("Protocolo RAADS-14 (Adultos)", pageWidth/2, 165, {align:'center'});
+            
+            doc.setFontSize(12); doc.setTextColor(50);
+            doc.text(`Paciente: ${currentUser.name}`, pageWidth/2, 230, { align: 'center' });
+
+            // PÁGINA 2
+            doc.addPage(); drawHeader(2);
+            let cy = 50;
+            doc.setFont("helvetica", "bold"); doc.setFontSize(16); doc.setTextColor(...colPrimary);
+            doc.text("1. ANÁLISE QUANTITATIVA", margin, cy);
+            cy += 15;
+
+            if(isPositive) {
+                doc.setFillColor(254, 242, 242); doc.setDrawColor(220, 38, 38); doc.setTextColor(185, 28, 28);
+                var resTxt = "ALTA PROBABILIDADE CLÍNICA";
+            } else {
+                doc.setFillColor(240, 253, 244); doc.setDrawColor(22, 163, 74); doc.setTextColor(21, 128, 61);
+                var resTxt = "BAIXA PROBABILIDADE CLÍNICA";
+            }
+            doc.rect(margin, cy, pageWidth-(margin*2), 25, 'FD');
+            doc.setFontSize(14); doc.text(resTxt, pageWidth/2, cy+16, {align:'center'});
+            
+            cy += 40;
+            doc.setFont("helvetica", "bold"); doc.setTextColor(...colPrimary); doc.setFontSize(11);
+            doc.text("Perfil por Domínio:", margin, cy);
+            
+            cy += 10; doc.setFont("helvetica", "normal"); doc.text("Social / Masking", margin, cy+5);
+            doc.setFillColor(230); doc.rect(60, cy, 100, 8, 'F');
+            doc.setFillColor(...colAccent); doc.rect(60, cy, (socScore/15)*100, 8, 'F');
+            
+            cy += 15; doc.text("Sensorial", margin, cy+5);
+            doc.setFillColor(230); doc.rect(60, cy, 100, 8, 'F');
+            doc.setFillColor(...colAccent); doc.rect(60, cy, (senScore/12)*100, 8, 'F');
+
+            cy += 15; doc.text("Mentalização", margin, cy+5);
+            doc.setFillColor(230); doc.rect(60, cy, 100, 8, 'F');
+            doc.setFillColor(...colAccent); doc.rect(60, cy, (menScore/15)*100, 8, 'F');
+
+            drawFooter(2);
+
+            // PÁGINA 3
+            doc.addPage(); drawHeader(3);
+            cy = 50;
+            doc.setFont("helvetica", "bold"); doc.setFontSize(16); doc.setTextColor(...colPrimary);
+            doc.text("2. INTERPRETAÇÃO CLÍNICA", margin, cy);
+            cy += 10;
+            doc.setFont("helvetica", "normal"); doc.setFontSize(11); doc.setTextColor(50);
+
+            let txt = "";
+            if(isPositive) {
+                txt = "Seus resultados sugerem um perfil neurodivergente compatível com TEA (Nível 1 de Suporte). O traço mais marcante parece ser o 'Masking' - o esforço consciente para imitar comportamentos sociais, o que gera exaustão severa.\n\n" +
+                "Sua mente provavelmente processa informações de forma literal e lógica, tornando difícil entender 'entrelinhas' sociais ou jogos emocionais.";
+            } else {
+                txt = "Seus resultados não atingiram o ponto de corte para autismo. É possível que suas dificuldades sociais venham de Ansiedade Social ou Alta Sensibilidade (PAS), onde a leitura social existe, mas o medo do julgamento trava a interação.";
+            }
+            let lines = doc.splitTextToSize(txt, pageWidth-(margin*2));
+            doc.text(lines, margin, cy+5);
+
+            if(isPositive) {
+                let by = cy + (lines.length*6) + 15;
+                doc.setFillColor(245, 243, 255); doc.setDrawColor(...colAccent);
+                doc.rect(margin, by, pageWidth-(margin*2), 35, 'FD');
+                doc.setFont("helvetica", "bold"); doc.setTextColor(...colAccent);
+                doc.text("INVESTIGAÇÃO CRUZADA (TEA + TDAH)", margin+5, by+8);
+                doc.setFont("helvetica", "normal"); doc.setTextColor(0); doc.setFontSize(10);
+                let cross = "Atenção: Cerca de 50% dos autistas também possuem TDAH (Dupla Excepcionalidade). Se sua mente é caótica e desorganizada além de socialmente rígida, faça o teste de TDAH no portal.";
+                doc.text(doc.splitTextToSize(cross, pageWidth-(margin*2)-10), margin+5, by+16);
+            }
+            drawFooter(3);
+
+            // PÁGINA 4
+            doc.addPage(); drawHeader(4);
+            cy = 50;
+            doc.setFont("helvetica", "bold"); doc.setFontSize(16); doc.setTextColor(...colPrimary);
+            doc.text("3. ESTRATÉGIAS E UPSELL", margin, cy);
+            cy += 15;
+            doc.setFont("helvetica", "normal"); doc.setFontSize(11); doc.setTextColor(50);
+            let strat = "1. Respeite sua Bateria Social: Não se force a socializar no ritmo dos outros.\n" +
+            "2. Dieta Sensorial: Use fones de cancelamento de ruído e evite luzes fortes.\n" +
+            "3. Conexão por Interesse: Busque amigos através de hobbies técnicos.";
+            doc.text(strat, margin, cy);
+
+            cy += 50;
+            doc.setDrawColor(22, 163, 74); doc.setLineWidth(1);
+            doc.rect(margin, cy, pageWidth-(margin*2), 50);
+            doc.setFillColor(22, 163, 74); doc.circle(margin+15, cy+25, 8, 'F');
+            doc.setTextColor(255); doc.setFontSize(14); doc.text("!", margin+14, cy+28);
+            
+            doc.setTextColor(22, 163, 74); doc.setFont("helvetica", "bold"); 
+            doc.text("LEITURA RECOMENDADA", margin+30, cy+15);
+            doc.setTextColor(0); doc.setFont("helvetica", "normal"); doc.setFontSize(11);
+            doc.text("O esforço de camuflagem social gera ansiedade crônica.", margin+30, cy+25);
+            doc.setFont("helvetica", "bold");
+            doc.text("'Tratamento da Ansiedade - Da estabilização à Integração'", margin+30, cy+35);
+            doc.setFont("helvetica", "normal");
+            doc.text("Autor: Eduardo Pokk", margin+30, cy+42);
+
+            drawFooter(4);
+            doc.save(`Dossie_Autismo_${currentUser.name.replace(/\s/g, '_')}.pdf`);
+        }
+    </script>
+</body>
+</html>
