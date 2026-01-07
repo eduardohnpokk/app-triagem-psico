@@ -70,6 +70,7 @@
         <div id="processing-screen" class="quiz-box hidden">
             <i class="fa-solid fa-circle-notch fa-spin" style="font-size: 3rem; color: var(--accent); margin-bottom: 20px;"></i>
             <h2>Medindo Energia...</h2>
+            <p style="color: #64748b; font-size: 0.9rem;">Salvando no histórico...</p>
         </div>
 
         <div id="result-screen" class="quiz-box hidden">
@@ -84,10 +85,15 @@
 
     <footer>Supervisão Técnica: Eduardo Pokk | Psicólogo CRP 06/73583</footer>
 
-    <script>
-        // SIMULAÇÃO LOGIN
+    <script type="module">
+        // 1. IMPORTAÇÕES
+        import { db } from './firebase-config.js';
+        import { doc, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        // 2. IDENTIFICAÇÃO DO USUÁRIO
         const currentUser = {
-            name: localStorage.getItem('user_name') || "Paciente Identificado (Login)"
+            name: localStorage.getItem('usuario_nome') || "Visitante Anônimo",
+            id: localStorage.getItem('usuario_id')
         };
 
         const questions = [
@@ -102,6 +108,10 @@
 
         const options = [{ label: "Nunca / Quase Nunca", value: 0 }, { label: "Às vezes", value: 25 }, { label: "Frequentemente", value: 50 }, { label: "Muitas vezes", value: 75 }, { label: "Sempre", value: 100 }];
         let currentQ = 0, totalScore = 0;
+
+        // Expondo funções para o HTML
+        window.startQuiz = startQuiz;
+        window.generatePremiumPDF = generatePremiumPDF;
 
         function startQuiz() { 
             document.getElementById('intro-screen').classList.add('hidden'); 
@@ -132,13 +142,42 @@
             else { finishQuiz(); } 
         }
 
-        function finishQuiz() { 
+        // 3. FUNÇÃO ALTERADA PARA SALVAR NO BANCO
+        async function finishQuiz() { 
             document.getElementById('quiz-screen').classList.add('hidden'); 
             document.getElementById('processing-screen').classList.remove('hidden'); 
+
+            // Calcula Score Final (Média)
+            const finalScore = totalScore / questions.length;
+            let severity = "";
+            
+            if (finalScore < 25) severity = "SEM INDÍCIOS DE BURNOUT";
+            else if (finalScore < 50) severity = "RISCO LEVE / CANSAÇO";
+            else if (finalScore < 75) severity = "RISCO MODERADO";
+            else severity = "BURNOUT SEVERO";
+
+            // Salva no Firebase
+            if (currentUser.id) {
+                try {
+                    const userDocRef = doc(db, "usuarios", currentUser.id);
+                    const historicoRef = collection(userDocRef, "historico_testes");
+                    
+                    await addDoc(historicoRef, {
+                        teste: "Burnout (CBI)",
+                        data: new Date(),
+                        resultado: severity,
+                        nivel_exaustao: Math.round(finalScore) + "%"
+                    });
+                    console.log("Resultado Burnout salvo!");
+                } catch (error) {
+                    console.error("Erro ao salvar Burnout:", error);
+                }
+            }
+
             setTimeout(() => { 
                 document.getElementById('processing-screen').classList.add('hidden'); 
                 document.getElementById('result-screen').classList.remove('hidden'); 
-            }, 2000); 
+            }, 1000); 
         }
 
         // --- MOTOR PDF PREMIUM ---

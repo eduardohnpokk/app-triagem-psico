@@ -50,7 +50,7 @@
     <header>
         <a href="index.html" class="brand">Eduardo Pokk <span style="font-weight: 300;">| Área de Testes</span></a>
         <div class="user-info">
-            <i class="fa-solid fa-circle-user"></i> Acesso Liberado
+            <i class="fa-solid fa-circle-user"></i> <span id="user-display">Visitante</span>
         </div>
     </header>
 
@@ -64,7 +64,7 @@
                     <h3>TDAH Adulto <i class="fa-solid fa-brain" style="color:#2563eb;"></i></h3>
                     <p>Avaliação de sintomas de Desatenção e Hiperatividade com base na escala ASRS-18.</p>
                 </div>
-                <a href="tdah.html" class="btn-start">Iniciar Teste</a>
+                <a href="teste_tdah.html" class="btn-start">Iniciar Teste</a>
             </div>
 
             <div class="card tea">
@@ -72,7 +72,7 @@
                     <h3>Autismo (TEA) <i class="fa-solid fa-puzzle-piece" style="color:#7c3aed;"></i></h3>
                     <p>Rastreio de traços do espectro, sensibilidade sensorial e camuflagem social (RAADS-14).</p>
                 </div>
-                <a href="tea.html" class="btn-start">Iniciar Teste</a>
+                <a href="teste_tea.html" class="btn-start">Iniciar Teste</a>
             </div>
 
             <div class="card ahsd">
@@ -80,7 +80,7 @@
                     <h3>Altas Habilidades <i class="fa-solid fa-lightbulb" style="color:#d97706;"></i></h3>
                     <p>Investigação de superdotação, tédio crônico e dupla excepcionalidade.</p>
                 </div>
-                <a href="ahsd.html" class="btn-start">Iniciar Teste</a>
+                <a href="teste_ahsd.html" class="btn-start">Iniciar Teste</a>
             </div>
 
             <div class="card ansiedade">
@@ -88,7 +88,7 @@
                     <h3>Ansiedade (TAG) <i class="fa-solid fa-bolt" style="color:#0ea5e9;"></i></h3>
                     <p>Mapeamento de níveis de tensão e preocupação excessiva (GAD-7).</p>
                 </div>
-                <a href="ansiedade.html" class="btn-start">Iniciar Teste</a>
+                <a href="teste_ansiedade.html" class="btn-start">Iniciar Teste</a>
             </div>
 
             <div class="card depressao">
@@ -96,7 +96,7 @@
                     <h3>Depressão <i class="fa-solid fa-cloud-rain" style="color:#475569;"></i></h3>
                     <p>Avaliação de humor, energia vital e anedonia (Escala PHQ-9).</p>
                 </div>
-                <a href="depressao.html" class="btn-start">Iniciar Teste</a>
+                <a href="teste_depressao.html" class="btn-start">Iniciar Teste</a>
             </div>
 
             <div class="card burnout">
@@ -104,10 +104,22 @@
                     <h3>Burnout <i class="fa-solid fa-battery-empty" style="color:#ea580c;"></i></h3>
                     <p>Mensuração de exaustão física e emocional ligada à rotina (CBI).</p>
                 </div>
-                <a href="burnout.html" class="btn-start">Iniciar Teste</a>
+                <a href="teste_burnout.html" class="btn-start">Iniciar Teste</a>
             </div>
         </div>
     </div>
+
+    <script>
+        // Lógica simples para pegar o nome do usuário salvo no cadastro
+        const userName = localStorage.getItem('usuario_nome');
+        
+        if (userName) {
+            document.getElementById('user-display').innerText = "Olá, " + userName.split(' ')[0]; // Pega só o primeiro nome
+        } else {
+            // Se não tiver nome (tentou burlar), manda pro cadastro
+            window.location.href = "cadastro.html";
+        }
+    </script>
 
 </body>
 </html>

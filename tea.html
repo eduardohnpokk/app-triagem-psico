@@ -64,6 +64,7 @@
         <div id="processing-screen" class="quiz-box hidden">
             <i class="fa-solid fa-circle-notch fa-spin" style="font-size: 3rem; color: var(--accent); margin-bottom: 20px;"></i>
             <h2>Analisando Padrões...</h2>
+            <p style="color: #64748b; font-size: 0.9rem;">Salvando no seu histórico seguro...</p>
         </div>
 
         <div id="result-screen" class="quiz-box hidden">
@@ -78,10 +79,15 @@
 
     <footer>Supervisão Técnica: Eduardo Pokk | Psicólogo CRP 06/73583</footer>
 
-    <script>
-        // SIMULAÇÃO LOGIN
+    <script type="module">
+        // 1. IMPORTAÇÕES DO FIREBASE
+        import { db } from './firebase-config.js';
+        import { doc, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        // 2. IDENTIFICAÇÃO DO USUÁRIO
         const currentUser = {
-            name: localStorage.getItem('user_name') || "Paciente Identificado (Login)"
+            name: localStorage.getItem('usuario_nome') || "Visitante Anônimo",
+            id: localStorage.getItem('usuario_id')
         };
 
         const questions = [
@@ -103,6 +109,10 @@
 
         const options = [{ label: "Verdadeiro agora e quando jovem", value: 3 }, { label: "Verdadeiro apenas agora", value: 2 }, { label: "Verdadeiro apenas quando jovem", value: 1 }, { label: "Nunca", value: 0 }];
         let currentQ = 0, userAnswers = [];
+
+        // Expondo funções para o HTML funcionar com module
+        window.startQuiz = startQuiz;
+        window.generatePremiumPDF = generatePremiumPDF;
 
         function startQuiz() { 
             document.getElementById('intro-screen').classList.add('hidden'); 
@@ -133,13 +143,39 @@
             else { finishQuiz(); } 
         }
 
-        function finishQuiz() { 
+        // 3. FUNÇÃO ALTERADA PARA SALVAR NO BANCO
+        async function finishQuiz() { 
             document.getElementById('quiz-screen').classList.add('hidden'); 
             document.getElementById('processing-screen').classList.remove('hidden'); 
+
+            // Calcula pontuação para o Banco de Dados
+            let totalScore = 0;
+            userAnswers.forEach(ans => totalScore += ans);
+            const resultadoFinal = totalScore >= 14 ? "POSITIVO TEA" : "NEGATIVO TEA";
+
+            // Salva no Firebase
+            if (currentUser.id) {
+                try {
+                    const userDocRef = doc(db, "usuarios", currentUser.id);
+                    const historicoRef = collection(userDocRef, "historico_testes");
+                    
+                    await addDoc(historicoRef, {
+                        teste: "Autismo (RAADS-14)",
+                        data: new Date(),
+                        resultado: resultadoFinal,
+                        pontuacao_total: totalScore,
+                        respostas_brutas: userAnswers
+                    });
+                    console.log("Resultado TEA salvo com sucesso!");
+                } catch (error) {
+                    console.error("Erro ao salvar TEA:", error);
+                }
+            }
+
             setTimeout(() => { 
                 document.getElementById('processing-screen').classList.add('hidden'); 
                 document.getElementById('result-screen').classList.remove('hidden'); 
-            }, 2000); 
+            }, 1000); 
         }
 
         async function generatePremiumPDF() {

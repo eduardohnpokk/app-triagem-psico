@@ -66,6 +66,7 @@
         <div id="processing-screen" class="quiz-box hidden">
             <i class="fa-solid fa-circle-notch fa-spin" style="font-size: 3rem; color: var(--accent); margin-bottom: 20px;"></i>
             <h2>Processando...</h2>
+            <p style="color: #64748b; font-size: 0.9rem;">Salvando no histórico...</p>
         </div>
 
         <div id="result-screen" class="quiz-box hidden">
@@ -86,10 +87,15 @@
 
     <footer>Supervisão Técnica: Eduardo Pokk | Psicólogo CRP 06/73583</footer>
 
-    <script>
-        // SIMULAÇÃO LOGIN
+    <script type="module">
+        // 1. IMPORTAÇÕES
+        import { db } from './firebase-config.js';
+        import { doc, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        // 2. IDENTIFICAÇÃO DO USUÁRIO
         const currentUser = {
-            name: localStorage.getItem('user_name') || "Paciente Identificado (Login)"
+            name: localStorage.getItem('usuario_nome') || "Visitante Anônimo",
+            id: localStorage.getItem('usuario_id')
         };
 
         const questions = [
@@ -106,6 +112,10 @@
 
         const options = [{ label: "Nenhuma vez", value: 0 }, { label: "Vários dias", value: 1 }, { label: "Mais da metade", value: 2 }, { label: "Quase todos os dias", value: 3 }];
         let currentQ = 0, totalScore = 0, q9Score = 0;
+
+        // Expondo funções para o HTML
+        window.startQuiz = startQuiz;
+        window.generatePremiumPDF = generatePremiumPDF;
 
         function startQuiz() { 
             document.getElementById('intro-screen').classList.add('hidden'); 
@@ -137,13 +147,43 @@
             else { finishQuiz(); } 
         }
 
-        function finishQuiz() { 
+        // 3. FUNÇÃO ALTERADA PARA SALVAR NO BANCO
+        async function finishQuiz() { 
             document.getElementById('quiz-screen').classList.add('hidden'); 
             document.getElementById('processing-screen').classList.remove('hidden'); 
+
+            // Calcula Severidade
+            let severity = "MÍNIMA / AUSENTE";
+            if (totalScore <= 4) severity = "MÍNIMA / AUSENTE";
+            else if (totalScore <= 9) severity = "DEPRESSÃO LEVE";
+            else if (totalScore <= 14) severity = "DEPRESSÃO MODERADA";
+            else if (totalScore <= 19) severity = "MODERADA GRAVE";
+            else severity = "DEPRESSÃO GRAVE";
+
+            // Salva no Firebase
+            if (currentUser.id) {
+                try {
+                    const userDocRef = doc(db, "usuarios", currentUser.id);
+                    const historicoRef = collection(userDocRef, "historico_testes");
+                    
+                    await addDoc(historicoRef, {
+                        teste: "Depressão (PHQ-9)",
+                        data: new Date(),
+                        resultado: severity,
+                        pontuacao_total: totalScore,
+                        risco_suicidio: q9Score > 0 // Flag Importante
+                    });
+                    console.log("Resultado Depressão salvo!");
+                } catch (error) {
+                    console.error("Erro ao salvar Depressão:", error);
+                }
+            }
+
+            // Exibe resultado e alerta de risco se necessário
             setTimeout(() => { 
                 document.getElementById('processing-screen').classList.add('hidden'); 
                 document.getElementById('result-screen').classList.remove('hidden'); 
-                if(q9Score>0) document.getElementById('suicide-risk').style.display='block'; 
+                if(q9Score > 0) document.getElementById('suicide-risk').style.display='block'; 
             }, 2000); 
         }
 

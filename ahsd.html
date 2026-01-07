@@ -70,6 +70,7 @@
         <div id="processing-screen" class="quiz-box hidden">
             <i class="fa-solid fa-circle-notch fa-spin" style="font-size: 3rem; color: var(--accent); margin-bottom: 20px;"></i>
             <h2>Processando Perfil...</h2>
+            <p style="color: #64748b; font-size: 0.9rem;">Salvando no histórico...</p>
         </div>
 
         <div id="result-screen" class="quiz-box hidden">
@@ -84,12 +85,15 @@
 
     <footer>Supervisão Técnica: Eduardo Pokk | Psicólogo CRP 06/73583</footer>
 
-    <script>
-        // --- SIMULAÇÃO DE LOGIN (PREPARAÇÃO PARA FIREBASE) ---
-        // Quando tivermos o banco, o nome virá automaticamente. 
-        // Por enquanto, usamos um valor padrão se não houver login.
+    <script type="module">
+        // 1. IMPORTAÇÕES FIREBASE
+        import { db } from './firebase-config.js';
+        import { doc, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        // 2. IDENTIFICAÇÃO DO USUÁRIO
         const currentUser = {
-            name: localStorage.getItem('user_name') || "Paciente Identificado (Login)"
+            name: localStorage.getItem('usuario_nome') || "Visitante Anônimo",
+            id: localStorage.getItem('usuario_id')
         };
 
         const questions = [
@@ -109,6 +113,10 @@
 
         const options = [{ label: "Descreve perfeitamente", value: 3 }, { label: "Descreve bem", value: 2 }, { label: "Descreve um pouco", value: 1 }, { label: "Não me descreve", value: 0 }];
         let currentQ = 0, userAnswers = []; let totalScore = 0;
+
+        // Expondo funções globais
+        window.startQuiz = startQuiz;
+        window.generatePremiumPDF = generatePremiumPDF;
 
         function startQuiz() { 
             document.getElementById('intro-screen').classList.add('hidden'); 
@@ -139,13 +147,38 @@
             else { finishQuiz(); } 
         }
 
-        function finishQuiz() { 
+        // 3. FUNÇÃO ALTERADA PARA SALVAR NO BANCO
+        async function finishQuiz() { 
             document.getElementById('quiz-screen').classList.add('hidden'); 
             document.getElementById('processing-screen').classList.remove('hidden'); 
+
+            // Calcula lógica do resultado (Igual à do PDF)
+            const isHigh = totalScore >= 24;
+            const resultadoFinal = isHigh ? "POSITIVO AH/SD" : "NEGATIVO AH/SD";
+
+            // Salva no Firebase
+            if (currentUser.id) {
+                try {
+                    const userDocRef = doc(db, "usuarios", currentUser.id);
+                    const historicoRef = collection(userDocRef, "historico_testes");
+                    
+                    await addDoc(historicoRef, {
+                        teste: "Altas Habilidades / Superdotação",
+                        data: new Date(),
+                        resultado: resultadoFinal,
+                        pontuacao_total: totalScore,
+                        respostas_brutas: userAnswers
+                    });
+                    console.log("Resultado AH/SD salvo!");
+                } catch (error) {
+                    console.error("Erro ao salvar AH/SD:", error);
+                }
+            }
+
             setTimeout(() => { 
                 document.getElementById('processing-screen').classList.add('hidden'); 
                 document.getElementById('result-screen').classList.remove('hidden'); 
-            }, 2000); 
+            }, 1000); 
         }
 
         async function generatePremiumPDF() {

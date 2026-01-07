@@ -69,6 +69,7 @@
         <div id="processing-screen" class="quiz-box hidden">
             <i class="fa-solid fa-circle-notch fa-spin" style="font-size: 3rem; color: var(--accent); margin-bottom: 20px;"></i>
             <h2>Processando...</h2>
+            <p style="color: #64748b; font-size: 0.9rem;">Salvando no histórico...</p>
         </div>
 
         <div id="result-screen" class="quiz-box hidden">
@@ -83,10 +84,15 @@
 
     <footer>Supervisão Técnica: Eduardo Pokk | Psicólogo CRP 06/73583</footer>
 
-    <script>
-        // SIMULAÇÃO DO USUÁRIO LOGADO
+    <script type="module">
+        // 1. IMPORTAÇÕES
+        import { db } from './firebase-config.js';
+        import { doc, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        // 2. IDENTIFICAÇÃO DO USUÁRIO
         const currentUser = {
-            name: localStorage.getItem('user_name') || "Paciente Identificado (Login)"
+            name: localStorage.getItem('usuario_nome') || "Visitante Anônimo",
+            id: localStorage.getItem('usuario_id')
         };
 
         const questions = [
@@ -101,6 +107,10 @@
 
         const options = [{ label: "Nenhuma vez", value: 0 }, { label: "Vários dias", value: 1 }, { label: "Mais da metade", value: 2 }, { label: "Quase todos os dias", value: 3 }];
         let currentQ = 0, totalScore = 0;
+
+        // Expondo funções para o HTML
+        window.startQuiz = startQuiz;
+        window.generatePremiumPDF = generatePremiumPDF;
 
         function startQuiz() { 
             document.getElementById('intro-screen').classList.add('hidden'); 
@@ -131,13 +141,40 @@
             else { finishQuiz(); } 
         }
 
-        function finishQuiz() { 
+        // 3. FUNÇÃO ALTERADA PARA SALVAR NO BANCO
+        async function finishQuiz() { 
             document.getElementById('quiz-screen').classList.add('hidden'); 
             document.getElementById('processing-screen').classList.remove('hidden'); 
+
+            // Calcula a severidade (Mesma lógica do PDF)
+            let severity = "";
+            if (totalScore <= 4) severity = "ANSIEDADE MÍNIMA";
+            else if (totalScore <= 9) severity = "ANSIEDADE LEVE";
+            else if (totalScore <= 14) severity = "ANSIEDADE MODERADA";
+            else severity = "ANSIEDADE GRAVE";
+
+            // Salva no Firebase
+            if (currentUser.id) {
+                try {
+                    const userDocRef = doc(db, "usuarios", currentUser.id);
+                    const historicoRef = collection(userDocRef, "historico_testes");
+                    
+                    await addDoc(historicoRef, {
+                        teste: "Ansiedade (GAD-7)",
+                        data: new Date(),
+                        resultado: severity,
+                        pontuacao_total: totalScore
+                    });
+                    console.log("Resultado GAD-7 salvo!");
+                } catch (error) {
+                    console.error("Erro ao salvar GAD-7:", error);
+                }
+            }
+
             setTimeout(() => { 
                 document.getElementById('processing-screen').classList.add('hidden'); 
                 document.getElementById('result-screen').classList.remove('hidden'); 
-            }, 2000); 
+            }, 1000); 
         }
 
         // --- MOTOR PDF PREMIUM ---
