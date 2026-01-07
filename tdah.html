@@ -61,13 +61,14 @@
 
         <div id="processing-screen" class="quiz-box hidden">
             <i class="fa-solid fa-circle-notch fa-spin" style="font-size: 3rem; color: var(--accent); margin-bottom: 20px;"></i>
-            <h2>Processando Dados...</h2>
+            <h2>Processando Resultados...</h2>
+            <p style="color: #64748b; font-size: 0.9rem;">Salvando dados seguros...</p>
         </div>
 
         <div id="result-screen" class="quiz-box hidden">
             <div style="font-size: 3rem; color: #16a34a; margin-bottom: 20px;"><i class="fa-solid fa-file-contract"></i></div>
             <h1>Dossiê Gerado</h1>
-            <p>Seu relatório técnico está pronto para download.</p>
+            <p>Seu relatório técnico foi salvo e está pronto para download.</p>
             <button class="btn-primary" onclick="generatePremiumPDF()">
                 <i class="fa-solid fa-download"></i> BAIXAR DOSSIÊ COMPLETO
             </button>
@@ -76,10 +77,15 @@
 
     <footer>Supervisão Técnica: Eduardo Pokk | Psicólogo CRP 06/73583</footer>
 
-    <script>
-        // SIMULAÇÃO LOGIN (Substituiremos pelo Firebase Auth depois)
+    <script type="module">
+        // 1. IMPORTA O BANCO DE DADOS
+        import { db } from './firebase-config.js';
+        import { doc, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        // 2. IDENTIFICA O USUÁRIO (Vindo do Cadastro)
         const currentUser = {
-            name: localStorage.getItem('user_name') || "Paciente Identificado (Login)"
+            name: localStorage.getItem('usuario_nome') || "Visitante Anônimo",
+            id: localStorage.getItem('usuario_id')
         };
 
         const questions = [
@@ -105,6 +111,10 @@
 
         const options = [{ label: "Nunca", value: 0 }, { label: "Raramente", value: 1 }, { label: "Algumas vezes", value: 2 }, { label: "Frequentemente", value: 3 }, { label: "Muito Frequentemente", value: 4 }];
         let currentQ = 0, userAnswers = [];
+
+        // Expondo funções para o HTML (Necessário quando se usa type="module")
+        window.startQuiz = startQuiz;
+        window.generatePremiumPDF = generatePremiumPDF;
 
         function startQuiz() { 
             document.getElementById('intro-screen').classList.add('hidden'); 
@@ -135,13 +145,46 @@
             else { finishQuiz(); } 
         }
 
-        function finishQuiz() { 
+        // 3. FUNÇÃO ALTERADA PARA SALVAR NO BANCO
+        async function finishQuiz() { 
             document.getElementById('quiz-screen').classList.add('hidden'); 
             document.getElementById('processing-screen').classList.remove('hidden'); 
+
+            // Calcula pontuação para salvar
+            let partAScore = 0;
+            userAnswers.forEach((ans, i) => {
+                if (i < 6 && ans >= questions[i].threshold) partAScore++;
+            });
+            const resultadoFinal = partAScore >= 4 ? "POSITIVO TDAH" : "NEGATIVO TDAH";
+
+            // Salva no Firebase (Se tiver usuário logado)
+            if (currentUser.id) {
+                try {
+                    // Cria uma referência ao documento do usuário
+                    const userDocRef = doc(db, "usuarios", currentUser.id);
+                    // Cria uma coleção 'historico_testes' dentro desse usuário
+                    const historicoRef = collection(userDocRef, "historico_testes");
+                    
+                    await addDoc(historicoRef, {
+                        teste: "TDAH (ASRS-18)",
+                        data: new Date(),
+                        resultado: resultadoFinal,
+                        pontuacao_parte_A: partAScore,
+                        respostas_brutas: userAnswers
+                    });
+                    console.log("Resultado salvo com sucesso no Firebase!");
+                } catch (error) {
+                    console.error("Erro ao salvar no banco:", error);
+                }
+            } else {
+                console.warn("Nenhum usuário logado. Resultado não será salvo no banco.");
+            }
+
+            // Mostra tela final após salvar (ou tentar)
             setTimeout(() => { 
                 document.getElementById('processing-screen').classList.add('hidden'); 
                 document.getElementById('result-screen').classList.remove('hidden'); 
-            }, 2000); 
+            }, 1000); 
         }
 
         async function generatePremiumPDF() {
