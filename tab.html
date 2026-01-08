@@ -1,6 +1,16 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+<script>
+    // PORTARIA DE SEGURANÇA
+    // Verifica se existe um usuário salvo no navegador
+    const checkUser = localStorage.getItem('usuario_nome');
+    
+    // Se NÃO tiver usuário (ou seja, tentou entrar direto), chuta para o cadastro
+    if (!checkUser) {
+        window.location.href = "cadastro.html";
+    }
+</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rastreio Bipolaridade (MDQ) | Dr. Eduardo Pokk</title>
