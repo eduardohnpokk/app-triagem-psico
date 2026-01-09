@@ -8,11 +8,12 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
-        /* --- SEU CSS ORIGINAL (INTACTO) --- */
+        /* ESTILO "SALES PAGE" PREMIUM */
         :root { --primary: #0f172a; --accent: #2563eb; --gold: #d97706; --bg: #f8fafc; --text: #334155; --white: #ffffff; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Inter', sans-serif; background-color: var(--bg); color: var(--text); line-height: 1.6; }
 
+        /* Navbar */
         header { background: var(--white); padding: 20px 5%; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 100; }
         .brand { font-weight: 800; font-size: 1.2rem; color: var(--primary); }
         .brand span { color: var(--accent); }
@@ -21,12 +22,14 @@
         .login-btn-header { background: transparent; border: 2px solid var(--primary); color: var(--primary); padding: 6px 16px; border-radius: 20px; font-weight: 700; font-size: 0.85rem; cursor: pointer; transition: all 0.2s; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; }
         .login-btn-header:hover { background: var(--primary); color: white; }
 
+        /* Hero */
         .hero { text-align: center; padding: 100px 20px; background: linear-gradient(180deg, #ffffff 0%, #f1f5f9 100%); }
         .hero h1 { font-size: 3rem; color: var(--primary); margin-bottom: 20px; line-height: 1.1; letter-spacing: -1px; }
         .hero p { font-size: 1.2rem; color: #64748b; max-width: 700px; margin: 0 auto 40px auto; }
         .hero-btn { display: inline-block; background: var(--accent); color: white; padding: 18px 50px; border-radius: 50px; font-weight: 700; font-size: 1.1rem; text-decoration: none; transition: transform 0.2s; box-shadow: 0 10px 25px rgba(37, 99, 235, 0.3); }
         .hero-btn:hover { transform: translateY(-3px); background: #1d4ed8; }
 
+        /* Features */
         .features { padding: 80px 20px; max-width: 1200px; margin: 0 auto; }
         .section-title { text-align: center; font-size: 2rem; color: var(--primary); margin-bottom: 50px; }
         .feature-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
@@ -34,12 +37,14 @@
         .feature-item:hover { border-color: var(--accent); transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
         .icon-box { font-size: 2rem; margin-bottom: 20px; color: var(--accent); }
 
+        /* Bio */
         .bio-section { background: white; padding: 80px 20px; border-top: 1px solid #e2e8f0; border-bottom: 1px solid #e2e8f0; }
         .bio-container { max-width: 900px; margin: 0 auto; display: flex; align-items: center; gap: 50px; flex-wrap: wrap; }
         .bio-text { flex: 1; }
         .bio-text h2 { font-size: 2rem; margin-bottom: 20px; color: var(--primary); }
         .bio-img { width: 150px; height: 150px; background: #e2e8f0; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; color: #94a3b8; overflow: hidden; border: 4px solid white; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
 
+        /* Pricing */
         .pricing { padding: 80px 20px; text-align: center; background: #f8fafc; }
         .single-offer-card { background: white; padding: 50px; border-radius: 20px; width: 100%; max-width: 500px; margin: 0 auto; border: 2px solid var(--accent); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15); position: relative; }
         .badge { position: absolute; top: -15px; left: 50%; transform: translateX(-50%); background: var(--gold); color: white; padding: 8px 20px; border-radius: 30px; font-size: 0.9rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 4px 10px rgba(217, 119, 6, 0.3); }
@@ -50,13 +55,14 @@
         .benefit-list { list-style: none; text-align: left; margin: 30px 0; color: #334155; font-size: 1.1rem; }
         .benefit-list li { margin-bottom: 15px; display: flex; gap: 15px; align-items: flex-start; }
         .benefit-list i { color: #16a34a; margin-top: 5px; }
-
+        
         .cta-btn { display: block; width: 100%; padding: 20px; background: var(--accent); color: white; border-radius: 10px; font-weight: 700; font-size: 1.2rem; text-decoration: none; transition: 0.2s; box-shadow: 0 10px 20px rgba(37, 99, 235, 0.2); cursor: pointer; }
         .cta-btn:hover { background: #1d4ed8; transform: translateY(-2px); }
         .guarantee { margin-top: 15px; font-size: 0.85rem; color: #64748b; }
 
         footer { background: var(--primary); color: #94a3b8; padding: 40px; text-align: center; font-size: 0.9rem; }
 
+        /* Modal */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(4px); z-index: 1000; display: none; justify-content: center; align-items: center; }
         .modal-box { background: white; padding: 40px; border-radius: 16px; width: 90%; max-width: 400px; position: relative; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); text-align: center; }
         .close-modal { position: absolute; top: 15px; right: 20px; font-size: 1.5rem; cursor: pointer; color: #94a3b8; }
@@ -66,16 +72,6 @@
         .btn-entrar:hover { background: #1e293b; }
         .error-msg { color: #ef4444; font-size: 0.9rem; margin-bottom: 15px; display: none; }
     </style>
-
-    <script>
-        window.onerror = function(message, source, lineno, colno, error) {
-            console.error("Erro capturado:", message);
-            // Se for um erro de script crítico, avisa o usuário
-            if (message.includes("import") || message.includes("SyntaxError") || message.includes("unexpected")) {
-                alert("ERRO TÉCNICO: O site não conseguiu carregar os scripts. Verifique o arquivo firebase-config.js ou a conexão.");
-            }
-        };
-    </script>
 </head>
 <body>
 
@@ -98,14 +94,14 @@
     <section class="features">
         <h2 class="section-title">O que está incluso no Portal?</h2>
         <div class="feature-grid">
-            <div class="feature-item"><div class="icon-box"><i class="fa-solid fa-brain"></i></div><h3>TDAH Adulto</h3><p>Escala ASRS-18.</p></div>
-            <div class="feature-item"><div class="icon-box" style="color: #7c3aed;"><i class="fa-solid fa-puzzle-piece"></i></div><h3>Autismo (TEA)</h3><p>Escala RAADS-14.</p></div>
-            <div class="feature-item"><div class="icon-box" style="color: #d97706;"><i class="fa-solid fa-lightbulb"></i></div><h3>Altas Habilidades</h3><p>Investigação de superdotação.</p></div>
-            <div class="feature-item"><div class="icon-box" style="color: #0ea5e9;"><i class="fa-solid fa-bolt"></i></div><h3>Ansiedade (TAG)</h3><p>Mapeamento GAD-7.</p></div>
-            <div class="feature-item"><div class="icon-box" style="color: #475569;"><i class="fa-solid fa-cloud-rain"></i></div><h3>Depressão</h3><p>Escala PHQ-9.</p></div>
-            <div class="feature-item"><div class="icon-box" style="color: #ea580c;"><i class="fa-solid fa-battery-empty"></i></div><h3>Burnout</h3><p>Medição CBI.</p></div>
-            <div class="feature-item"><div class="icon-box" style="color: #6366f1;"><i class="fa-solid fa-masks-theater"></i></div><h3>Bipolaridade</h3><p>Protocolo MDQ.</p></div>
-            <div class="feature-item"><div class="icon-box" style="color: #be185d;"><i class="fa-solid fa-heart-crack"></i></div><h3>Borderline</h3><p>Escala MSI-BPD.</p></div>
+            <div class="feature-item"><div class="icon-box"><i class="fa-solid fa-brain"></i></div><h3>TDAH Adulto</h3><p>Escala ASRS-18 para identificar déficit de atenção.</p></div>
+            <div class="feature-item"><div class="icon-box" style="color: #7c3aed;"><i class="fa-solid fa-puzzle-piece"></i></div><h3>Autismo (TEA)</h3><p>Escala RAADS-14 para traços do espectro e camuflagem.</p></div>
+            <div class="feature-item"><div class="icon-box" style="color: #d97706;"><i class="fa-solid fa-lightbulb"></i></div><h3>Altas Habilidades</h3><p>Investigação de superdotação e tédio crônico.</p></div>
+            <div class="feature-item"><div class="icon-box" style="color: #0ea5e9;"><i class="fa-solid fa-bolt"></i></div><h3>Ansiedade (TAG)</h3><p>Mapeamento de níveis de tensão (GAD-7).</p></div>
+            <div class="feature-item"><div class="icon-box" style="color: #475569;"><i class="fa-solid fa-cloud-rain"></i></div><h3>Depressão</h3><p>Escala PHQ-9 para medir humor e energia vital.</p></div>
+            <div class="feature-item"><div class="icon-box" style="color: #ea580c;"><i class="fa-solid fa-battery-empty"></i></div><h3>Burnout</h3><p>Medição de exaustão física e emocional (CBI).</p></div>
+            <div class="feature-item"><div class="icon-box" style="color: #6366f1;"><i class="fa-solid fa-masks-theater"></i></div><h3>Bipolaridade</h3><p>Protocolo MDQ para identificar oscilações de humor.</p></div>
+            <div class="feature-item"><div class="icon-box" style="color: #be185d;"><i class="fa-solid fa-heart-crack"></i></div><h3>Borderline</h3><p>Escala MSI-BPD para instabilidade emocional.</p></div>
         </div>
     </section>
 
@@ -114,7 +110,8 @@
             <div class="bio-img"><i class="fa-solid fa-user fa-3x" style="color: #cbd5e1;"></i></div>
             <div class="bio-text">
                 <h2>Supervisão Técnica: Dr. Eduardo Pokk</h2>
-                <p>Psicólogo Clínico (CRP 06/73583) atuante desde 2004.</p>
+                <p>Psicólogo Clínico (CRP 06/73583) atuante desde 2004, especializado em Gestão de Pessoas e comportamento humano. Autor dos livros "A Guerra Invisível" e <strong>"Tratamento da Ansiedade - Da estabilização à Integração"</strong>.</p>
+                <p style="margin-top: 15px; font-style: italic;">"Criei este portal para que você pare de sofrer com a dúvida e comece a entender como seu cérebro funciona."</p>
             </div>
         </div>
     </section>
@@ -128,9 +125,10 @@
                 <div class="price">R$ 49,90 <span style="font-size: 1rem; display: block; margin-top: 5px;">pagamento único</span></div>
             </div>
             <ul class="benefit-list">
-                <li><i class="fa-solid fa-check-circle"></i> <strong>8 Rastreios Completos</strong></li>
-                <li><i class="fa-solid fa-check-circle"></i> <strong>Dossiês em PDF</strong></li>
-                <li><i class="fa-solid fa-check-circle"></i> Acesso imediato e vitalício</li>
+                <li><i class="fa-solid fa-check-circle"></i> <strong>8 Rastreios Completos</strong> (TDAH, TEA, TAB, etc)</li>
+                <li><i class="fa-solid fa-check-circle"></i> <strong>Dossiês em PDF</strong> (Padrão Clínico)</li>
+                <li><i class="fa-solid fa-check-circle"></i> <strong>Análise de Comorbidades</strong> (Cruzamento)</li>
+                <li><i class="fa-solid fa-check-circle"></i> Acesso imediato e vitalício aos relatórios</li>
             </ul>
 
             <a href="javascript:void(0)" id="btnPagamento" class="cta-btn">QUERO MAPEAR MINHA MENTE</a>
@@ -156,70 +154,72 @@
     </div>
     
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
-        import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-functions.js";
-        import { firebaseConfig } from './firebase-config.js';
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-functions.js";
 
-        // Tenta iniciar o Firebase
+        // --- SUAS CONFIGURAÇÕES REAIS ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyCqDAUEfYarlFkA1u2A-n-SGv_1AjFb7WU",
+            authDomain: "portal-eduardo-pokk.firebaseapp.com",
+            projectId: "portal-eduardo-pokk",
+            storageBucket: "portal-eduardo-pokk.firebasestorage.app",
+            messagingSenderId: "657739349802",
+            appId: "1:657739349802:web:c14305400575f68ed5a853"
+        };
+
+        console.log("Iniciando Sistema...");
+        
         let auth, functions;
+
         try {
             const app = initializeApp(firebaseConfig);
             auth = getAuth(app);
             functions = getFunctions(app);
-            console.log("Firebase conectado com sucesso.");
+            console.log("Firebase Conectado!");
+
         } catch (error) {
-            console.error("ERRO CRÍTICO FIREBASE:", error);
-            alert("Erro ao conectar no sistema. Código: " + error.message);
+            console.error("ERRO GRAVE:", error);
+            alert("Erro ao conectar no Firebase: " + error.message);
         }
 
-        // --- 1. LÓGICA DE PAGAMENTO ---
+        // --- 1. LÓGICA DE PAGAMENTO (Monitorar botão) ---
         const btnCompra = document.getElementById('btnPagamento');
-        
-        // Verifica se o botão existe no HTML
         if (btnCompra) {
-            // Adiciona o ouvinte de clique
-            btnCompra.addEventListener('click', async () => {
+            btnCompra.addEventListener('click', async (e) => {
+                e.preventDefault(); // Impede o link de pular
                 
-                // Salva estado original
                 const textoOriginal = btnCompra.innerText;
-                
-                // Muda botão para dar feedback visual
-                btnCompra.innerText = "Conectando...";
+                btnCompra.innerText = "Processando...";
                 btnCompra.style.opacity = "0.7";
-                btnCompra.style.pointerEvents = "none"; // Evita clique duplo
+                btnCompra.style.pointerEvents = "none"; // Trava novos cliques
 
                 try {
                     console.log("Chamando função de pagamento...");
-                    
-                    // Chama a função no servidor (functions/index.js)
                     const criarPagamento = httpsCallable(functions, 'criarPagamento');
                     const resposta = await criarPagamento();
                     
-                    console.log("Resposta recebida:", resposta);
+                    console.log("Resposta:", resposta);
                     
                     const linkPagamento = resposta.data.init_point;
                     
                     if (linkPagamento) {
                         window.location.href = linkPagamento;
                     } else {
-                        throw new Error("O link de pagamento não foi gerado pelo Mercado Pago.");
+                        throw new Error("O link de pagamento não foi gerado.");
                     }
 
                 } catch (error) {
-                    console.error("ERRO NO PROCESSO:", error);
-                    alert("Não foi possível iniciar o pagamento: " + error.message);
+                    console.error("ERRO PAGAMENTO:", error);
+                    alert("Erro ao iniciar pagamento. Tente novamente.");
                     
-                    // Restaura botão
+                    // Restaura botão se der erro
                     btnCompra.innerText = textoOriginal;
                     btnCompra.style.opacity = "1";
                     btnCompra.style.pointerEvents = "auto";
                 }
             });
-        } else {
-            console.error("ERRO: O script não encontrou o botão #btnPagamento");
         }
-
 
         // --- 2. LÓGICA DE LOGIN ---
         const loginModal = document.getElementById('loginModal');
@@ -227,12 +227,10 @@
         const closeLoginBtn = document.getElementById('closeModal');
         const btnLoginAction = document.getElementById('btnLoginAction');
 
-        // Abrir/Fechar Modal
-        if (openLoginBtn) openLoginBtn.addEventListener('click', () => loginModal.style.display = 'flex');
-        if (closeLoginBtn) closeLoginBtn.addEventListener('click', () => loginModal.style.display = 'none');
-        window.addEventListener('click', (e) => {
-            if (e.target === loginModal) loginModal.style.display = 'none';
-        });
+        // Controles do Modal
+        if(openLoginBtn) openLoginBtn.addEventListener('click', () => loginModal.style.display = 'flex');
+        if(closeLoginBtn) closeLoginBtn.addEventListener('click', () => loginModal.style.display = 'none');
+        window.addEventListener('click', (e) => { if (e.target === loginModal) loginModal.style.display = 'none'; });
 
         // Ação de Logar
         if (btnLoginAction) {
@@ -240,27 +238,24 @@
                 const email = document.getElementById('emailInput').value;
                 const pass = document.getElementById('passInput').value;
                 
-                btnLoginAction.innerText = "Aguarde...";
+                btnLoginAction.innerText = "Verificando...";
                 document.getElementById('loginError').style.display = 'none';
 
                 try {
                     await signInWithEmailAndPassword(auth, email, pass);
-                    // O redirecionamento acontece no onAuthStateChanged abaixo
                 } catch (error) {
                     console.error("Erro login:", error);
                     btnLoginAction.innerText = "ENTRAR";
-                    const erroMsg = document.getElementById('loginError');
-                    erroMsg.style.display = 'block';
-                    erroMsg.innerText = "Dados inválidos ou erro de conexão.";
+                    document.getElementById('loginError').style.display = 'block';
                 }
             });
         }
 
-        // Monitorar se o usuário já está logado
+        // Se logar com sucesso, vai para o painel
         if (auth) {
             onAuthStateChanged(auth, (user) => {
                 if (user) {
-                    console.log("Usuário logado. Redirecionando...");
+                    console.log("Usuário logado:", user.email);
                     window.location.href = "dashboard.html";
                 }
             });
