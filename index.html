@@ -236,7 +236,7 @@
                 <li><i class="fa-solid fa-check-circle"></i> Acesso imediato e vitalício aos relatórios</li>
             </ul>
 
-            <a href="cadastro.html" class="cta-btn">QUERO MAPEAR MINHA MENTE</a>
+            <a href="#" id="btnPagamento" class="cta-btn">QUERO MAPEAR MINHA MENTE</a>
             
             <div class="guarantee">
                 <i class="fa-solid fa-lock"></i> Compra segura • Acesso imediato
@@ -267,36 +267,39 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
-        // Importa a biblioteca de funções para chamar o backend de pagamentos
         import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-functions.js";
         
         import { firebaseConfig } from './firebase-config.js';
 
-        // Inicializa o Firebase
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const functions = getFunctions(app);
 
+        console.log("Sistema iniciado...");
+
         // --- 1. LÓGICA DE PAGAMENTO (Botão Quero Mapear) ---
-        const btnCompra = document.querySelector('.cta-btn');
+        // Agora buscamos pelo ID único, para não ter erro
+        const btnCompra = document.getElementById('btnPagamento');
         const criarPagamento = httpsCallable(functions, 'criarPagamento');
 
         if (btnCompra) {
+            console.log("Botão de compra encontrado!");
             btnCompra.addEventListener('click', async (event) => {
-                event.preventDefault(); // Impede ir para cadastro.html
+                event.preventDefault(); // OBRIGATÓRIO: Impede o link de funcionar
+                console.log("Clique detectado. Iniciando processo...");
                 
                 const textoOriginal = btnCompra.innerText;
                 btnCompra.innerText = "Gerando Pagamento...";
                 btnCompra.style.opacity = "0.7";
 
                 try {
-                    // Chama o Backend (Function)
                     const resposta = await criarPagamento();
+                    console.log("Resposta do servidor:", resposta);
                     
-                    // Pega o link do Mercado Pago
                     const linkPagamento = resposta.data.init_point;
                     
                     if (linkPagamento) {
+                        console.log("Redirecionando para:", linkPagamento);
                         window.location.href = linkPagamento;
                     } else {
                         throw new Error("Link não gerado");
@@ -309,6 +312,8 @@
                     btnCompra.style.opacity = "1";
                 }
             });
+        } else {
+            console.error("ERRO CRÍTICO: O script não encontrou o botão de compra!");
         }
 
         // --- 2. LÓGICA DO MODAL DE LOGIN ---
@@ -320,28 +325,24 @@
         const passInput = document.getElementById('passInput');
         const errorMsg = document.getElementById('loginError');
 
-        // Abrir Modal
         if (openBtn) {
             openBtn.addEventListener('click', () => {
                 modal.style.display = 'flex';
             });
         }
 
-        // Fechar Modal
         if (closeBtn) {
             closeBtn.addEventListener('click', () => {
                 modal.style.display = 'none';
             });
         }
 
-        // Fechar clicando fora
         window.onclick = function(event) {
             if (event.target == modal) {
                 modal.style.display = "none";
             }
         }
 
-        // Ação de Entrar
         if (loginAction) {
             loginAction.addEventListener('click', async () => {
                 const email = emailInput.value;
@@ -361,7 +362,6 @@
             });
         }
 
-        // Monitorar se o usuário entrou e redirecionar
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 console.log("Usuário logado:", user.email);
