@@ -71,6 +71,10 @@
         .btn-entrar { width: 100%; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 1rem; }
         .btn-entrar:hover { background: #1e293b; }
         .error-msg { color: #ef4444; font-size: 0.9rem; margin-bottom: 15px; display: none; }
+
+        /* CSS NOVO: Links para alternar entre Login e Cadastro */
+        .toggle-link { cursor: pointer; color: var(--accent); text-decoration: underline; font-weight: 600; font-size: 0.9rem; }
+        .hidden-form { display: none; }
     </style>
 </head>
 <body>
@@ -144,21 +148,51 @@
     <div id="loginModal" class="modal-overlay">
         <div class="modal-box">
             <span class="close-modal" id="closeModal">&times;</span>
-            <h2>Login</h2>
-            <div class="error-msg" id="loginError">E-mail ou senha incorretos.</div>
-            <input type="email" id="emailInput" class="login-input" placeholder="Seu e-mail de compra">
-            <input type="password" id="passInput" class="login-input" placeholder="Sua senha">
-            <button class="btn-entrar" id="btnLoginAction">ENTRAR</button>
-            <p style="margin-top: 15px; font-size: 0.8rem; color: #64748b;">Ainda não tem acesso? <a href="#oferta" style="color: var(--accent);">Clique aqui</a></p>
+            
+            <div id="areaLogin">
+                <h2>Login</h2>
+                <div class="error-msg" id="loginError">E-mail ou senha incorretos.</div>
+                
+                <input type="email" id="emailInput" class="login-input" placeholder="Seu e-mail de compra">
+                <input type="password" id="passInput" class="login-input" placeholder="Sua senha">
+                
+                <button class="btn-entrar" id="btnLoginAction">ENTRAR</button>
+                
+                <p style="margin-top: 15px; font-size: 0.8rem; color: #64748b;">
+                    Pagou e ainda não tem senha? <br>
+                    <span id="irParaCadastro" class="toggle-link">Clique aqui para criar seu acesso</span>
+                </p>
+                <p style="margin-top: 10px; font-size: 0.8rem; color: #64748b;">
+                    Ainda não comprou? <a href="#oferta" style="color: var(--accent);">Ver oferta</a>
+                </p>
+            </div>
+
+            <div id="areaCadastro" class="hidden-form">
+                <h2>Criar Senha</h2>
+                <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 15px;">Use o mesmo e-mail que você usou no pagamento.</p>
+                
+                <div class="error-msg" id="cadastroError">Erro ao criar conta.</div>
+                
+                <input type="email" id="emailCadInput" class="login-input" placeholder="Seu e-mail">
+                <input type="password" id="passCadInput" class="login-input" placeholder="Crie uma senha (mín 6 digitos)">
+                
+                <button class="btn-entrar" id="btnCadastroAction" style="background-color: var(--accent);">CRIAR ACESSO</button>
+                
+                <p style="margin-top: 15px; font-size: 0.8rem; color: #64748b;">
+                    Já tem senha? <span id="irParaLogin" class="toggle-link">Fazer Login</span>
+                </p>
+            </div>
+
         </div>
     </div>
     
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        // IMPORTANTE: Adicionei createUserWithEmailAndPassword aqui
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-functions.js";
 
-        // --- CHAVES COLADAS AQUI (Opção Nuclear) ---
+        // --- CHAVES COLADAS AQUI ---
         const firebaseConfig = {
             apiKey: "AIzaSyCqDAUEfYarlFkA1u2A-n-SGv_1AjFb7WU",
             authDomain: "portal-eduardo-pokk.firebaseapp.com",
@@ -183,24 +217,20 @@
             alert("Erro ao conectar no Firebase: " + error.message);
         }
 
-        // --- 1. LÓGICA DE PAGAMENTO (Monitorar botão) ---
+        // --- 1. LÓGICA DE PAGAMENTO ---
         const btnCompra = document.getElementById('btnPagamento');
         if (btnCompra) {
             btnCompra.addEventListener('click', async (e) => {
-                e.preventDefault(); // Impede o link de pular
+                e.preventDefault();
                 
                 const textoOriginal = btnCompra.innerText;
                 btnCompra.innerText = "Processando...";
                 btnCompra.style.opacity = "0.7";
-                btnCompra.style.pointerEvents = "none"; // Trava novos cliques
+                btnCompra.style.pointerEvents = "none";
 
                 try {
-                    console.log("Chamando função de pagamento...");
                     const criarPagamento = httpsCallable(functions, 'criarPagamento');
                     const resposta = await criarPagamento();
-                    
-                    console.log("Resposta:", resposta);
-                    
                     const linkPagamento = resposta.data.init_point;
                     
                     if (linkPagamento) {
@@ -212,8 +242,6 @@
                 } catch (error) {
                     console.error("ERRO PAGAMENTO:", error);
                     alert("Erro ao iniciar pagamento. Tente novamente.");
-                    
-                    // Restaura botão se der erro
                     btnCompra.innerText = textoOriginal;
                     btnCompra.style.opacity = "1";
                     btnCompra.style.pointerEvents = "auto";
@@ -221,18 +249,41 @@
             });
         }
 
-        // --- 2. LÓGICA DE LOGIN ---
+        // --- 2. LÓGICA DO MODAL (LOGIN E CADASTRO) ---
         const loginModal = document.getElementById('loginModal');
         const openLoginBtn = document.getElementById('openLoginBtn');
         const closeLoginBtn = document.getElementById('closeModal');
-        const btnLoginAction = document.getElementById('btnLoginAction');
+        
+        // Elementos das telas
+        const areaLogin = document.getElementById('areaLogin');
+        const areaCadastro = document.getElementById('areaCadastro');
+        const irParaCadastro = document.getElementById('irParaCadastro');
+        const irParaLogin = document.getElementById('irParaLogin');
 
-        // Controles do Modal
-        if(openLoginBtn) openLoginBtn.addEventListener('click', () => loginModal.style.display = 'flex');
+        // Botões
+        const btnLoginAction = document.getElementById('btnLoginAction');
+        const btnCadastroAction = document.getElementById('btnCadastroAction');
+
+        // Controles de Abrir/Fechar
+        if(openLoginBtn) openLoginBtn.addEventListener('click', () => {
+            loginModal.style.display = 'flex';
+            areaLogin.style.display = 'block'; // Sempre reseta para login
+            areaCadastro.style.display = 'none';
+        });
         if(closeLoginBtn) closeLoginBtn.addEventListener('click', () => loginModal.style.display = 'none');
         window.addEventListener('click', (e) => { if (e.target === loginModal) loginModal.style.display = 'none'; });
 
-        // Ação de Logar
+        // Troca de Telas (Toggle)
+        irParaCadastro.addEventListener('click', () => {
+            areaLogin.style.display = 'none';
+            areaCadastro.style.display = 'block';
+        });
+        irParaLogin.addEventListener('click', () => {
+            areaCadastro.style.display = 'none';
+            areaLogin.style.display = 'block';
+        });
+
+        // AÇÃO DE LOGIN
         if (btnLoginAction) {
             btnLoginAction.addEventListener('click', async () => {
                 const email = document.getElementById('emailInput').value;
@@ -251,7 +302,40 @@
             });
         }
 
-        // Se logar com sucesso, vai para o painel
+        // AÇÃO DE CADASTRO (CRIAR SENHA)
+        if (btnCadastroAction) {
+            btnCadastroAction.addEventListener('click', async () => {
+                const email = document.getElementById('emailCadInput').value;
+                const pass = document.getElementById('passCadInput').value;
+                
+                if (pass.length < 6) {
+                    alert("A senha precisa ter pelo menos 6 caracteres.");
+                    return;
+                }
+
+                btnCadastroAction.innerText = "Criando...";
+                document.getElementById('cadastroError').style.display = 'none';
+
+                try {
+                    // Cria o usuário no Firebase
+                    await createUserWithEmailAndPassword(auth, email, pass);
+                    // O onAuthStateChanged vai redirecionar automaticamente
+                } catch (error) {
+                    console.error("Erro cadastro:", error);
+                    btnCadastroAction.innerText = "CRIAR ACESSO";
+                    const erroMsg = document.getElementById('cadastroError');
+                    erroMsg.style.display = 'block';
+                    
+                    if(error.code === 'auth/email-already-in-use') {
+                        erroMsg.innerText = "Este e-mail já existe. Faça login.";
+                    } else {
+                        erroMsg.innerText = "Erro ao criar conta. Verifique os dados.";
+                    }
+                }
+            });
+        }
+
+        // --- 3. REDIRECIONAMENTO ---
         if (auth) {
             onAuthStateChanged(auth, (user) => {
                 if (user) {
