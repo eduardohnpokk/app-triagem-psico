@@ -18,11 +18,9 @@
         .brand { font-weight: 800; font-size: 1.2rem; color: var(--primary); }
         .brand span { color: var(--accent); }
         
-        /* Container para alinhar CRP e Botão Login */
         .header-actions { display: flex; gap: 15px; align-items: center; }
         .crp-badge { font-size: 0.8rem; background: #e0f2fe; color: #0369a1; padding: 5px 10px; border-radius: 20px; font-weight: 600; }
         
-        /* Botão de Login */
         .login-btn-header {
             background: transparent;
             border: 2px solid var(--primary);
@@ -47,7 +45,7 @@
         .hero-btn { display: inline-block; background: var(--accent); color: white; padding: 18px 50px; border-radius: 50px; font-weight: 700; font-size: 1.1rem; text-decoration: none; transition: transform 0.2s; box-shadow: 0 10px 25px rgba(37, 99, 235, 0.3); }
         .hero-btn:hover { transform: translateY(-3px); background: #1d4ed8; }
 
-        /* Lista de Testes (Vitrine) */
+        /* Lista de Testes */
         .features { padding: 80px 20px; max-width: 1200px; margin: 0 auto; }
         .section-title { text-align: center; font-size: 2rem; color: var(--primary); margin-bottom: 50px; }
         .feature-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
@@ -63,7 +61,7 @@
         .bio-text h2 { font-size: 2rem; margin-bottom: 20px; color: var(--primary); }
         .bio-img { width: 150px; height: 150px; background: #e2e8f0; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; color: #94a3b8; overflow: hidden; border: 4px solid white; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
 
-        /* PRICING ÚNICO */
+        /* PRICING */
         .pricing { padding: 80px 20px; text-align: center; background: #f8fafc; }
         
         .single-offer-card { 
@@ -109,7 +107,7 @@
 
         footer { background: var(--primary); color: #94a3b8; padding: 40px; text-align: center; font-size: 0.9rem; }
 
-        /* --- ESTILOS DO MODAL DE LOGIN --- */
+        /* Modal Login */
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(15, 23, 42, 0.8);
@@ -144,7 +142,6 @@
 
     <header>
         <div class="brand">Eduardo Pokk <span>PSI</span></div>
-        
         <div class="header-actions">
             <div class="crp-badge">CRP 06/73583</div>
             <button id="openLoginBtn" class="login-btn-header">
@@ -270,95 +267,89 @@
         import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-functions.js";
         import { firebaseConfig } from './firebase-config.js';
 
-        console.log("Script carregado. Aguardando página...");
+        console.log("Iniciando script...");
 
-        // BLINDAGEM: Espera a página carregar 100% para evitar erro de botão não encontrado
-        window.addEventListener('load', () => {
-            console.log("Página pronta! Iniciando sistema...");
+        try {
+            const app = initializeApp(firebaseConfig);
+            const auth = getAuth(app);
+            const functions = getFunctions(app);
 
-            try {
-                const app = initializeApp(firebaseConfig);
-                const auth = getAuth(app);
-                const functions = getFunctions(app);
-
-                // --- LÓGICA DE PAGAMENTO ---
-                const btnCompra = document.getElementById('btnPagamento');
+            // --- 1. LÓGICA DE PAGAMENTO ---
+            // Procura o botão imediatamente
+            const btnCompra = document.getElementById('btnPagamento');
+            
+            if (btnCompra) {
+                console.log("Botão de compra encontrado!");
                 
-                if (btnCompra) {
-                    console.log("Botão de compra localizado.");
+                btnCompra.addEventListener('click', async (event) => {
+                    // Previne o link de tentar fazer qualquer coisa
+                    event.preventDefault(); 
+                    console.log("Clique processado. Iniciando Backend...");
                     
-                    btnCompra.addEventListener('click', async (event) => {
-                        event.preventDefault(); // Garante que o link não faça nada além do script
-                        console.log("Clique no pagamento detectado.");
+                    const textoOriginal = btnCompra.innerText;
+                    btnCompra.innerText = "Gerando Pagamento...";
+                    btnCompra.style.opacity = "0.7";
 
-                        const textoOriginal = btnCompra.innerText;
-                        btnCompra.innerText = "Gerando Pagamento...";
-                        btnCompra.style.opacity = "0.7";
-                        btnCompra.style.pointerEvents = "none"; // Evita duplo clique
-
-                        try {
-                            const criarPagamento = httpsCallable(functions, 'criarPagamento');
-                            const resposta = await criarPagamento();
-                            console.log("Resposta do servidor:", resposta);
-                            
-                            const linkPagamento = resposta.data.init_point;
-                            if (linkPagamento) {
-                                window.location.href = linkPagamento;
-                            } else {
-                                throw new Error("Link veio vazio");
-                            }
-
-                        } catch (error) {
-                            console.error("ERRO:", error);
-                            alert("Erro ao conectar com o banco. Tente novamente.");
-                            btnCompra.innerText = textoOriginal;
-                            btnCompra.style.opacity = "1";
-                            btnCompra.style.pointerEvents = "auto";
-                        }
-                    });
-                } else {
-                    console.error("ERRO: O botão btnPagamento sumiu do HTML.");
-                }
-
-                // --- LÓGICA DE LOGIN ---
-                const openBtn = document.getElementById('openLoginBtn');
-                const modal = document.getElementById('loginModal');
-                const closeBtn = document.getElementById('closeModal');
-                const loginAction = document.getElementById('btnLoginAction');
-
-                if (openBtn) openBtn.addEventListener('click', () => modal.style.display = 'flex');
-                if (closeBtn) closeBtn.addEventListener('click', () => modal.style.display = 'none');
-                
-                window.onclick = function(event) {
-                    if (event.target == modal) modal.style.display = "none";
-                }
-
-                if (loginAction) {
-                    loginAction.addEventListener('click', async () => {
-                        const email = document.getElementById('emailInput').value;
-                        const pass = document.getElementById('passInput').value;
+                    try {
+                        const criarPagamento = httpsCallable(functions, 'criarPagamento');
+                        const resposta = await criarPagamento();
+                        console.log("Resposta recebida:", resposta);
                         
-                        loginAction.innerText = "Verificando...";
-                        document.getElementById('loginError').style.display = 'none';
-
-                        try {
-                            await signInWithEmailAndPassword(auth, email, pass);
-                        } catch (error) {
-                            console.error("Erro login:", error);
-                            loginAction.innerText = "ENTRAR";
-                            document.getElementById('loginError').style.display = 'block';
+                        const linkPagamento = resposta.data.init_point;
+                        if (linkPagamento) {
+                            window.location.href = linkPagamento;
+                        } else {
+                            throw new Error("Link veio vazio");
                         }
-                    });
-                }
 
-                onAuthStateChanged(auth, (user) => {
-                    if (user) window.location.href = "dashboard.html";
+                    } catch (error) {
+                        console.error("ERRO NO PROCESSO:", error);
+                        alert("Ocorreu um erro ao conectar com o banco. Veja o Console (F12) para detalhes.");
+                        btnCompra.innerText = textoOriginal;
+                        btnCompra.style.opacity = "1";
+                    }
                 });
-
-            } catch (erroGeral) {
-                console.error("ERRO GERAL NO SCRIPT:", erroGeral);
+            } else {
+                console.error("ERRO: O botão 'btnPagamento' não existe na tela.");
             }
-        });
+
+            // --- 2. LÓGICA DE LOGIN ---
+            const openBtn = document.getElementById('openLoginBtn');
+            const modal = document.getElementById('loginModal');
+            const closeBtn = document.getElementById('closeModal');
+            const loginAction = document.getElementById('btnLoginAction');
+
+            if (openBtn) openBtn.addEventListener('click', () => modal.style.display = 'flex');
+            if (closeBtn) closeBtn.addEventListener('click', () => modal.style.display = 'none');
+            
+            window.onclick = function(event) {
+                if (event.target == modal) modal.style.display = "none";
+            }
+
+            if (loginAction) {
+                loginAction.addEventListener('click', async () => {
+                    const email = document.getElementById('emailInput').value;
+                    const pass = document.getElementById('passInput').value;
+                    loginAction.innerText = "Verificando...";
+                    document.getElementById('loginError').style.display = 'none';
+
+                    try {
+                        await signInWithEmailAndPassword(auth, email, pass);
+                    } catch (error) {
+                        console.error("Erro login:", error);
+                        loginAction.innerText = "ENTRAR";
+                        document.getElementById('loginError').style.display = 'block';
+                    }
+                });
+            }
+
+            onAuthStateChanged(auth, (user) => {
+                if (user) window.location.href = "dashboard.html";
+            });
+
+        } catch (erroGeral) {
+            console.error("O SCRIPT QUEBROU:", erroGeral);
+        }
     </script>
 </body>
 </html>
