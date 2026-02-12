@@ -1,29 +1,24 @@
 /**
  * ARQUIVO: neuro-data.js
- * DESCRIÇÃO: Banco de dados central de todos os testes neuropsicológicos.
- * ATUALIZADO: Inclui TDAH, TEA, AH/SD, GAD-7, PHQ-9, Burnout, TAB, TPB e QI.
+ * DESCRIÇÃO: Cérebro central (Sem QI, apenas testes clínicos validados).
  */
 
 export const Battery = {
-    // -------------------------------------------------------------------------
     // 1. TDAH ADULTO (ASRS-18)
-    // -------------------------------------------------------------------------
     tdah: {
         id: "tdah",
         title: "TDAH Adulto (ASRS-18)",
-        color: "#2563eb", // Azul Royal
+        color: "#2563eb",
         description: "Avaliação de sintomas de desatenção e hiperatividade (Protocolo OMS).",
         type: "scale",
         options: ["Nunca", "Raramente", "Algumas vezes", "Frequentemente", "Muito Frequentemente"],
         questions: [
-            // Parte A (Desatenção)
             { text: "Dificuldade para finalizar detalhes finais de um projeto quando as partes difíceis já foram concluídas?", weight: 1, group: "A" },
             { text: "Dificuldade para organizar as coisas quando precisa fazer algo que exige planejamento?", weight: 1, group: "A" },
             { text: "Problemas para lembrar de compromissos ou obrigações?", weight: 1, group: "A" },
             { text: "Evita ou adia iniciar tarefas que exigem muito esforço mental?", weight: 1, group: "A" },
             { text: "Balança as mãos ou os pés quando precisa ficar sentado por muito tempo?", weight: 1, group: "A" },
             { text: "Sente-se excessivamente ativo, como se estivesse 'com o motor ligado'?", weight: 1, group: "A" },
-            // Parte B (Sintomas Complementares)
             { text: "Comete erros por descuido em projetos chatos ou difíceis?", weight: 1, group: "B" },
             { text: "Dificuldade para manter a atenção em trabalhos repetitivos?", weight: 1, group: "B" },
             { text: "Dificuldade para se concentrar no que as pessoas dizem, mesmo quando falam diretamente com você?", weight: 1, group: "B" },
@@ -39,17 +34,14 @@ export const Battery = {
         ]
     },
 
-    // -------------------------------------------------------------------------
     // 2. AUTISMO (RAADS-14)
-    // -------------------------------------------------------------------------
     tea: {
         id: "tea",
         title: "Espectro Autista (RAADS-14)",
-        color: "#7c3aed", // Roxo
+        color: "#7c3aed",
         description: "Rastreio de traços do espectro, sensibilidade e camuflagem social.",
         type: "scale",
         options: ["Nunca", "Verdadeiro apenas quando jovem", "Verdadeiro apenas agora", "Verdadeiro agora e quando jovem"],
-        // Nota: A lógica de pontuação aqui é: 0, 1, 2, 3
         questions: [
             { text: "É muito difícil para mim entender o que os outros estão pensando ou sentindo se não disserem claramente.", domain: "Mentalização" },
             { text: "Certas texturas (roupas/alimentos) ou barulhos me incomodam muito mais do que aos outros.", domain: "Sensorial" },
@@ -68,13 +60,11 @@ export const Battery = {
         ]
     },
 
-    // -------------------------------------------------------------------------
     // 3. ALTAS HABILIDADES / SUPERDOTAÇÃO
-    // -------------------------------------------------------------------------
     ahsd: {
         id: "ahsd",
         title: "Altas Habilidades / Superdotação",
-        color: "#d97706", // Dourado
+        color: "#d97706",
         description: "Investigação de intensidade, sobre-excitabilidade e intelecto.",
         type: "scale",
         options: ["Não me descreve", "Descreve um pouco", "Descreve bem", "Descreve perfeitamente"],
@@ -94,13 +84,11 @@ export const Battery = {
         ]
     },
 
-    // -------------------------------------------------------------------------
     // 4. ANSIEDADE (GAD-7)
-    // -------------------------------------------------------------------------
     ansiedade: {
         id: "ansiedade",
         title: "Ansiedade Generalizada (GAD-7)",
-        color: "#0ea5e9", // Azul Céu
+        color: "#0ea5e9",
         description: "Mapeamento de níveis de tensão e preocupação excessiva.",
         type: "scale",
         options: ["Nenhuma vez", "Vários dias", "Mais da metade dos dias", "Quase todos os dias"],
@@ -115,13 +103,11 @@ export const Battery = {
         ]
     },
 
-    // -------------------------------------------------------------------------
     // 5. DEPRESSÃO (PHQ-9)
-    // -------------------------------------------------------------------------
     depressao: {
         id: "depressao",
         title: "Depressão (PHQ-9)",
-        color: "#475569", // Cinza Chumbo
+        color: "#475569",
         description: "Avaliação de humor, energia vital e anedonia.",
         type: "scale",
         options: ["Nenhuma vez", "Vários dias", "Mais da metade dos dias", "Quase todos os dias"],
@@ -134,17 +120,15 @@ export const Battery = {
             { text: "Sentir-se mal consigo mesmo(a) ou fracassado(a)." },
             { text: "Dificuldade para se concentrar." },
             { text: "Lentidão ou agitação motora." },
-            { text: "Pensar em se ferir ou que seria melhor estar morto(a).", alert: true } // Gatilho de Risco
+            { text: "Pensar em se ferir ou que seria melhor estar morto(a).", alert: true }
         ]
     },
 
-    // -------------------------------------------------------------------------
     // 6. BURNOUT (CBI Adaptado)
-    // -------------------------------------------------------------------------
     burnout: {
         id: "burnout",
         title: "Síndrome de Burnout",
-        color: "#ea580c", // Laranja Queimado
+        color: "#ea580c",
         description: "Mensuração de exaustão física e emocional ligada à rotina.",
         type: "scale",
         options: ["Nunca", "Às vezes", "Frequentemente", "Muitas vezes", "Sempre"],
@@ -159,15 +143,13 @@ export const Battery = {
         ]
     },
 
-    // -------------------------------------------------------------------------
     // 7. BIPOLARIDADE (MDQ)
-    // -------------------------------------------------------------------------
     tab: {
         id: "tab",
         title: "Transtorno Bipolar (MDQ)",
-        color: "#6366f1", // Índigo
+        color: "#6366f1",
         description: "Rastreio de oscilações de humor (mania e hipomania).",
-        type: "binary", // Sim/Não
+        type: "binary",
         options: ["Não", "Sim"],
         questions: [
             { text: "Você se sentiu tão bem ou tão hiperativo que outras pessoas acharam estranho?" },
@@ -182,17 +164,15 @@ export const Battery = {
             { text: "Você estava muito mais social (ex: ligando para amigos de madrugada)?" },
             { text: "Você estava muito mais interessado em sexo do que o habitual?" },
             { text: "Você fez coisas arriscadas (ex: gastar demais, dirigir imprudentemente)?" },
-            { text: "Esses sintomas aconteceram no mesmo período de tempo?" } // Critério de Tempo
+            { text: "Esses sintomas aconteceram no mesmo período de tempo?" }
         ]
     },
 
-    // -------------------------------------------------------------------------
     // 8. BORDERLINE (MSI-BPD)
-    // -------------------------------------------------------------------------
     borderline: {
         id: "borderline",
         title: "Transtorno Borderline (TPB)",
-        color: "#be185d", // Rosa Escuro
+        color: "#be185d",
         description: "Avaliação de instabilidade emocional e medo de abandono.",
         type: "binary",
         options: ["Não", "Sim"],
@@ -207,24 +187,6 @@ export const Battery = {
             { text: "Você sente um vazio crônico por dentro?" },
             { text: "Você sente que não sabe quem você realmente é (autoimagem instável)?" },
             { text: "Você faz esforços desesperados para evitar ser abandonado(a)?" }
-        ]
-    },
-
-    // -------------------------------------------------------------------------
-    // 9. NOVO: TESTE DE Q.I. (Raciocínio Lógico)
-    // -------------------------------------------------------------------------
-    qi: {
-        id: "qi",
-        title: "Inteligência Lógica (Matrizes)",
-        color: "#059669", // Verde Esmeralda
-        description: "Teste de raciocínio abstrato independente de cultura.",
-        type: "visual", // Indica que o engine deve carregar imagens
-        questions: [
-            // ATENÇÃO: Você precisará salvar as imagens na pasta assets/tests/qi/
-            { id: "q1", image: "q1.png", options: ["A", "B", "C", "D", "E", "F"], correct: 2 }, // Ex: Índice 2 é a resposta C
-            { id: "q2", image: "q2.png", options: ["A", "B", "C", "D", "E", "F"], correct: 0 },
-            { id: "q3", image: "q3.png", options: ["A", "B", "C", "D", "E", "F"], correct: 4 },
-            // ... Adicionar mais questões conforme você conseguir as imagens
         ]
     }
 };
