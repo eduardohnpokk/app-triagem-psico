@@ -3,58 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
     <title>Portal Neuropsicológico | Dr. Eduardo Pokk</title>
-    <meta name="description" content="Plataforma de rastreio neuropsicológico. TDAH, Autismo, AH/SD e comorbidades. Assinatura mensal com acesso ilimitado.">
-    
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
-        /* ESTILO PROFISSIONAL (Clean & Medical) */
+        /* CSS MANTIDO IGUAL - Focado no Modal */
         :root { --primary: #0f172a; --accent: #2563eb; --gold: #d97706; --bg: #f8fafc; --white: #ffffff; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Inter', sans-serif; background-color: var(--bg); color: #334155; line-height: 1.6; }
 
-        /* Navbar */
         header { background: var(--white); padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; position: sticky; top: 0; z-index: 100; }
         .brand { font-weight: 800; font-size: 1.2rem; color: var(--primary); }
-        .brand span { color: var(--accent); }
-        
-        .login-btn { 
-            text-decoration: none; 
-            color: var(--primary); 
-            font-weight: 600; 
-            font-size: 0.9rem; 
-            border: 2px solid var(--primary); 
-            padding: 8px 20px; 
-            border-radius: 50px; 
-            transition: 0.3s; 
-            cursor: pointer;
-            background: transparent;
-        }
+        .login-btn { text-decoration: none; color: var(--primary); font-weight: 600; font-size: 0.9rem; border: 2px solid var(--primary); padding: 8px 20px; border-radius: 50px; transition: 0.3s; cursor: pointer; background: transparent; }
         .login-btn:hover { background: var(--primary); color: white; }
 
-        /* Hero Section */
         .hero { text-align: center; padding: 100px 20px; background: linear-gradient(180deg, #fff 0%, #f1f5f9 100%); }
         .hero h1 { font-size: 3rem; color: var(--primary); line-height: 1.1; margin-bottom: 20px; letter-spacing: -1px; }
         .hero p { font-size: 1.2rem; color: #64748b; max-width: 600px; margin: 0 auto 40px; }
-        
-        .cta-button { 
-            display: inline-block; 
-            background: var(--accent); 
-            color: white; 
-            padding: 18px 40px; 
-            border-radius: 50px; 
-            font-weight: 700; 
-            font-size: 1.1rem; 
-            text-decoration: none; 
-            box-shadow: 0 10px 25px rgba(37, 99, 235, 0.3); 
-            transition: transform 0.2s; 
-        }
+        .cta-button { display: inline-block; background: var(--accent); color: white; padding: 18px 40px; border-radius: 50px; font-weight: 700; font-size: 1.1rem; text-decoration: none; box-shadow: 0 10px 25px rgba(37, 99, 235, 0.3); transition: transform 0.2s; }
         .cta-button:hover { transform: translateY(-3px); background: #1d4ed8; }
 
-        /* Lista de Testes */
         .features { padding: 80px 20px; max-width: 1000px; margin: 0 auto; }
         .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; }
         .card { background: white; padding: 30px; border-radius: 12px; border: 1px solid #e2e8f0; text-align: center; transition: 0.3s; }
@@ -62,20 +31,17 @@
         .card i { font-size: 2rem; margin-bottom: 15px; color: var(--accent); }
         .card h3 { margin-bottom: 10px; color: var(--primary); }
 
-        /* Preço */
         .pricing { background: var(--primary); color: white; padding: 80px 20px; text-align: center; margin-top: 50px; }
         .price-card { background: white; color: var(--primary); max-width: 400px; margin: 0 auto; padding: 50px; border-radius: 20px; position: relative; }
         .tag { position: absolute; top: -15px; left: 50%; transform: translateX(-50%); background: var(--gold); color: white; padding: 5px 20px; border-radius: 20px; font-size: 0.8rem; font-weight: 800; text-transform: uppercase; }
-        
         .amount { font-size: 3.5rem; font-weight: 800; }
         .period { font-size: 1.2rem; color: #64748b; font-weight: 500; }
         .list { list-style: none; text-align: left; margin: 30px 0; font-size: 1rem; color: #475569; }
         .list li { margin-bottom: 10px; display: flex; gap: 10px; }
         .list i { color: #16a34a; }
-
         footer { text-align: center; padding: 40px; font-size: 0.9rem; color: #94a3b8; }
 
-        /* MODAL DE LOGIN (Oculto por padrão) */
+        /* Modal LOGIN */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(4px); z-index: 1000; display: none; justify-content: center; align-items: center; }
         .modal-box { background: white; padding: 40px; border-radius: 16px; width: 90%; max-width: 400px; position: relative; text-align: center; }
         .close-modal { position: absolute; top: 15px; right: 20px; font-size: 1.5rem; cursor: pointer; color: #94a3b8; }
@@ -83,7 +49,6 @@
         .btn-entrar { width: 100%; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 1rem; }
         .error-msg { color: #ef4444; font-size: 0.9rem; margin-bottom: 15px; display: none; }
         .toggle-link { cursor: pointer; color: var(--accent); text-decoration: underline; font-weight: 600; font-size: 0.9rem; }
-        .hidden-form { display: none; }
     </style>
 </head>
 <body>
@@ -139,37 +104,25 @@
         <div class="modal-box">
             <span class="close-modal" id="closeModal">&times;</span>
             
-            <div id="areaLogin">
-                <h2>Login</h2>
-                <div class="error-msg" id="loginError">Erro ao entrar.</div>
-                <input type="email" id="emailInput" class="login-input" placeholder="Seu e-mail">
-                <input type="password" id="passInput" class="login-input" placeholder="Sua senha">
-                <button class="btn-entrar" id="btnLoginAction">ENTRAR</button>
-                <p style="margin-top: 15px; font-size: 0.8rem; color: #64748b;">
-                    Já é assinante e não tem senha? <br><span id="irParaCadastro" class="toggle-link">Criar Acesso</span>
-                </p>
-            </div>
-
-            <div id="areaCadastro" class="hidden-form">
-                <h2>Criar Acesso</h2>
-                <p style="font-size: 0.8rem; margin-bottom: 15px;">Use o e-mail que você usou na compra.</p>
-                <div class="error-msg" id="cadastroError">Erro ao criar.</div>
-                <input type="email" id="emailCadInput" class="login-input" placeholder="Seu e-mail">
-                <input type="password" id="passCadInput" class="login-input" placeholder="Crie uma senha">
-                <button class="btn-entrar" id="btnCadastroAction" style="background-color: var(--accent);">CRIAR CONTA</button>
-                <p style="margin-top: 15px; font-size: 0.8rem; color: #64748b;">
-                    Já tem conta? <span id="irParaLogin" class="toggle-link">Fazer Login</span>
-                </p>
-            </div>
+            <h2>Área do Membro</h2>
+            <div class="error-msg" id="loginError">E-mail ou senha incorretos.</div>
+            
+            <input type="email" id="emailInput" class="login-input" placeholder="Seu e-mail">
+            <input type="password" id="passInput" class="login-input" placeholder="Sua senha">
+            <button class="btn-entrar" id="btnLoginAction">ENTRAR</button>
+            
+            <p style="margin-top: 20px; font-size: 0.9rem; color: #64748b; border-top: 1px solid #e2e8f0; padding-top: 20px;">
+                Ainda não é assinante? <br>
+                <a href="#oferta" class="toggle-link" onclick="document.getElementById('loginModal').style.display='none'">Assinar Agora</a>
+            </p>
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-        // CONFIGURAÇÃO FIREBASE
+        // FIREBASE CONFIG
         const firebaseConfig = {
             apiKey: "AIzaSyCqDAUEfYarlFkA1u2A-n-SGv_1AjFb7WU",
             authDomain: "portal-eduardo-pokk.firebaseapp.com",
@@ -181,75 +134,33 @@
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
-        const db = getFirestore(app);
 
-        // --- LÓGICA DO MODAL ---
+        // Modal Logic
         const modal = document.getElementById('loginModal');
         document.getElementById('openLoginBtn').onclick = () => modal.style.display = 'flex';
         document.getElementById('closeModal').onclick = () => modal.style.display = 'none';
-        
-        document.getElementById('irParaCadastro').onclick = () => {
-            document.getElementById('areaLogin').style.display = 'none';
-            document.getElementById('areaCadastro').style.display = 'block';
-        };
-        document.getElementById('irParaLogin').onclick = () => {
-            document.getElementById('areaCadastro').style.display = 'none';
-            document.getElementById('areaLogin').style.display = 'block';
-        };
+        window.onclick = (e) => { if(e.target == modal) modal.style.display = 'none'; }
 
-        // --- LOGIN ---
+        // Login Action
         document.getElementById('btnLoginAction').onclick = async () => {
             const email = document.getElementById('emailInput').value;
             const pass = document.getElementById('passInput').value;
             const btn = document.getElementById('btnLoginAction');
             
-            btn.innerText = "Entrando...";
+            btn.innerText = "Verificando...";
             try {
                 await signInWithEmailAndPassword(auth, email, pass);
+                // O redirecionamento acontece no observer abaixo
             } catch (e) {
                 btn.innerText = "ENTRAR";
                 document.getElementById('loginError').style.display = 'block';
-                document.getElementById('loginError').innerText = "E-mail ou senha incorretos.";
             }
         };
 
-        // --- CADASTRO (CRIAR SENHA / ADMIN) ---
-        document.getElementById('btnCadastroAction').onclick = async () => {
-            const email = document.getElementById('emailCadInput').value;
-            const pass = document.getElementById('passCadInput').value;
-            const btn = document.getElementById('btnCadastroAction');
-            
-            if(pass.length < 6) return alert("Senha muito curta (mínimo 6 dígitos).");
-
-            btn.innerText = "Criando...";
-            try {
-                const cred = await createUserWithEmailAndPassword(auth, email, pass);
-                
-                // BACKDOOR: Se for seu e-mail, vira ADMIN automaticamente
-                let userStatus = "pendente"; 
-                if (email.toLowerCase().includes("eduardo.pokk")) {
-                    userStatus = "admin_premium";
-                }
-
-                await setDoc(doc(db, "usuarios", cred.user.uid), {
-                    email: email,
-                    status: userStatus,
-                    criado_em: new Date()
-                });
-
-                window.location.href = "dashboard.html";
-
-            } catch (e) {
-                btn.innerText = "CRIAR CONTA";
-                document.getElementById('cadastroError').style.display = 'block';
-                document.getElementById('cadastroError').innerText = "Erro ao criar. E-mail já existe?";
-            }
-        };
-
-        // REDIRECIONAMENTO AUTOMÁTICO
+        // Redireciona se logado
         onAuthStateChanged(auth, (user) => {
             if (user) {
-                localStorage.setItem('usuario_nome', user.email);
+                localStorage.setItem('usuario_nome', user.email); 
                 localStorage.setItem('usuario_id', user.uid);
                 window.location.href = "dashboard.html";
             }
