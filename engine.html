@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ambiente de Teste | NeuroPortal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* ESTILO UNIFICADO E LIMPO */
+        :root { --primary: #0f172a; --bg: #f8fafc; --white: #fff; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--primary); display: flex; flex-direction: column; min-height: 100vh; margin: 0; }
+        
+        .test-container { max-width: 800px; margin: 40px auto; padding: 20px; flex: 1; }
+        .card { background: var(--white); padding: 40px; border-radius: 16px; box-shadow: 0 10px 30px -10px rgba(0,0,0,0.1); text-align: center; }
+        
+        /* Barra de Progresso */
+        .progress-track { background: #e2e8f0; height: 6px; border-radius: 3px; margin-bottom: 30px; overflow: hidden; }
+        .progress-fill { height: 100%; background: var(--primary); width: 0%; transition: width 0.3s; }
+
+        /* Perguntas */
+        h2 { font-size: 1.5rem; margin-bottom: 30px; }
+        .options-grid { display: grid; gap: 15px; }
+        .btn-opt { padding: 20px; border: 2px solid #e2e8f0; border-radius: 10px; background: white; cursor: pointer; font-size: 1rem; font-weight: 600; transition: 0.2s; text-align: left; }
+        .btn-opt:hover { border-color: var(--primary); background: #f1f5f9; }
+
+        /* Imagem para teste de QI */
+        .matrix-img { max-width: 100%; border-radius: 8px; margin-bottom: 20px; border: 1px solid #e2e8f0; }
+    </style>
+</head>
+<body>
+
+    <div class="test-container">
+        <div class="card">
+            <div class="progress-track"><div class="progress-fill" id="progress"></div></div>
+            
+            <div id="question-area">
+                <span id="domain-badge" style="font-size:0.8rem; text-transform:uppercase; color:#64748b; letter-spacing:1px;">Domínio</span>
+                <h2 id="q-text">Carregando...</h2>
+                
+                <div id="img-container" style="display:none;">
+                    <img id="q-img" class="matrix-img" src="" alt="Matriz Lógica">
+                </div>
+
+                <div class="options-grid" id="opts">
+                    </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { Battery } from './neuro-data.js';
+        
+        // 1. Descobre qual teste abrir (pela URL: engine.html?t=tdah)
+        const params = new URLSearchParams(window.location.search);
+        const testId = params.get('t'); // ex: 'tdah', 'qi', 'tea'
+        const currentTest = Battery[testId];
+
+        if (!currentTest) {
+            alert("Teste não encontrado.");
+            window.location.href = "dashboard.html";
+        }
+
+        // Configura Cores
+        document.querySelector('.progress-fill').style.backgroundColor = currentTest.color;
+
+        let currentQIndex = 0;
+        const answers = [];
+
+        function loadQuestion() {
+            const q = currentTest.questions[currentQIndex];
+            
+            // Atualiza Barra
+            const pct = ((currentQIndex) / currentTest.questions.length) * 100;
+            document.getElementById('progress').style.width = `${pct}%`;
+
+            // Atualiza Texto
+            document.getElementById('domain-badge').innerText = q.domain || "Questão " + (currentQIndex + 1);
+            
+            // Lógica Visual vs Texto
+            if (currentTest.type === 'visual') {
+                document.getElementById('q-text').innerText = "Qual opção completa a lógica?";
+                document.getElementById('img-container').style.display = 'block';
+                document.getElementById('q-img').src = `assets/tests/qi/${q.image}`; // Pasta onde ficarão as imagens
+                document.getElementById('opts').style.gridTemplateColumns = "repeat(3, 1fr)"; // Grade para QI
+            } else {
+                document.getElementById('q-text').innerText = q.text;
+                document.getElementById('img-container').style.display = 'none';
+                document.getElementById('opts').style.display = "flex";
+                document.getElementById('opts').style.flexDirection = "column";
+            }
+
+            // Gera Botões
+            const container = document.getElementById('opts');
+            container.innerHTML = '';
+
+            // Opções Padrão (Se não for QI)
+            let options = q.options || ["Nunca", "Raramente", "Algumas Vezes", "Frequentemente", "Sempre"];
+            
+            options.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = 'btn-opt';
+                btn.innerText = opt;
+                btn.onclick = () => saveAnswer(idx); // Salva o índice ou valor
+                container.appendChild(btn);
+            });
+        }
+
+        function saveAnswer(val) {
+            answers.push(val);
+            if (currentQIndex < currentTest.questions.length - 1) {
+                currentQIndex++;
+                loadQuestion();
+            } else {
+                finishTest();
+            }
+        }
+
+        function finishTest() {
+            document.querySelector('.card').innerHTML = `<h2>Processando...</h2><i class="fa-solid fa-circle-notch fa-spin"></i>`;
+            // Aqui chamaremos a função de salvar no Firebase e a lógica do neuro-data.js
+            console.log("Respostas:", answers);
+            // Redirecionar para dashboard ou página de resultado
+        }
+
+        // Inicia
+        loadQuestion();
+    </script>
+</body>
+</html>
