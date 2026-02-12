@@ -3,83 +3,124 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cadastro | Portal Eduardo Pokk</title>
+    <title>Ativar Acesso | Portal Neuropsicológico</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
         :root { --primary: #0f172a; --accent: #2563eb; --bg: #f8fafc; }
-        body { font-family: 'Inter', sans-serif; background-color: var(--bg); display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg); display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px; }
         
         .card { background: white; padding: 40px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 100%; max-width: 400px; text-align: center; }
-        h1 { color: var(--primary); margin-bottom: 10px; font-size: 1.8rem; }
-        p { color: #64748b; margin-bottom: 30px; }
+        h1 { color: var(--primary); margin-bottom: 10px; font-size: 1.5rem; }
+        p { color: #64748b; margin-bottom: 30px; font-size: 0.9rem; }
         
+        label { display: block; text-align: left; font-size: 0.8rem; font-weight: 600; margin-bottom: 5px; color: var(--primary); }
         input { width: 100%; padding: 15px; margin-bottom: 15px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 1rem; box-sizing: border-box; }
-        input:focus { outline: none; border-color: var(--accent); ring: 2px solid var(--accent); }
+        input:focus { outline: none; border-color: var(--accent); }
         
         .btn { width: 100%; padding: 15px; background: var(--accent); color: white; border: none; border-radius: 8px; font-weight: bold; font-size: 1.1rem; cursor: pointer; transition: 0.2s; }
         .btn:hover { background: #1d4ed8; }
-        .btn:disabled { background: #94a3b8; cursor: wait; }
+        
+        .error { color: #ef4444; font-size: 0.85rem; margin-bottom: 15px; display: none; }
     </style>
 </head>
 <body>
 
     <div class="card">
-        <h1>Identificação</h1>
-        <p>Para gerar seus relatórios personalizados, preencha seus dados abaixo.</p>
+        <h1>Pagamento Confirmado! <span style="color:#16a34a">✓</span></h1>
+        <p>Defina sua senha para acessar a plataforma.</p>
         
+        <div id="msgError" class="error">Erro ao criar conta.</div>
+
         <form id="form-cadastro">
-            <input type="text" id="nome" placeholder="Seu Nome Completo" required>
-            <input type="email" id="email" placeholder="Seu Melhor E-mail" required>
-            <button type="submit" class="btn" id="btn-entrar">Iniciar Mapeamento</button>
+            <label>Seu Nome Completo</label>
+            <input type="text" id="nome" placeholder="Ex: Eduardo Pokk" required>
+            
+            <label>Seu E-mail (O mesmo da compra)</label>
+            <input type="email" id="email" placeholder="seu@email.com" required>
+            
+            <label>Crie uma Senha</label>
+            <input type="password" id="senha" placeholder="Mínimo 6 caracteres" required minlength="6">
+            
+            <button type="submit" class="btn" id="btn-entrar">Ativar Acesso</button>
         </form>
     </div>
 
     <script type="module">
-        // Importa seu banco de dados já configurado
-        import { db } from './firebase-config.js';
-        // Importa funções para GRAVAR dados
-        import { collection, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        // CONFIGURAÇÃO FIREBASE
+        const firebaseConfig = {
+            apiKey: "AIzaSyCqDAUEfYarlFkA1u2A-n-SGv_1AjFb7WU",
+            authDomain: "portal-eduardo-pokk.firebaseapp.com",
+            projectId: "portal-eduardo-pokk",
+            storageBucket: "portal-eduardo-pokk.firebasestorage.app",
+            messagingSenderId: "657739349802",
+            appId: "1:657739349802:web:c14305400575f68ed5a853"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
 
         const form = document.getElementById('form-cadastro');
         const btn = document.getElementById('btn-entrar');
+        const errorMsg = document.getElementById('msgError');
 
         form.addEventListener('submit', async (e) => {
-            e.preventDefault(); // Impede a página de recarregar
-            
+            e.preventDefault();
             const nome = document.getElementById('nome').value;
             const email = document.getElementById('email').value;
+            const senha = document.getElementById('senha').value;
 
-            // Muda botão para "Carregando..."
-            btn.innerText = "Salvando...";
+            if(senha.length < 6) {
+                alert("A senha precisa ter pelo menos 6 caracteres.");
+                return;
+            }
+
+            btn.innerText = "Ativando...";
             btn.disabled = true;
+            errorMsg.style.display = 'none';
 
             try {
-                // 1. Salva no Firebase na coleção 'usuarios'
-                const docRef = await addDoc(collection(db, "usuarios"), {
+                // 1. Cria o Login (Auth)
+                const userCredential = await createUserWithEmailAndPassword(auth, email, senha);
+                const user = userCredential.user;
+
+                // 2. Salva o Nome no Banco (Firestore)
+                // Lógica de Admin (Backdoor para você)
+                let status = "ativo";
+                if(email.toLowerCase().includes("eduardo.pokk")) status = "admin";
+
+                await setDoc(doc(db, "usuarios", user.uid), {
                     nome: nome,
                     email: email,
-                    data_entrada: new Date(), // Pega data e hora atual
-                    status: "iniciou_triagem"
+                    status: status,
+                    data_entrada: new Date()
                 });
 
-                console.log("Usuário salvo com ID: ", docRef.id);
-
-                // 2. Salva o ID no navegador (para usar nos próximos testes)
-                localStorage.setItem('usuario_id', docRef.id);
+                // 3. Salva nome localmente e redireciona
                 localStorage.setItem('usuario_nome', nome);
+                localStorage.setItem('usuario_id', user.uid);
+                
+                alert("Conta ativada com sucesso!");
+                window.location.href = "dashboard.html";
 
-                // 3. Redireciona para o Painel (ou primeiro teste)
-                // ATENÇÃO: Se o nome do seu arquivo principal de testes não for 'dashboard.html', mude aqui!
-                window.location.href = "dashboard.html"; 
-
-            } catch (erro) {
-                console.error("Erro ao cadastrar: ", erro);
-                alert("Erro ao salvar. Verifique sua conexão.");
+            } catch (error) {
+                console.error("Erro:", error);
                 btn.innerText = "Tentar Novamente";
                 btn.disabled = false;
+                errorMsg.style.display = 'block';
+                
+                if(error.code === 'auth/email-already-in-use') {
+                    errorMsg.innerText = "Este e-mail já possui conta. Vá para o Login.";
+                    setTimeout(() => window.location.href = "index.html", 3000);
+                } else {
+                    errorMsg.innerText = "Erro: " + error.message;
+                }
             }
         });
     </script>
-
 </body>
 </html>
