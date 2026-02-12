@@ -3,62 +3,196 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portal Neuropsicológico | Em Manutenção</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;600&display=swap" rel="stylesheet">
+    <title>Teste TDAH, Autismo e Altas Habilidades | Portal Dr. Eduardo Pokk</title>
+    
+    <meta name="description" content="Faça seu rastreio neuropsicológico online.">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://app-triagem-psico.vercel.app/">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Mapeie sua Mente | Portal Dr. Eduardo Pokk">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
     <style>
-        body {
-            margin: 0;
-            height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background-color: #0f172a; /* Sua cor Primary */
-            color: white;
-            font-family: 'Inter', sans-serif;
-            text-align: center;
-        }
-        .container {
-            max-width: 600px;
-            padding: 20px;
-        }
-        h1 {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-            color: #fff;
-        }
-        p {
-            font-size: 1.2rem;
-            color: #94a3b8;
-            line-height: 1.6;
-        }
-        .badge {
-            background: #2563eb; /* Sua cor Accent */
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            font-weight: 600;
-        }
-        .loader {
-            border: 4px solid rgba(255,255,255,0.1);
-            border-left-color: #2563eb;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-            margin: 30px auto;
-        }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        /* Estilos Mantidos */
+        :root { --primary: #0f172a; --accent: #2563eb; --gold: #d97706; --bg: #f8fafc; --text: #334155; --white: #ffffff; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg); color: var(--text); line-height: 1.6; }
+
+        header { background: var(--white); padding: 20px 5%; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 100; }
+        .brand { font-weight: 800; font-size: 1.2rem; color: var(--primary); }
+        .brand span { color: var(--accent); }
+        .header-actions { display: flex; gap: 15px; align-items: center; }
+        .crp-badge { font-size: 0.8rem; background: #e0f2fe; color: #0369a1; padding: 5px 10px; border-radius: 20px; font-weight: 600; }
+        .login-btn-header { background: transparent; border: 2px solid var(--primary); color: var(--primary); padding: 6px 16px; border-radius: 20px; font-weight: 700; font-size: 0.85rem; cursor: pointer; transition: all 0.2s; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; }
+        .login-btn-header:hover { background: var(--primary); color: white; }
+
+        .hero { text-align: center; padding: 100px 20px; background: linear-gradient(180deg, #ffffff 0%, #f1f5f9 100%); }
+        .hero h1 { font-size: 3rem; color: var(--primary); margin-bottom: 20px; line-height: 1.1; letter-spacing: -1px; }
+        .hero p { font-size: 1.2rem; color: #64748b; max-width: 700px; margin: 0 auto 40px auto; }
+        .hero-btn { display: inline-block; background: var(--accent); color: white; padding: 18px 50px; border-radius: 50px; font-weight: 700; font-size: 1.1rem; text-decoration: none; transition: transform 0.2s; box-shadow: 0 10px 25px rgba(37, 99, 235, 0.3); }
+        .hero-btn:hover { transform: translateY(-3px); background: #1d4ed8; }
+
+        /* Features e Pricing simplificados para o exemplo, mantenha o seu CSS completo aqui */
+        .pricing { padding: 80px 20px; text-align: center; background: #f8fafc; }
+        .single-offer-card { background: white; padding: 50px; border-radius: 20px; width: 100%; max-width: 500px; margin: 0 auto; border: 2px solid var(--accent); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15); position: relative; }
+        .badge { position: absolute; top: -15px; left: 50%; transform: translateX(-50%); background: var(--gold); color: white; padding: 8px 20px; border-radius: 30px; font-size: 0.9rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; }
+        .price { font-size: 3.5rem; font-weight: 800; color: var(--primary); line-height: 1; margin: 30px 0; }
+        .cta-btn { display: block; width: 100%; padding: 20px; background: var(--accent); color: white; border-radius: 10px; font-weight: 700; font-size: 1.2rem; text-decoration: none; transition: 0.2s; cursor: pointer; }
+        
+        /* Modal */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(4px); z-index: 1000; display: none; justify-content: center; align-items: center; }
+        .modal-box { background: white; padding: 40px; border-radius: 16px; width: 90%; max-width: 400px; position: relative; text-align: center; }
+        .close-modal { position: absolute; top: 15px; right: 20px; font-size: 1.5rem; cursor: pointer; color: #94a3b8; }
+        .login-input { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 1rem; }
+        .btn-entrar { width: 100%; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 1rem; }
+        .error-msg { color: #ef4444; font-size: 0.9rem; margin-bottom: 15px; display: none; }
+        .toggle-link { cursor: pointer; color: var(--accent); text-decoration: underline; font-weight: 600; font-size: 0.9rem; }
+        .hidden-form { display: none; }
     </style>
 </head>
 <body>
-    <div class="container">
-        <span class="badge">Novidades em Breve</span>
-        <div class="loader"></div>
-        <h1>Estamos Evoluindo.</h1>
-        <p>O Portal de Rastreio Neuropsicológico do Dr. Eduardo Pokk está passando por uma reformulação completa para se tornar uma plataforma ainda mais poderosa.</p>
-        <p style="font-size: 0.9rem; margin-top: 30px;">Já é aluno/paciente? Seu acesso será migrado automaticamente.</p>
+
+    <header>
+        <div class="brand">Eduardo Pokk <span>PSI</span></div>
+        <div class="header-actions">
+            <div class="crp-badge">CRP 06/73583</div>
+            <button id="openLoginBtn" class="login-btn-header"><i class="fa-solid fa-user-lock"></i> LOGIN</button>
+        </div>
+    </header>
+
+    <section class="hero">
+        <h1>Mapeie sua mente.<br>Sem achismos.</h1>
+        <p>Portal de investigação neuropsicológica para adultos.</p>
+        <a href="#oferta" class="hero-btn">Liberar Meu Acesso</a>
+    </section>
+
+    <section class="pricing" id="oferta">
+        <div class="single-offer-card">
+            <div class="badge">Oferta de Lançamento</div>
+            <h3>Acesso Total</h3>
+            <div class="price">R$ 49,90 <span style="font-size: 1rem; display: block;">pagamento único</span></div>
+            
+            <a href="COLE_SEU_LINK_DO_MERCADO_PAGO_AQUI" class="cta-btn" target="_blank">QUERO MAPEAR MINHA MENTE</a>
+            
+            <div style="margin-top:15px; color:#64748b; font-size:0.9rem;"><i class="fa-solid fa-lock"></i> Compra segura</div>
+        </div>
+    </section>
+
+    <div id="loginModal" class="modal-overlay">
+        <div class="modal-box">
+            <span class="close-modal" id="closeModal">&times;</span>
+            
+            <div id="areaLogin">
+                <h2>Login</h2>
+                <div class="error-msg" id="loginError">Erro ao entrar.</div>
+                <input type="email" id="emailInput" class="login-input" placeholder="Seu e-mail">
+                <input type="password" id="passInput" class="login-input" placeholder="Sua senha">
+                <button class="btn-entrar" id="btnLoginAction">ENTRAR</button>
+                <p style="margin-top: 15px; font-size: 0.8rem; color: #64748b;">
+                    Pagou e não tem senha? <br><span id="irParaCadastro" class="toggle-link">Crie sua senha aqui</span>
+                </p>
+            </div>
+
+            <div id="areaCadastro" class="hidden-form">
+                <h2>Criar Acesso</h2>
+                <p style="font-size: 0.8rem; margin-bottom: 15px;">Use o e-mail da compra.</p>
+                <div class="error-msg" id="cadastroError">Erro ao criar.</div>
+                <input type="email" id="emailCadInput" class="login-input" placeholder="Seu e-mail">
+                <input type="password" id="passCadInput" class="login-input" placeholder="Crie uma senha">
+                <button class="btn-entrar" id="btnCadastroAction" style="background-color: var(--accent);">CRIAR CONTA</button>
+                <p style="margin-top: 15px; font-size: 0.8rem; color: #64748b;">
+                    Já tem conta? <span id="irParaLogin" class="toggle-link">Fazer Login</span>
+                </p>
+            </div>
+        </div>
     </div>
+    
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        // CHAVES DO FIREBASE
+        const firebaseConfig = {
+            apiKey: "AIzaSyCqDAUEfYarlFkA1u2A-n-SGv_1AjFb7WU",
+            authDomain: "portal-eduardo-pokk.firebaseapp.com",
+            projectId: "portal-eduardo-pokk",
+            storageBucket: "portal-eduardo-pokk.firebasestorage.app",
+            messagingSenderId: "657739349802",
+            appId: "1:657739349802:web:c14305400575f68ed5a853"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // --- Lógica do Modal ---
+        const modal = document.getElementById('loginModal');
+        document.getElementById('openLoginBtn').onclick = () => { modal.style.display = 'flex'; };
+        document.getElementById('closeModal').onclick = () => { modal.style.display = 'none'; };
+        document.getElementById('irParaCadastro').onclick = () => {
+            document.getElementById('areaLogin').style.display = 'none';
+            document.getElementById('areaCadastro').style.display = 'block';
+        };
+        document.getElementById('irParaLogin').onclick = () => {
+            document.getElementById('areaCadastro').style.display = 'none';
+            document.getElementById('areaLogin').style.display = 'block';
+        };
+
+        // --- LOGIN ---
+        document.getElementById('btnLoginAction').onclick = async () => {
+            const email = document.getElementById('emailInput').value;
+            const pass = document.getElementById('passInput').value;
+            try {
+                await signInWithEmailAndPassword(auth, email, pass);
+            } catch (e) {
+                document.getElementById('loginError').style.display = 'block';
+                document.getElementById('loginError').innerText = "E-mail ou senha incorretos.";
+            }
+        };
+
+        // --- CADASTRO COM BACKDOOR ADMIN ---
+        document.getElementById('btnCadastroAction').onclick = async () => {
+            const email = document.getElementById('emailCadInput').value;
+            const pass = document.getElementById('passCadInput').value;
+            
+            if(pass.length < 6) return alert("Senha muito curta.");
+
+            try {
+                const cred = await createUserWithEmailAndPassword(auth, email, pass);
+                
+                // BACKDOOR: Se for seu e-mail, vira ADMIN automaticamente
+                let userStatus = "pendente"; // Padrão
+                if (email.toLowerCase().includes("eduardo.pokk")) {
+                    userStatus = "admin_premium";
+                    console.log("Acesso Admin concedido.");
+                }
+
+                // Salva no banco para garantir
+                await setDoc(doc(db, "usuarios", cred.user.uid), {
+                    email: email,
+                    status: userStatus,
+                    criado_em: new Date()
+                });
+
+                window.location.href = "dashboard.html";
+
+            } catch (e) {
+                document.getElementById('cadastroError').style.display = 'block';
+                document.getElementById('cadastroError').innerText = "Erro ao criar. E-mail já existe?";
+            }
+        };
+
+        // Redirecionamento
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                localStorage.setItem('usuario_nome', user.email);
+                localStorage.setItem('usuario_id', user.uid);
+                window.location.href = "dashboard.html";
+            }
+        });
+    </script>
 </body>
 </html>
