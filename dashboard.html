@@ -2,9 +2,8 @@
 <html lang="pt-BR">
 <head>
     <script>
-        // Segurança: Verifica Login
         const checkUser = localStorage.getItem('usuario_nome');
-        if (!checkUser) window.location.href = "index.html"; // Manda pro login se não tiver user
+        if (!checkUser) window.location.href = "index.html"; 
     </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -29,7 +28,6 @@
         .card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); transition: 0.3s; border-left: 5px solid #cbd5e1; display: flex; flex-direction: column; justify-content: space-between; }
         .card:hover { transform: translateY(-5px); box-shadow: 0 10px 15px rgba(0,0,0,0.1); }
         
-        /* Cores Específicas */
         .card.tdah { border-left-color: #2563eb; }
         .card.tea { border-left-color: #7c3aed; }
         .card.ahsd { border-left-color: #d97706; }
@@ -38,7 +36,6 @@
         .card.burnout { border-left-color: #ea580c; }
         .card.tab { border-left-color: #6366f1; }
         .card.borderline { border-left-color: #be185d; }
-        .card.qi { border-left-color: #059669; } /* Nova cor para QI */
         
         .card h3 { margin-top: 0; display: flex; justify-content: space-between; align-items: center; font-size: 1.2rem; }
         .card p { font-size: 0.95rem; color: #64748b; margin-bottom: 25px; line-height: 1.5; }
@@ -61,14 +58,6 @@
         <p class="subtitle">Acesse as ferramentas de rastreio clínico.</p>
         
         <div class="grid">
-            <div class="card qi">
-                <div>
-                    <h3>Teste de Q.I. <i class="fa-solid fa-shapes" style="color:#059669;"></i></h3>
-                    <p>Avaliação de Raciocínio Lógico e Inteligência Fluida (Matrizes).</p>
-                </div>
-                <a href="engine.html?t=qi" class="btn-start">Iniciar Teste</a>
-            </div>
-
             <div class="card tdah">
                 <div><h3>TDAH Adulto <i class="fa-solid fa-brain" style="color:#2563eb;"></i></h3><p>Escala ASRS-18 (Desatenção/Hiperatividade).</p></div>
                 <a href="engine.html?t=tdah" class="btn-start">Iniciar Teste</a>
