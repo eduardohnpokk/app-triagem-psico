@@ -14,19 +14,15 @@ export const Battery = {
         title: "TDAH Adulto (ASRS-18)",
         color: "#2563eb",
         description: "Avaliação de sintomas de desatenção e hiperatividade (OMS).",
-        type: "frequency_asrs", // Escala específica do ASRS
+        type: "frequency_asrs",
         options: ["Nunca", "Raramente", "Algumas vezes", "Frequentemente", "Muito Frequentemente"],
         questions: [
-            // PARTE A (Perguntas de 1 a 6 - O Coração do Diagnóstico)
-            // 'threshold': valor mínimo (0-4) para considerar o sintoma clinicamente relevante
             { id: "a1", text: "Dificuldade para finalizar detalhes finais de um projeto?", threshold: 2, domain: "desatencao" },
             { id: "a2", text: "Dificuldade para organizar tarefas que exigem planejamento?", threshold: 2, domain: "desatencao" },
             { id: "a3", text: "Problemas para lembrar de compromissos ou obrigações?", threshold: 2, domain: "desatencao" },
-            { id: "a4", text: "Adia ou evita tarefas que exigem muito esforço mental?", threshold: 3, domain: "desatencao" }, // Requer frequência maior
+            { id: "a4", text: "Adia ou evita tarefas que exigem muito esforço mental?", threshold: 3, domain: "desatencao" },
             { id: "a5", text: "Balança as mãos ou os pés quando precisa ficar sentado?", threshold: 3, domain: "hiperatividade" },
             { id: "a6", text: "Sente-se excessivamente ativo, como se estivesse 'com o motor ligado'?", threshold: 3, domain: "hiperatividade" },
-            
-            // PARTE B (Sintomas de Suporte)
             { id: "b1", text: "Comete erros por descuido em projetos chatos?", threshold: 2, domain: "desatencao" },
             { id: "b2", text: "Dificuldade para manter a atenção em trabalhos repetitivos?", threshold: 2, domain: "desatencao" },
             { id: "b3", text: "Dificuldade para concentrar no que as pessoas dizem?", threshold: 2, domain: "desatencao" },
@@ -43,28 +39,21 @@ export const Battery = {
         calculate: (answers) => {
             let partAScore = 0;
             let totalSymptoms = 0;
-            
-            // ASRS Logic: Verifica se a resposta atinge o limiar (threshold) clínico
             answers.forEach((val, idx) => {
-                // Acessa a pergunta correspondente no array acima
                 const q = Battery.tdah.questions[idx]; 
                 if (val >= q.threshold) {
                     totalSymptoms++;
-                    if (idx < 6) partAScore++; // Primeiras 6 são Parte A
+                    if (idx < 6) partAScore++;
                 }
             });
-
-            // Critério Diagnóstico: 4 ou mais na Parte A é altamente sugestivo
             const risk = partAScore >= 4 ? "ALTO RISCO (Indicativo Clínico)" : "BAIXO RISCO";
             const detail = `Você apresentou ${partAScore}/6 sintomas críticos na triagem primária.`;
-            
             return { score: totalSymptoms, result: risk, details: detail };
         }
     },
 
     // =========================================================================
     // 2. AUTISMO (RAADS-14)
-    // Lógica: Foco em duração do sintoma (Vida toda vs Só agora)
     // =========================================================================
     tea: {
         id: "tea",
@@ -72,7 +61,6 @@ export const Battery = {
         color: "#7c3aed",
         description: "Rastreio de traços do espectro, sensorialidade e camuflagem.",
         type: "frequency_raads",
-        // Valores: 3, 2, 1, 0
         options: ["Verdadeiro agora e quando jovem", "Verdadeiro apenas agora", "Verdadeiro apenas quando jovem", "Nunca"],
         questions: [
             { text: "É muito difícil entender o que os outros pensam/sentem se não disserem claramente.", domain: "Mentalização" },
@@ -91,17 +79,9 @@ export const Battery = {
             { text: "Tenho interesses muito específicos e intensos.", domain: "Mentalização" }
         ],
         calculate: (answers) => {
-            // No RAADS, as opções valem 3, 2, 1, 0 na ordem apresentada
-            // Mas o array de 'answers' virá como índice (0, 1, 2, 3). Precisamos inverter ou mapear.
-            // Mapeamento: Opção 0 (Agora e Jovem) = 3 pontos. Opção 3 (Nunca) = 0 pontos.
             const mapScore = [3, 2, 1, 0];
             let total = 0;
-            
-            answers.forEach(idx => {
-                total += mapScore[idx];
-            });
-
-            // Corte: 14 pontos
+            answers.forEach(idx => { total += mapScore[idx]; });
             const risk = total >= 14 ? "ALTA PROBABILIDADE (Perfil Neurodivergente)" : "BAIXA PROBABILIDADE";
             return { score: total, result: risk, details: `Pontuação ${total}/42. Corte clínico é 14.` };
         }
@@ -116,7 +96,7 @@ export const Battery = {
         color: "#0ea5e9",
         description: "Mapeamento de níveis de tensão e preocupação.",
         type: "frequency_gad",
-        options: ["Nenhuma vez", "Vários dias", "Mais da metade", "Quase todos os dias"], // Valem 0, 1, 2, 3
+        options: ["Nenhuma vez", "Vários dias", "Mais da metade", "Quase todos os dias"],
         questions: [
             { text: "Sentir-se nervoso(a), ansioso(a) ou muito tenso(a)." },
             { text: "Não ser capaz de impedir ou de controlar as preocupações." },
@@ -127,14 +107,12 @@ export const Battery = {
             { text: "Sentir medo como se algo horrível fosse acontecer." }
         ],
         calculate: (answers) => {
-            let total = answers.reduce((a, b) => a + b, 0); // Soma simples (0 a 3)
-            
+            let total = answers.reduce((a, b) => a + b, 0);
             let result = "";
             if (total <= 4) result = "Ansiedade Mínima";
             else if (total <= 9) result = "Ansiedade Leve";
             else if (total <= 14) result = "Ansiedade Moderada";
             else result = "Ansiedade Grave";
-
             return { score: total, result: result, details: "Escala de 0 a 21 pontos." };
         }
     },
@@ -158,40 +136,35 @@ export const Battery = {
             { text: "Sentir-se mal consigo mesmo(a) ou fracassado(a)." },
             { text: "Dificuldade para se concentrar." },
             { text: "Lentidão ou agitação motora." },
-            { text: "Pensamentos de que seria melhor estar morto(a) ou de se ferir." } // Item 9 Crítico
+            { text: "Pensamentos de que seria melhor estar morto(a) ou de se ferir." }
         ],
         calculate: (answers) => {
             let total = answers.reduce((a, b) => a + b, 0);
-            let riskFlag = answers[8] > 0; // Se marcou qualquer coisa > 0 na última pergunta
-
+            let riskFlag = answers[8] > 0;
             let result = "";
             if (total <= 4) result = "Mínima / Ausente";
             else if (total <= 9) result = "Depressão Leve";
             else if (total <= 14) result = "Depressão Moderada";
             else if (total <= 19) result = "Moderada Grave";
             else result = "Depressão Grave";
-
             if (riskFlag) result += " (⚠️ ALERTA DE RISCO)";
-
             return { score: total, result: result, details: riskFlag ? "Marcador de ideação identificado." : "Sem marcadores de risco imediato." };
         }
     },
 
     // =========================================================================
-    // 5. BIPOLARIDADE (MDQ) - LÓGICA COMPLEXA
+    // 5. BIPOLARIDADE (MDQ)
     // =========================================================================
     tab: {
         id: "tab",
         title: "Transtorno Bipolar (MDQ)",
         color: "#6366f1",
         description: "Rastreio de mania e hipomania.",
-        type: "binary_complex", // Customizado
-        // Perguntas 1-13 são Sim/Não. 14 é Sim/Não. 15 é Nível de Problema.
+        type: "binary_complex",
         options: ["Não", "Sim"], 
         questions: [
-            // Seção 1: Sintomas
-            { text: "Você se sentiu tão bem ou hiperativo que outros acharam estranho?" }, // 0
-            { text: "Ficou tão irritado que gritou com as pessoas ou começou brigas?" }, // 1
+            { text: "Você se sentiu tão bem ou hiperativo que outros acharam estranho?" },
+            { text: "Ficou tão irritado que gritou com as pessoas ou começou brigas?" },
             { text: "Sentiu-se muito mais autoconfiante do que o habitual?" },
             { text: "Dormiu muito menos que o habitual e não sentiu falta?" },
             { text: "Estava muito mais falante ou falou mais rápido do que o costume?" },
@@ -201,26 +174,17 @@ export const Battery = {
             { text: "Estava muito mais ativo ou fez mais coisas do que o habitual?" },
             { text: "Estava muito mais social (ex: ligar para amigos de madrugada)?" },
             { text: "Estava muito mais interessado em sexo?" },
-            { text: "Fez coisas excessivas, tolas ou arriscadas (gastar, dirigir mal)?" }, // 11
-            { text: "Gastar dinheiro causou problemas para você ou sua família?" }, // 12
-            // Seção 2: Tempo
-            { text: "Esses sintomas aconteceram no mesmo período de tempo?", isTiming: true }, // 13
-            // Seção 3: Impacto (Lógica separada no engine, aqui simplificado para Sim/Não de impacto grave)
-            { text: "Isso causou problemas moderados ou graves na sua vida?", isImpact: true } // 14
+            { text: "Fez coisas excessivas, tolas ou arriscadas (gastar, dirigir mal)?" },
+            { text: "Gastar dinheiro causou problemas para você ou sua família?" },
+            { text: "Esses sintomas aconteceram no mesmo período de tempo?", isTiming: true },
+            { text: "Isso causou problemas moderados ou graves na sua vida?", isImpact: true }
         ],
         calculate: (answers) => {
-            // Contar Sim (1) nas primeiras 13 questões
             let symptoms = 0;
-            for(let i=0; i<=12; i++) {
-                if(answers[i] === 1) symptoms++;
-            }
-            
-            const timing = answers[13] === 1; // Aconteceu junto?
-            const impact = answers[14] === 1; // Causou problema?
-
-            // Critério MDQ: 7+ sintomas + Tempo + Impacto
+            for(let i=0; i<=12; i++) { if(answers[i] === 1) symptoms++; }
+            const timing = answers[13] === 1;
+            const impact = answers[14] === 1;
             let positive = (symptoms >= 7 && timing && impact);
-            
             return { 
                 score: symptoms, 
                 result: positive ? "TRIAGEM POSITIVA (Alto Risco TAB)" : "TRIAGEM NEGATIVA",
@@ -249,19 +213,15 @@ export const Battery = {
             { text: "Você sente que cada hora de trabalho é um sacrifício?" }
         ],
         calculate: (answers) => {
-            // Valores: 0, 25, 50, 75, 100
             const values = [0, 25, 50, 75, 100];
             let total = 0;
             answers.forEach(idx => total += values[idx]);
-            
-            let average = total / 7; // Média CBI
-            
+            let average = total / 7;
             let result = "";
             if (average < 25) result = "Sem Burnout";
             else if (average < 50) result = "Risco Leve / Cansaço";
             else if (average < 75) result = "Risco Moderado";
             else result = "Burnout Severo";
-
             return { score: Math.round(average), result: result, details: `Nível de carga: ${Math.round(average)}%` };
         }
     },
