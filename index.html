@@ -163,14 +163,10 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        // =======================================================
-        // LINK DE PRODUÇÃO (LIVE)
-        // =======================================================
         const STRIPE_LINK = "https://buy.stripe.com/cNi28sbkC0FOeg2eMR3gk00";
 
-        // CONFIGURAÇÃO FIREBASE
         const firebaseConfig = {
             apiKey: "AIzaSyCqDAUEfYarlFkA1u2A-n-SGv_1AjFb7WU",
             authDomain: "portal-eduardo-pokk.firebaseapp.com",
@@ -184,7 +180,6 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // CONTROLE DO MODAL
         window.openModal = (view) => {
             document.getElementById('authModal').style.display = 'flex';
             switchView(view);
@@ -197,9 +192,6 @@
         document.getElementById('closeModal').onclick = () => document.getElementById('authModal').style.display = 'none';
         document.getElementById('headerLoginBtn').onclick = () => window.openModal('login');
 
-        // =======================================================
-        // LÓGICA DE CADASTRO -> PAGAMENTO
-        // =======================================================
         document.getElementById('btnCadAction').onclick = async () => {
             const nome = document.getElementById('cadNome').value;
             const email = document.getElementById('cadEmail').value;
@@ -213,12 +205,9 @@
             btn.disabled = true;
 
             try {
-                // 1. Cria usuário no Authentication
                 const cred = await createUserWithEmailAndPassword(auth, email, pass);
-                
-                // 2. Salva no Banco como PENDENTE (Admin Backdoor mantido)
                 let statusInicial = "pendente";
-                if(email.toLowerCase().includes("eduardo.pokk")) statusInicial = "ativo";
+                if(email.toLowerCase().includes("eduardo.pokk")) statusInicial = "admin";
 
                 await setDoc(doc(db, "usuarios", cred.user.uid), {
                     nome: nome,
@@ -227,74 +216,80 @@
                     criado_em: new Date()
                 });
 
-                // 3. Redireciona para o Stripe com o E-mail preenchido
                 const finalLink = `${STRIPE_LINK}?prefilled_email=${encodeURIComponent(email)}`;
-                
                 btn.innerText = "Redirecionando...";
                 window.location.href = finalLink;
 
             } catch (e) {
                 console.error(e);
-                btn.innerText = "Tentar Novamente";
+                btn.innerText = "IR PARA PAGAMENTO";
                 btn.disabled = false;
                 document.getElementById('cadError').style.display = 'block';
-                
-                if (e.code === 'auth/email-already-in-use') {
-                    document.getElementById('cadError').innerText = "E-mail já cadastrado. Faça login.";
-                } else {
-                    document.getElementById('cadError').innerText = "Erro: " + e.message;
-                }
+                document.getElementById('cadError').innerText = "Erro: " + e.message;
             }
         };
 
-        // =======================================================
-        // LÓGICA DE LOGIN
-        // =======================================================
         document.getElementById('btnLoginAction').onclick = async () => {
             const email = document.getElementById('loginEmail').value;
             const pass = document.getElementById('loginPass').value;
             const btn = document.getElementById('btnLoginAction');
 
             btn.innerText = "Verificando...";
+            btn.disabled = true;
             try {
                 await signInWithEmailAndPassword(auth, email, pass);
-                // O redirecionamento é feito no observador abaixo
             } catch (e) {
                 btn.innerText = "ACESSAR PAINEL";
+                btn.disabled = false;
                 document.getElementById('loginError').style.display = 'block';
             }
         };
 
-        // =======================================================
-        // GATEKEEPER (Verifica Status)
-        // =======================================================
         onAuthStateChanged(auth, async (user) => {
+            const btn = document.getElementById('btnLoginAction');
             if (user) {
-                // Se acabou de logar, verifica se está ativo no banco
                 try {
-                    const docSnap = await getDoc(doc(db, "usuarios", user.uid));
+                    const userRef = doc(db, "usuarios", user.uid);
                     
+                    // CORREÇÃO: Backdoor prioritária para Eduardo Pokk
+                    if (user.email.toLowerCase().includes("eduardo.pokk")) {
+                        await setDoc(userRef, { 
+                            status: "admin",
+                            email: user.email,
+                            nome: "Eduardo Pokk"
+                        }, { merge: true });
+                        
+                        localStorage.setItem('usuario_nome', "Eduardo Pokk");
+                        localStorage.setItem('usuario_id', user.uid);
+                        window.location.href = "dashboard.html";
+                        return;
+                    }
+
+                    const docSnap = await getDoc(userRef);
                     if (docSnap.exists()) {
                         const dados = docSnap.data();
-                        
                         if (dados.status === 'ativo' || dados.status === 'admin') {
-                            // SUCESSO: Vai pro painel
-                            localStorage.setItem('usuario_nome', dados.nome);
+                            localStorage.setItem('usuario_nome', dados.nome || user.email);
                             localStorage.setItem('usuario_id', user.uid);
                             window.location.href = "dashboard.html";
                         } else {
-                            // FALHA: Conta existe, mas não pagou (Pendente/Bloqueado)
                             const pagar = confirm("Sua conta existe, mas a assinatura não está ativa. Ir para o pagamento?");
                             if(pagar) {
                                  const finalLink = `${STRIPE_LINK}?prefilled_email=${encodeURIComponent(user.email)}`;
                                  window.location.href = finalLink;
                             } else {
-                                 signOut(auth); // Desloga para não ficar preso
+                                 await signOut(auth);
+                                 if(btn) { btn.innerText = "ACESSAR PAINEL"; btn.disabled = false; }
                             }
                         }
+                    } else {
+                        alert("Registro não encontrado no banco de dados.");
+                        await signOut(auth);
+                        if(btn) { btn.innerText = "ACESSAR PAINEL"; btn.disabled = false; }
                     }
                 } catch(err) {
-                    console.log("Erro de verificação:", err);
+                    console.error("Erro de verificação:", err);
+                    if(btn) { btn.innerText = "ACESSAR PAINEL"; btn.disabled = false; }
                 }
             }
         });
