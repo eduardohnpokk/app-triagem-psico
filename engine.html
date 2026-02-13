@@ -7,8 +7,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    
     <style>
-        :root { --primary: #0f172a; --bg: #f8fafc; --white: #fff; }
+        :root { --primary: #0f172a; --bg: #f8fafc; --white: #fff; --accent: #2563eb; }
         body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--primary); display: flex; flex-direction: column; min-height: 100vh; margin: 0; }
         
         .test-header { padding: 20px; text-align: center; background: white; border-bottom: 1px solid #e2e8f0; }
@@ -31,7 +33,10 @@
         .result-title { font-size: 1.8rem; font-weight: 800; margin-bottom: 10px; }
         .result-desc { font-size: 1.1rem; color: #64748b; margin-bottom: 30px; }
         
-        .btn-action { background: var(--primary); color: white; padding: 15px 30px; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-block; margin-top: 20px; cursor: pointer; border: none; font-size: 1rem; }
+        /* Estilo dos Botões de Ação */
+        .btn-action { background: var(--primary); color: white; padding: 15px 30px; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-block; margin-top: 10px; cursor: pointer; border: none; font-size: 1rem; width: 100%; box-sizing: border-box; }
+        .btn-pdf { background: #16a34a; margin-top: 20px; } /* Verde para PDF */
+        .btn-pdf:hover { background: #15803d; }
         
         @keyframes fadeIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
     </style>
@@ -61,6 +66,10 @@
                 <span id="res-detail" style="font-family:monospace; color:#475569;">...</span>
             </div>
 
+            <button id="btnDownloadPDF" class="btn-action btn-pdf">
+                <i class="fa-solid fa-file-pdf"></i> BAIXAR DOSSIÊ CLÍNICO (PDF)
+            </button>
+
             <button class="btn-action" onclick="window.location.href='dashboard.html'">Voltar ao Painel</button>
         </div>
 
@@ -75,6 +84,7 @@
         const testId = params.get('t');
         const currentTest = Battery[testId];
         const userId = localStorage.getItem('usuario_id');
+        const userName = localStorage.getItem('usuario_nome') || "Paciente";
 
         if (!currentTest) {
             alert("Erro: Teste não encontrado.");
@@ -84,10 +94,10 @@
         // Configuração Inicial
         document.getElementById('header-title').innerText = currentTest.title;
         document.querySelector('.progress-fill').style.backgroundColor = currentTest.color;
-        document.querySelector('.btn-action').style.backgroundColor = currentTest.color;
 
         let currentQIndex = 0;
         const answers = [];
+        let analysisResult = null; // Armazena o resultado para o PDF
 
         function loadQuestion() {
             const q = currentTest.questions[currentQIndex];
@@ -106,9 +116,6 @@
                 const btn = document.createElement('div');
                 btn.className = 'btn-opt';
                 btn.innerHTML = `<div class="circle"></div> ${optLabel}`;
-                
-                // Mapeia valor (Para RAADS e CBI que são invertidos ou específicos, a lógica cuida no neuro-data)
-                // Padrão: índice do array (0, 1, 2, 3...)
                 btn.onclick = () => saveAnswer(idx); 
                 container.appendChild(btn);
             });
@@ -125,14 +132,12 @@
         }
 
         async function finishTest() {
-            // UI de Carregamento
             document.getElementById('quiz-card').style.display = 'none';
             document.getElementById('result-card').style.display = 'block';
             document.getElementById('res-title').innerText = "Processando...";
-            document.getElementById('res-desc').innerText = "Aplicando critérios clínicos...";
 
-            // 1. Calcula Resultado (Usando a inteligência do neuro-data.js)
-            const analysis = currentTest.calculate(answers);
+            // 1. Calcula Resultado
+            analysisResult = currentTest.calculate(answers);
 
             // 2. Salva no Firebase
             if (userId) {
@@ -141,31 +146,93 @@
                         teste: currentTest.title,
                         teste_id: currentTest.id,
                         data: new Date(),
-                        score_bruto: analysis.score,
-                        resultado_texto: analysis.result,
-                        detalhes: analysis.details,
+                        score_bruto: analysisResult.score,
+                        resultado_texto: analysisResult.result,
+                        detalhes: analysisResult.details,
                         respostas_raw: answers
                     });
-                    console.log("Salvo com sucesso.");
                 } catch (e) {
                     console.error("Erro ao salvar:", e);
                 }
             }
 
-            // 3. Exibe Resultado
-            document.getElementById('res-title').innerText = analysis.result;
-            document.getElementById('res-desc').innerText = "Avaliação concluída com sucesso. O resultado foi registrado no seu prontuário digital.";
-            document.getElementById('res-detail').innerText = analysis.details;
+            // 3. Exibe Resultado na Tela
+            document.getElementById('res-title').innerText = analysisResult.result;
+            document.getElementById('res-detail').innerText = analysisResult.details;
             
-            // Muda cor se for risco alto
-            if (analysis.result.includes("ALTO") || analysis.result.includes("POSITIVA") || analysis.result.includes("Severo")) {
-                document.getElementById('res-title').style.color = "#dc2626"; // Vermelho
+            if (analysisResult.result.includes("ALTO") || analysisResult.result.includes("POSITIVA") || analysisResult.result.includes("Severo")) {
+                document.getElementById('res-title').style.color = "#dc2626";
             } else {
-                document.getElementById('res-title').style.color = "#16a34a"; // Verde
+                document.getElementById('res-title').style.color = "#16a34a";
             }
         }
 
-        // Inicia
+        // --- FUNÇÃO PARA GERAR O PDF ---
+        document.getElementById('btnDownloadPDF').onclick = () => {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            const dataEmissao = new Date().toLocaleDateString('pt-BR');
+
+            // Design do Dossiê
+            doc.setFillColor(15, 23, 42); // Cor Navy do Projeto
+            doc.rect(0, 0, 210, 35, 'F');
+
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(20);
+            doc.setFont("helvetica", "bold");
+            doc.text("DOSSIÊ DE RASTREIO CLÍNICO", 20, 22);
+
+            doc.setFontSize(10);
+            doc.setFont("helvetica", "normal");
+            doc.text(`Emissão: ${dataEmissao}`, 165, 22);
+
+            // Conteúdo
+            doc.setTextColor(15, 23, 42);
+            doc.setFontSize(14);
+            doc.setFont("helvetica", "bold");
+            doc.text("DADOS DO PACIENTE", 20, 50);
+            doc.line(20, 52, 190, 52);
+
+            doc.setFontSize(11);
+            doc.setFont("helvetica", "normal");
+            doc.text(`Nome: ${userName}`, 20, 60);
+            doc.text(`Protocolo: ${currentTest.title}`, 20, 67);
+
+            doc.setFontSize(14);
+            doc.setFont("helvetica", "bold");
+            doc.text("ANÁLISE RESULTANTE", 20, 85);
+            doc.line(20, 87, 190, 87);
+
+            doc.setFontSize(12);
+            doc.setTextColor(analysisResult.result.includes("ALTO") ? 180 : 0, 0, 0); 
+            doc.text(`Resultado: ${analysisResult.result}`, 20, 97);
+
+            doc.setTextColor(15, 23, 42);
+            doc.setFontSize(11);
+            doc.setFont("helvetica", "normal");
+            const splitDetails = doc.splitTextToSize(`Detalhamento Técnico: ${analysisResult.details}`, 170);
+            doc.text(splitDetails, 20, 107);
+
+            // Isenção de Responsabilidade
+            doc.setFillColor(241, 245, 249);
+            doc.rect(20, 140, 170, 30, 'F');
+            doc.setFontSize(9);
+            doc.setTextColor(71, 85, 105);
+            const disclaimer = "Este documento é uma ferramenta de rastreio baseada em escalas neuropsicológicas validadas. " +
+                               "Não substitui o diagnóstico clínico realizado por um profissional especializado.";
+            doc.text(doc.splitTextToSize(disclaimer, 160), 25, 150);
+
+            // Assinatura (Simbolismo de Especialista)
+            doc.setTextColor(15, 23, 42);
+            doc.setFontSize(11);
+            doc.text("Dr. Eduardo Pokk", 90, 270);
+            doc.setFontSize(9);
+            doc.text("Psicólogo e Autor do Portal", 88, 275);
+
+            // Salva o arquivo
+            doc.save(`Dossie_${testId}_${userName.replace(/\s/g, '_')}.pdf`);
+        };
+
         loadQuestion();
     </script>
 </body>
