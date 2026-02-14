@@ -2,7 +2,6 @@
 <html lang="pt-BR">
 <head>
     <script>
-        // Segurança de Acesso
         const checkUser = localStorage.getItem('usuario_nome');
         if (!checkUser) window.location.href = "index.html";
     </script>
@@ -12,54 +11,32 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-
     <style>
         :root { --primary: #0f172a; --bg: #f1f5f9; --white: #ffffff; --accent: #2563eb; --danger: #dc2626; --success: #16a34a; }
         body { font-family: 'Inter', sans-serif; background-color: var(--bg); color: #334155; margin: 0; }
-
         header { background: var(--primary); padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; color: white; position: sticky; top: 0; z-index: 100; }
         .brand { font-weight: 800; font-size: 1.1rem; color: white; text-decoration: none; }
         .header-right { display: flex; align-items: center; gap: 20px; }
         .user-info { font-size: 0.9rem; opacity: 0.9; }
         .btn-logout { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; padding: 5px 15px; border-radius: 4px; font-size: 0.8rem; cursor: pointer; transition: 0.2s; }
         .btn-logout:hover { background: var(--danger); border-color: var(--danger); }
-        
         .container { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
-
         .alert-security { background: #fef2f2; border: 1px solid #fee2e2; padding: 15px 25px; border-radius: 12px; margin-bottom: 25px; display: flex; align-items: center; gap: 15px; color: #991b1b; }
-        .alert-security p { margin: 0; font-weight: 600; font-size: 0.9rem; }
-
         .tabs-nav { display: flex; gap: 10px; margin-bottom: 30px; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; }
-        .tab-btn { padding: 12px 25px; border: none; background: none; font-weight: 700; color: #64748b; cursor: pointer; border-radius: 8px; transition: 0.2s; font-size: 1rem; display: flex; align-items: center; gap: 10px; }
-        .tab-btn:hover { background: #e2e8f0; color: var(--primary); }
+        .tab-btn { padding: 12px 25px; border: none; background: none; font-weight: 700; color: #64748b; cursor: pointer; border-radius: 8px; font-size: 1rem; display: flex; align-items: center; gap: 10px; }
         .tab-btn.active { color: var(--accent); background: #eff6ff; }
-        
-        .tab-content { display: none; animation: fadeIn 0.3s ease; }
-        .tab-content.active { display: block; }
-
-        .banner-global { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); color: white; padding: 30px; border-radius: 16px; margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 10px 15px -5px rgba(0,0,0,0.1); }
-        .btn-global { background: var(--accent); color: white; padding: 12px 25px; border-radius: 8px; font-weight: 700; border: none; cursor: pointer; transition: 0.2s; }
-        .btn-global:disabled { background: #475569; cursor: not-allowed; }
-
-        .history-list { display: flex; flex-direction: column; gap: 12px; }
-        .history-item { display: flex; justify-content: space-between; align-items: center; padding: 20px; border-radius: 12px; background: white; border: 1px solid #e2e8f0; }
-        .history-info b { display: block; color: var(--primary); font-size: 1.05rem; margin-bottom: 4px; }
-        .history-info span { font-size: 0.85rem; color: #64748b; }
-        .btn-download-laudo { background: var(--success); color: white; padding: 10px 20px; border-radius: 8px; font-size: 0.85rem; font-weight: 700; border: none; cursor: pointer; display: flex; align-items: center; gap: 8px; }
-
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: fadeIn 0.3s ease; }
+        .banner-global { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); color: white; padding: 30px; border-radius: 16px; margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center; }
+        .btn-global { background: var(--accent); color: white; padding: 12px 25px; border-radius: 8px; font-weight: 700; border: none; cursor: pointer; }
+        .history-item { display: flex; justify-content: space-between; align-items: center; padding: 20px; border-radius: 12px; background: white; border: 1px solid #e2e8f0; margin-bottom: 10px; }
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
         .card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); transition: 0.3s; border-left: 5px solid #cbd5e1; display: flex; flex-direction: column; justify-content: space-between; }
-        .card:hover { transform: translateY(-5px); }
-        
-        .card.tdah { border-left-color: #2563eb; } .card.tea { border-left-color: #7c3aed; }
         .btn-start { display: block; width: 100%; padding: 12px; background: #f8fafc; color: var(--primary); text-decoration: none; border-radius: 6px; font-weight: 700; font-size: 0.85rem; text-align: center; border: 1px solid #e2e8f0; }
-        .btn-start:hover { background: var(--primary); color: white; }
-
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
     </style>
 </head>
 <body>
-
     <header>
         <a href="dashboard.html" class="brand">Eduardo Pokk | Portal</a>
         <div class="header-right">
@@ -67,47 +44,37 @@
             <button id="btnSair" class="btn-logout">Sair</button>
         </div>
     </header>
-
     <div class="container">
-        <div class="alert-security">
-            <i class="fa-solid fa-shield-halved"></i>
-            <p>Atenção: Não empreste sua conta. Isso compromete a integridade do seu Dossiê Consolidado e polui seus dados clínicos.</p>
-        </div>
-
+        <div class="alert-security"><i class="fa-solid fa-shield-halved"></i><p>Não empreste sua conta. Isso compromete a integridade do seu Dossiê Consolidado.</p></div>
         <nav class="tabs-nav">
             <button class="tab-btn active" id="tabProtBtn" onclick="switchTab('tab-protocolos')">Protocolos de Rastreio</button>
-            <button class="tab-btn" id="tabRelBtn" onclick="switchTab('tab-relatorios')">Meus Laudos e Dossiês</button>
+            <button class="tab-btn" id="tabRelBtn" onclick="switchTab('tab-relatorios')">Meus Dossiês de Rastreio</button>
         </nav>
 
         <div id="tab-protocolos" class="tab-content active">
             <h1>Bateria de Protocolos</h1>
-            <p style="color: #64748b; margin-bottom: 30px;">Selecione o rastreio clínico desejado para iniciar a avaliação.</p>
             <div class="grid">
-                <div class="card tdah"><div><h3>TDAH Adulto</h3><p>Escala ASRS-18 Oficial.</p></div><a href="engine.html?t=tdah" class="btn-start">INICIAR PROTOCOLO</a></div>
-                <div class="card tea"><div><h3>Autismo Adulto</h3><p>Escala RAADS-14.</p></div><a href="engine.html?t=tea" class="btn-start">INICIAR PROTOCOLO</a></div>
-                <div class="card ansiedade"><div><h3>Ansiedade</h3><p>Escala GAD-7.</p></div><a href="engine.html?t=ansiedade" class="btn-start">INICIAR PROTOCOLO</a></div>
-                <div class="card depressao"><div><h3>Depressão</h3><p>Escala PHQ-9.</p></div><a href="engine.html?t=depressao" class="btn-start">INICIAR PROTOCOLO</a></div>
-                <div class="card tab"><div><h3>Bipolaridade</h3><p>Protocolo MDQ.</p></div><a href="engine.html?t=tab" class="btn-start">INICIAR PROTOCOLO</a></div>
-                <div class="card burnout"><div><h3>Burnout</h3><p>Escala CBI.</p></div><a href="engine.html?t=burnout" class="btn-start">INICIAR PROTOCOLO</a></div>
-                <div class="card borderline"><div><h3>Borderline</h3><p>Protocolo MSI-BPD.</p></div><a href="engine.html?t=borderline" class="btn-start">INICIAR PROTOCOLO</a></div>
-                <div class="card fobia"><div><h3>Fobia Social</h3><p>Escala SPIN.</p></div><a href="engine.html?t=fobia_social" class="btn-start">INICIAR PROTOCOLO</a></div>
-                <div class="card trauma"><div><h3>Trauma</h3><p>Escala PCL-5.</p></div><a href="engine.html?t=trauma" class="btn-start">INICIAR PROTOCOLO</a></div>
-                <div class="card sono"><div><h3>Qualidade do Sono</h3><p>Escala ISI.</p></div><a href="engine.html?t=sono" class="btn-start">INICIAR PROTOCOLO</a></div>
-                <div class="card toc"><div><h3>TOC</h3><p>Escala OCI-R.</p></div><a href="engine.html?t=toc" class="btn-start">INICIAR PROTOCOLO</a></div>
-                <div class="card substancias"><div><h3>Substâncias</h3><p>AUDIT.</p></div><a href="engine.html?t=substancias" class="btn-start">INICIAR PROTOCOLO</a></div>
-                <div class="card autoestima"><div><h3>Autoestima</h3><p>Rosenberg.</p></div><a href="engine.html?t=autoestima" class="btn-start">INICIAR PROTOCOLO</a></div>
+                <div class="card tdah"><div><h3>TDAH Adulto</h3><p>Escala ASRS-18 OMS.</p></div><a href="engine.html?t=tdah" class="btn-start">INICIAR</a></div>
+                <div class="card tea"><div><h3>Autismo Adulto</h3><p>Escala RAADS-14.</p></div><a href="engine.html?t=tea" class="btn-start">INICIAR</a></div>
+                <div class="card ansiedade"><div><h3>Ansiedade</h3><p>Escala GAD-7.</p></div><a href="engine.html?t=ansiedade" class="btn-start">INICIAR</a></div>
+                <div class="card depressao"><div><h3>Depressão</h3><p>Escala PHQ-9.</p></div><a href="engine.html?t=depressao" class="btn-start">INICIAR</a></div>
+                <div class="card tab"><div><h3>Bipolaridade</h3><p>Protocolo MDQ.</p></div><a href="engine.html?t=tab" class="btn-start">INICIAR</a></div>
+                <div class="card burnout"><div><h3>Burnout</h3><p>Escala CBI.</p></div><a href="engine.html?t=burnout" class="btn-start">INICIAR</a></div>
+                <div class="card borderline"><div><h3>Borderline</h3><p>Protocolo MSI-BPD.</p></div><a href="engine.html?t=borderline" class="btn-start">INICIAR</a></div>
+                <div class="card fobia"><div><h3>Fobia Social</h3><p>Escala SPIN.</p></div><a href="engine.html?t=fobia_social" class="btn-start">INICIAR</a></div>
+                <div class="card trauma"><div><h3>Trauma</h3><p>Escala PCL-5.</p></div><a href="engine.html?t=trauma" class="btn-start">INICIAR</a></div>
+                <div class="card sono"><div><h3>Sono</h3><p>Escala ISI.</p></div><a href="engine.html?t=sono" class="btn-start">INICIAR</a></div>
+                <div class="card toc"><div><h3>TOC</h3><p>Escala OCI-R.</p></div><a href="engine.html?t=toc" class="btn-start">INICIAR</a></div>
+                <div class="card substancias"><div><h3>Substâncias</h3><p>AUDIT.</p></div><a href="engine.html?t=substancias" class="btn-start">INICIAR</a></div>
+                <div class="card autoestima"><div><h3>Autoestima</h3><p>Rosenberg.</p></div><a href="engine.html?t=autoestima" class="btn-start">INICIAR</a></div>
             </div>
         </div>
 
         <div id="tab-relatorios" class="tab-content">
             <div class="banner-global">
-                <div class="banner-content">
-                    <h2>Dossiê Consolidado Global</h2>
-                    <p>Mapeamento cruzado de todos os seus protocolos e seu Índice de Bem-Estar (IBE).</p>
-                </div>
+                <div><h2>Mapeamento Global</h2><p>Análise de profundidade consolidada de todos os rastreios.</p></div>
                 <button class="btn-global" id="btnConsolidado">GERAR MAPEAMENTO MESTRE</button>
             </div>
-            <h1>Seu Histórico de Laudos</h1>
             <div id="history-container" class="history-list"></div>
         </div>
     </div>
@@ -138,13 +105,13 @@
             const container = document.getElementById('history-container');
             const q = query(collection(db, "usuarios", userId, "historico_testes"), orderBy("data", "desc"));
             const snap = await getDocs(q);
-            if (snap.empty) { container.innerHTML = '<div style="text-align:center; padding:40px;">Nenhum laudo encontrado.</div>'; return; }
+            if (snap.empty) { container.innerHTML = '<div style="text-align:center; padding:40px;">Sem registros clínicos.</div>'; return; }
             container.innerHTML = '';
             snap.forEach(docSnap => {
                 const d = docSnap.data();
                 const item = document.createElement('div'); item.className = 'history-item';
-                item.innerHTML = `<div class="history-info"><b>${d.teste}</b><span>Realizado em: ${d.data.toDate().toLocaleDateString('pt-BR')} • ${d.resultado_texto}</span></div>
-                                 <button class="btn-download-laudo" id="dl-${docSnap.id}"><i class="fa-solid fa-file-pdf"></i> BAIXAR LAUDO</button>`;
+                item.innerHTML = `<div class="history-info"><b>${d.teste}</b><span>${d.data.toDate().toLocaleDateString('pt-BR')} • ${d.resultado_texto}</span></div>
+                                 <button class="btn-download-laudo" id="dl-${docSnap.id}"><i class="fa-solid fa-file-pdf"></i> BAIXAR DOSSIÊ</button>`;
                 container.appendChild(item);
                 document.getElementById(`dl-${docSnap.id}`).onclick = () => gerarPDFIndividual(d);
             });
@@ -155,25 +122,24 @@
             let y = 60;
             doc.setFillColor(15, 23, 42); doc.rect(0, 0, 210, 50, 'F');
             doc.setTextColor(255); doc.setFontSize(22); doc.setFont("helvetica", "bold");
-            doc.text("REEMISSÃO DE LAUDO TÉCNICO", 20, 32);
-            doc.setTextColor(15, 23, 42); doc.setFontSize(14); doc.text("1. IDENTIFICAÇÃO", 20, y);
+            doc.text("DOSSIÊ DE RASTREIO TÉCNICO", 20, 32);
+            doc.setTextColor(15); doc.setFontSize(14); doc.text("1. IDENTIFICAÇÃO", 20, y);
             doc.line(20, y+2, 190, y+2); y += 15;
             doc.setFontSize(11); doc.setFont("helvetica", "normal");
             doc.text(`Paciente: ${userName}`, 20, y); y += 7;
             doc.text(`Protocolo: ${data.teste}`, 20, y); y += 15;
             doc.setFont("helvetica", "bold"); doc.text("2. INTERPRETAÇÃO CLÍNICA:", 20, y); y += 10;
             doc.setFont("helvetica", "normal");
-            const txt = doc.splitTextToSize(data.interpretation || "Sem descrição adicional disponível.", 175);
+            const txt = doc.splitTextToSize(data.interpretation || "Análise baseada em autorrelato.", 175);
             doc.text(txt, 20, y); y += (txt.length * 6) + 15;
             doc.setFont("helvetica", "bold"); doc.text("3. CONCLUSÃO TÉCNICA:", 20, y); y += 10;
-            doc.setFont("helvetica", "normal"); doc.text(data.resultado_texto, 20, y); y += 7;
-            doc.text(`Escore Bruto: ${data.detalhes}`, 20, y);
+            doc.setFont("helvetica", "normal"); doc.text(data.resultado_texto, 20, y);
             doc.text("Dr. Eduardo Pokk | Psicólogo Clínico", 70, 285);
-            doc.save(`Laudo_${data.teste_id}.pdf`);
+            doc.save(`Dossie_${data.teste_id}.pdf`);
         }
 
         document.getElementById('btnConsolidado').onclick = async () => {
-            const btn = document.getElementById('btnConsolidado'); btn.disabled = true; btn.innerText = "Sincronizando...";
+            const btn = document.getElementById('btnConsolidado'); btn.disabled = true;
             const q = query(collection(db, "usuarios", userId, "historico_testes"), orderBy("data", "desc"));
             const snap = await getDocs(q);
             const ultimos = {}; snap.forEach(doc => { if(!ultimos[doc.data().teste_id]) ultimos[doc.data().teste_id] = doc.data(); });
@@ -188,10 +154,7 @@
             const { jsPDF } = window.jspdf; const doc = new jsPDF();
             let y = 65;
             doc.setFillColor(15, 23, 42); doc.rect(0, 0, 210, 60, 'F');
-            doc.setTextColor(255); doc.setFontSize(24); doc.setFont("helvetica", "bold");
-            doc.text("DOSSIÊ NEUROPSICOLÓGICO CONSOLIDADO", 20, 35);
-            doc.setFontSize(10); doc.text(`EMISSÃO GLOBAL: ${new Date().toLocaleDateString('pt-BR')}`, 20, 50);
-
+            doc.setTextColor(255); doc.setFontSize(24); doc.text("MAPEAMENTO NEUROPSICOLÓGICO GLOBAL", 20, 35);
             doc.setTextColor(15); doc.setFontSize(16); doc.text(`1. ÍNDICE DE BEM-ESTAR GLOBAL (IBE): ${ibe}%`, 20, 85);
             doc.setDrawColor(200); doc.line(20, 88, 190, 88); y = 105;
             
@@ -204,11 +167,10 @@
 
             y += 10; if (y > 230) { doc.addPage(); y = 30; }
             doc.setFontSize(14); doc.setFont("helvetica", "bold"); doc.text("3. ANÁLISE DE INTERCONEXÕES", 20, y); y += 12;
-            const conclusao = "A integração deste histórico permite observar a intersecção de sintomas de atenção, humor e sensorialidade. Este documento fornece evidências qualitativas para a construção do diagnóstico diferencial em ambiente especializado. É imperativo que este consolidado seja validado por um profissional de saúde mental.";
+            const conclusao = "A integração deste dossiê revela a intersecção entre diferentes domínios. A sobreposição de indicadores (ex: funções executivas e regulação emocional) sugere a necessidade de investigação de quadros sindrômicos complexos. Este material deve ser utilizado como base técnica para consulta presencial por profissional habilitado.";
             doc.text(doc.splitTextToSize(conclusao, 175), 20, y);
-
             doc.text("Dr. Eduardo Pokk | Psicólogo Clínico", 70, 285);
-            doc.save("Dossie_Consolidado_Global.pdf"); btn.disabled = false; btn.innerText = "GERAR MAPEAMENTO MESTRE";
+            doc.save("Dossie_Consolidado_Global.pdf"); btn.disabled = false;
         };
 
         onAuthStateChanged(auth, (user) => { if (user) carregarHistorico(); });
