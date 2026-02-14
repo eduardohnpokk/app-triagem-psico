@@ -33,9 +33,14 @@
         .result-title { font-size: 1.8rem; font-weight: 800; margin-bottom: 10px; }
         .result-desc { font-size: 1.1rem; color: #64748b; margin-bottom: 30px; }
         
-        .btn-action { background: var(--primary); color: white; padding: 15px 30px; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-block; margin-top: 10px; cursor: pointer; border: none; font-size: 1rem; width: 100%; box-sizing: border-box; }
+        .btn-action { background: var(--primary); color: white; padding: 15px 30px; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-block; margin-top: 10px; cursor: pointer; border: none; font-size: 1rem; width: 100%; box-sizing: border-box; transition: 0.2s; }
         .btn-pdf { background: #16a34a; margin-top: 20px; }
         .btn-pdf:hover { background: #15803d; }
+
+        .suggestion-box { margin-top: 30px; padding-top: 20px; border-top: 2px dashed #e2e8f0; text-align: left; }
+        .suggestion-title { font-size: 0.9rem; font-weight: 700; color: var(--accent); text-transform: uppercase; margin-bottom: 15px; display: block; }
+        .btn-suggest { background: #eff6ff; color: var(--accent); border: 1px solid #bfdbfe; margin-bottom: 8px; }
+        .btn-suggest:hover { background: var(--accent); color: white; }
         
         @keyframes fadeIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
     </style>
@@ -69,7 +74,12 @@
                 <i class="fa-solid fa-file-pdf"></i> BAIXAR DOSSIÊ DETALHADO (PDF)
             </button>
 
-            <button class="btn-action" onclick="window.location.href='dashboard.html'">Voltar ao Painel</button>
+            <div id="suggestions-container" class="suggestion-box" style="display:none;">
+                <span class="suggestion-title"><i class="fa-solid fa-route"></i> Próximos Passos Recomendados:</span>
+                <div id="suggestions-list"></div>
+            </div>
+
+            <button class="btn-action" style="margin-top:20px;" onclick="window.location.href='dashboard.html'">Voltar ao Painel</button>
         </div>
 
     </div>
@@ -149,6 +159,24 @@
             document.getElementById('res-title').innerText = analysisResult.result;
             document.getElementById('res-detail').innerText = analysisResult.details;
             
+            // Renderiza Sugestões se houver
+            if (analysisResult.showSuggestions && currentTest.suggestions) {
+                const suggCont = document.getElementById('suggestions-container');
+                const suggList = document.getElementById('suggestions-list');
+                suggCont.style.display = 'block';
+                
+                currentTest.suggestions.forEach(sId => {
+                    const sTest = Battery[sId];
+                    if (sTest) {
+                        const sBtn = document.createElement('button');
+                        sBtn.className = 'btn-action btn-suggest';
+                        sBtn.innerHTML = `<i class="fa-solid fa-arrow-right"></i> Realizar ${sTest.title}`;
+                        sBtn.onclick = () => window.location.href = `engine.html?t=${sId}`;
+                        suggList.appendChild(sBtn);
+                    }
+                });
+            }
+
             if (analysisResult.result.includes("ALTO") || analysisResult.result.includes("PROBABILIDADE") || analysisResult.result.includes("POSITIVA") || analysisResult.result.includes("Grave")) {
                 document.getElementById('res-title').style.color = "#dc2626";
             } else {
@@ -162,7 +190,6 @@
             const dataEmissao = new Date().toLocaleDateString('pt-BR');
             let y = 50;
 
-            // --- CABEÇALHO ---
             doc.setFillColor(15, 23, 42);
             doc.rect(0, 0, 210, 40, 'F');
             doc.setTextColor(255, 255, 255);
@@ -174,7 +201,6 @@
             doc.text(`ID: ${Math.random().toString(36).substr(2, 9).toUpperCase()}`, 170, 15);
             doc.text(`Data: ${dataEmissao}`, 170, 25);
 
-            // --- IDENTIFICAÇÃO ---
             doc.setTextColor(15, 23, 42);
             doc.setFontSize(14);
             doc.text("1. IDENTIFICAÇÃO DO PACIENTE", 20, y);
@@ -188,7 +214,6 @@
             doc.text(`Protocolo Aplicado: ${currentTest.title}`, 20, y);
             y += 15;
 
-            // --- RESULTADOS ---
             doc.setFont("helvetica", "bold");
             doc.setFontSize(14);
             doc.text("2. ANÁLISE QUANTITATIVA E QUALITATIVA", 20, y);
@@ -210,8 +235,7 @@
             doc.text(interText, 20, y);
             y += (interText.length * 6) + 10;
 
-            // --- CRUZAMENTO DE DADOS (SUGESTÕES) ---
-            if (analysisResult.showSuggestions) {
+            if (analysisResult.showSuggestions && currentTest.suggestions) {
                 doc.setFont("helvetica", "bold");
                 doc.setFontSize(14);
                 doc.text("3. CRUZAMENTO DE DADOS E COMORBIDADES", 20, y);
@@ -219,23 +243,24 @@
                 y += 12;
                 doc.setFontSize(11);
                 doc.setFont("helvetica", "normal");
-                const sugText = "Com base nos marcadores identificados, há uma correlação estatística com outros domínios neuropsicológicos. Recomenda-se a realização dos seguintes protocolos complementares para exclusão de diagnósticos diferenciais ou confirmação de comorbidades:";
+                const sugText = "Com base nos marcadores identificados, recomenda-se a realização dos seguintes protocolos complementares para exclusão de diagnósticos diferenciais ou confirmação de comorbidades:";
                 const splitSug = doc.splitTextToSize(sugText, 170);
                 doc.text(splitSug, 20, y);
                 y += (splitSug.length * 6) + 5;
 
                 currentTest.suggestions.forEach(id => {
                     const testSug = Battery[id];
-                    doc.setFont("helvetica", "bold");
-                    doc.text(`> ${testSug.title}:`, 25, y);
-                    doc.setFont("helvetica", "normal");
-                    doc.text(` ${testSug.description}`, 25 + doc.getTextWidth(`> ${testSug.title}:`), y);
-                    y += 7;
+                    if(testSug) {
+                        doc.setFont("helvetica", "bold");
+                        doc.text(`> ${testSug.title}:`, 25, y);
+                        doc.setFont("helvetica", "normal");
+                        doc.text(` ${testSug.description}`, 25 + doc.getTextWidth(`> ${testSug.title}:`), y);
+                        y += 7;
+                    }
                 });
                 y += 10;
             }
 
-            // --- ENCAMINHAMENTO ---
             if (y > 230) { doc.addPage(); y = 30; }
             doc.setFont("helvetica", "bold");
             doc.setFontSize(14);
@@ -244,18 +269,14 @@
             y += 12;
             doc.setFontSize(10);
             doc.setFont("helvetica", "normal");
-            const conduta = "Considerando os resultados obtidos neste rastreio, orienta-se o encaminhamento para avaliação especializada. Este documento serve como base para o profissional de saúde mental (Psicólogo Neuropsicólogo ou Psiquiatra) iniciar a investigação diagnóstica profunda, incluindo anamnese clínica, aplicação de testes projetivos/psicométricos e análise de histórico de vida. Não deve ser utilizado de forma isolada para fechamento de diagnóstico ou automedicação.";
+            const conduta = "Os resultados obtidos sugerem a necessidade de avaliação especializada. Este documento serve como base para o profissional de saúde mental iniciar a investigação diagnóstica profunda. Não deve ser utilizado de forma isolada para fechamento de diagnóstico ou automedicação.";
             const splitConduta = doc.splitTextToSize(conduta, 170);
             doc.text(splitConduta, 20, y);
 
-            // --- RODAPÉ ---
             doc.setFontSize(10);
             doc.setTextColor(15, 23, 42);
             doc.text("__________________________________________", 60, 275);
             doc.text("Dr. Eduardo Pokk | Especialista em TI & Psicologia", 55, 282);
-            doc.setFontSize(8);
-            doc.text("Documento gerado automaticamente pelo Portal Neuropsicológico v2.1", 65, 290);
-
             doc.save(`Dossie_Clinico_${userName.replace(/\s+/g, '_')}.pdf`);
         };
 
