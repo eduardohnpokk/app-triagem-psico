@@ -26,40 +26,32 @@
         
         .container { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
 
-        /* Alerta de Segurança */
         .alert-security { background: #fef2f2; border: 1px solid #fee2e2; padding: 15px 25px; border-radius: 12px; margin-bottom: 25px; display: flex; align-items: center; gap: 15px; color: #991b1b; }
         .alert-security p { margin: 0; font-weight: 600; font-size: 0.9rem; }
 
-        /* NAVEGAÇÃO POR ABAS (Aba solicitada) */
         .tabs-nav { display: flex; gap: 10px; margin-bottom: 30px; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; }
         .tab-btn { padding: 12px 25px; border: none; background: none; font-weight: 700; color: #64748b; cursor: pointer; border-radius: 8px; transition: 0.2s; font-size: 1rem; display: flex; align-items: center; gap: 10px; }
         .tab-btn:hover { background: #e2e8f0; color: var(--primary); }
         .tab-btn.active { color: var(--accent); background: #eff6ff; }
-        .tab-btn.active::after { content: ''; position: absolute; bottom: -12px; left: 0; width: 100%; height: 3px; background: var(--accent); border-radius: 10px; }
+        
         .tab-content { display: none; animation: fadeIn 0.3s ease; }
         .tab-content.active { display: block; }
 
-        /* Conteúdo da Aba de Relatórios */
         .banner-global { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); color: white; padding: 30px; border-radius: 16px; margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 10px 15px -5px rgba(0,0,0,0.1); }
         .btn-global { background: var(--accent); color: white; padding: 12px 25px; border-radius: 8px; font-weight: 700; border: none; cursor: pointer; transition: 0.2s; }
         .btn-global:disabled { background: #475569; cursor: not-allowed; }
 
         .history-list { display: flex; flex-direction: column; gap: 12px; }
-        .history-item { display: flex; justify-content: space-between; align-items: center; padding: 20px; border-radius: 12px; background: white; border: 1px solid #e2e8f0; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+        .history-item { display: flex; justify-content: space-between; align-items: center; padding: 20px; border-radius: 12px; background: white; border: 1px solid #e2e8f0; }
         .history-info b { display: block; color: var(--primary); font-size: 1.05rem; margin-bottom: 4px; }
         .history-info span { font-size: 0.85rem; color: #64748b; }
         .btn-download-laudo { background: var(--success); color: white; padding: 10px 20px; border-radius: 8px; font-size: 0.85rem; font-weight: 700; border: none; cursor: pointer; display: flex; align-items: center; gap: 8px; }
 
-        /* Grid de Cards */
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
         .card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); transition: 0.3s; border-left: 5px solid #cbd5e1; display: flex; flex-direction: column; justify-content: space-between; }
         .card:hover { transform: translateY(-5px); }
-        .card.tdah { border-left-color: #2563eb; } .card.tea { border-left-color: #7c3aed; } .card.ansiedade { border-left-color: #0ea5e9; }
-        .card.depressao { border-left-color: #475569; } .card.burnout { border-left-color: #ea580c; } .card.tab { border-left-color: #6366f1; }
-        .card.borderline { border-left-color: #be185d; } .card.fobia { border-left-color: #1e40af; } .card.trauma { border-left-color: #991b1b; }
-        .card.sono { border-left-color: #1e1b4b; } .card.toc { border-left-color: #065f46; } .card.substancias { border-left-color: #4c1d95; }
-        .card.autoestima { border-left-color: #db2777; }
         
+        .card.tdah { border-left-color: #2563eb; } .card.tea { border-left-color: #7c3aed; }
         .btn-start { display: block; width: 100%; padding: 12px; background: #f8fafc; color: var(--primary); text-decoration: none; border-radius: 6px; font-weight: 700; font-size: 0.85rem; text-align: center; border: 1px solid #e2e8f0; }
         .btn-start:hover { background: var(--primary); color: white; }
 
@@ -77,38 +69,33 @@
     </header>
 
     <div class="container">
-        
         <div class="alert-security">
             <i class="fa-solid fa-shield-halved"></i>
-            <p>Atenção: Não empreste sua conta para outras pessoas realizarem os testes, isso vai estragar seu rastreio consolidado.</p>
+            <p>Atenção: Não empreste sua conta. Isso compromete a integridade do seu Dossiê Consolidado e polui seus dados clínicos.</p>
         </div>
 
         <nav class="tabs-nav">
-            <button class="tab-btn active" onclick="switchTab('tab-protocolos')">
-                <i class="fa-solid fa-clipboard-list"></i> Protocolos de Rastreio
-            </button>
-            <button class="tab-btn" onclick="switchTab('tab-relatorios')">
-                <i class="fa-solid fa-box-archive"></i> Meus Laudos e Dossiês
-            </button>
+            <button class="tab-btn active" id="tabProtBtn" onclick="switchTab('tab-protocolos')">Protocolos de Rastreio</button>
+            <button class="tab-btn" id="tabRelBtn" onclick="switchTab('tab-relatorios')">Meus Laudos e Dossiês</button>
         </nav>
 
         <div id="tab-protocolos" class="tab-content active">
             <h1>Bateria de Protocolos</h1>
             <p style="color: #64748b; margin-bottom: 30px;">Selecione o rastreio clínico desejado para iniciar a avaliação.</p>
             <div class="grid">
-                <div class="card tdah"><div><h3>TDAH Adulto <i class="fa-solid fa-brain"></i></h3><p>Escala ASRS-18 com critérios da OMS.</p></div><a href="engine.html?t=tdah" class="btn-start">INICIAR PROTOCOLO</a></div>
-                <div class="card tea"><div><h3>Autismo Adulto <i class="fa-solid fa-puzzle-piece"></i></h3><p>Escala RAADS-14.</p></div><a href="engine.html?t=tea" class="btn-start">INICIAR PROTOCOLO</a></div>
-                <div class="card ansiedade"><div><h3>Ansiedade <i class="fa-solid fa-bolt"></i></h3><p>Escala GAD-7.</p></div><a href="engine.html?t=ansiedade" class="btn-start">INICIAR PROTOCOLO</a></div>
-                <div class="card depressao"><div><h3>Depressão <i class="fa-solid fa-cloud-rain"></i></h3><p>Escala PHQ-9.</p></div><a href="engine.html?t=depressao" class="btn-start">INICIAR PROTOCOLO</a></div>
-                <div class="card tab"><div><h3>Bipolaridade <i class="fa-solid fa-masks-theater"></i></h3><p>Protocolo MDQ.</p></div><a href="engine.html?t=tab" class="btn-start">INICIAR PROTOCOLO</a></div>
-                <div class="card burnout"><div><h3>Burnout <i class="fa-solid fa-battery-empty"></i></h3><p>Escala CBI.</p></div><a href="engine.html?t=burnout" class="btn-start">INICIAR PROTOCOLO</a></div>
-                <div class="card borderline"><div><h3>Borderline <i class="fa-solid fa-heart-crack"></i></h3><p>Protocolo MSI-BPD.</p></div><a href="engine.html?t=borderline" class="btn-start">INICIAR PROTOCOLO</a></div>
-                <div class="card fobia"><div><h3>Fobia Social <i class="fa-solid fa-users-slash"></i></h3><p>Escala SPIN.</p></div><a href="engine.html?t=fobia_social" class="btn-start">INICIAR PROTOCOLO</a></div>
-                <div class="card trauma"><div><h3>Trauma e Estresse <i class="fa-solid fa-burst"></i></h3><p>Sintomas de PCL-5.</p></div><a href="engine.html?t=trauma" class="btn-start">INICIAR PROTOCOLO</a></div>
-                <div class="card sono"><div><h3>Qualidade do Sono <i class="fa-solid fa-moon"></i></h3><p>Escala ISI.</p></div><a href="engine.html?t=sono" class="btn-start">INICIAR PROTOCOLO</a></div>
-                <div class="card toc"><div><h3>Rastreio de TOC <i class="fa-solid fa-rotate"></i></h3><p>Escala OCI-R.</p></div><a href="engine.html?t=toc" class="btn-start">INICIAR PROTOCOLO</a></div>
-                <div class="card substancias"><div><h3>Uso de Substâncias <i class="fa-solid fa-wine-glass"></i></h3><p>Protocolo AUDIT.</p></div><a href="engine.html?t=substancias" class="btn-start">INICIAR PROTOCOLO</a></div>
-                <div class="card autoestima"><div><h3>Autoestima <i class="fa-solid fa-face-smile"></i></h3><p>Escala Rosenberg.</p></div><a href="engine.html?t=autoestima" class="btn-start">INICIAR PROTOCOLO</a></div>
+                <div class="card tdah"><div><h3>TDAH Adulto</h3><p>Escala ASRS-18 Oficial.</p></div><a href="engine.html?t=tdah" class="btn-start">INICIAR PROTOCOLO</a></div>
+                <div class="card tea"><div><h3>Autismo Adulto</h3><p>Escala RAADS-14.</p></div><a href="engine.html?t=tea" class="btn-start">INICIAR PROTOCOLO</a></div>
+                <div class="card ansiedade"><div><h3>Ansiedade</h3><p>Escala GAD-7.</p></div><a href="engine.html?t=ansiedade" class="btn-start">INICIAR PROTOCOLO</a></div>
+                <div class="card depressao"><div><h3>Depressão</h3><p>Escala PHQ-9.</p></div><a href="engine.html?t=depressao" class="btn-start">INICIAR PROTOCOLO</a></div>
+                <div class="card tab"><div><h3>Bipolaridade</h3><p>Protocolo MDQ.</p></div><a href="engine.html?t=tab" class="btn-start">INICIAR PROTOCOLO</a></div>
+                <div class="card burnout"><div><h3>Burnout</h3><p>Escala CBI.</p></div><a href="engine.html?t=burnout" class="btn-start">INICIAR PROTOCOLO</a></div>
+                <div class="card borderline"><div><h3>Borderline</h3><p>Protocolo MSI-BPD.</p></div><a href="engine.html?t=borderline" class="btn-start">INICIAR PROTOCOLO</a></div>
+                <div class="card fobia"><div><h3>Fobia Social</h3><p>Escala SPIN.</p></div><a href="engine.html?t=fobia_social" class="btn-start">INICIAR PROTOCOLO</a></div>
+                <div class="card trauma"><div><h3>Trauma</h3><p>Escala PCL-5.</p></div><a href="engine.html?t=trauma" class="btn-start">INICIAR PROTOCOLO</a></div>
+                <div class="card sono"><div><h3>Qualidade do Sono</h3><p>Escala ISI.</p></div><a href="engine.html?t=sono" class="btn-start">INICIAR PROTOCOLO</a></div>
+                <div class="card toc"><div><h3>TOC</h3><p>Escala OCI-R.</p></div><a href="engine.html?t=toc" class="btn-start">INICIAR PROTOCOLO</a></div>
+                <div class="card substancias"><div><h3>Substâncias</h3><p>AUDIT.</p></div><a href="engine.html?t=substancias" class="btn-start">INICIAR PROTOCOLO</a></div>
+                <div class="card autoestima"><div><h3>Autoestima</h3><p>Rosenberg.</p></div><a href="engine.html?t=autoestima" class="btn-start">INICIAR PROTOCOLO</a></div>
             </div>
         </div>
 
@@ -116,16 +103,13 @@
             <div class="banner-global">
                 <div class="banner-content">
                     <h2>Dossiê Consolidado Global</h2>
-                    <p>Cruze todos os seus protocolos e obtenha o seu Índice de Bem-Estar (IBE).</p>
+                    <p>Mapeamento cruzado de todos os seus protocolos e seu Índice de Bem-Estar (IBE).</p>
                 </div>
-                <button class="btn-global" id="btnConsolidado"><i class="fa-solid fa-file-contract"></i> GERAR DOSSIÊ GLOBAL</button>
+                <button class="btn-global" id="btnConsolidado">GERAR MAPEAMENTO MESTRE</button>
             </div>
-            <h1>Seu Histórico Clínico</h1>
-            <div id="history-container" class="history-list">
-                <div class="no-data">Nenhum laudo encontrado.</div>
-            </div>
+            <h1>Seu Histórico de Laudos</h1>
+            <div id="history-container" class="history-list"></div>
         </div>
-
     </div>
 
     <script type="module">
@@ -134,80 +118,65 @@
         import { getFirestore, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
         import { Battery } from './neuro-data.js';
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyCqDAUEfYarlFkA1u2A-n-SGv_1AjFb7WU",
-            authDomain: "portal-eduardo-pokk.firebaseapp.com",
-            projectId: "portal-eduardo-pokk",
-            storageBucket: "portal-eduardo-pokk.firebasestorage.app",
-            messagingSenderId: "657739349802",
-            appId: "1:657739349802:web:c14305400575f68ed5a853"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-        const userId = localStorage.getItem('usuario_id');
-        const userName = localStorage.getItem('usuario_nome');
+        const firebaseConfig = { apiKey: "AIzaSyCqDAUEfYarlFkA1u2A-n-SGv_1AjFb7WU", authDomain: "portal-eduardo-pokk.firebaseapp.com", projectId: "portal-eduardo-pokk", storageBucket: "portal-eduardo-pokk.firebasestorage.app", messagingSenderId: "657739349802", appId: "1:657739349802:web:c14305400575f68ed5a853" };
+        const app = initializeApp(firebaseConfig); const auth = getAuth(app); const db = getFirestore(app);
+        const userId = localStorage.getItem('usuario_id'); const userName = localStorage.getItem('usuario_nome');
 
         if (userName) document.getElementById('user-display').innerText = userName.split(' ')[0];
 
-        // Função de Troca de Abas
         window.switchTab = (tabId) => {
             document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
             document.getElementById(tabId).classList.add('active');
-            event.currentTarget.classList.add('active');
+            if(tabId === 'tab-protocolos') document.getElementById('tabProtBtn').classList.add('active');
+            else document.getElementById('tabRelBtn').classList.add('active');
         };
 
         document.getElementById('btnSair').onclick = () => signOut(auth).then(() => { localStorage.clear(); window.location.href = "index.html"; });
 
-        // Carregar Histórico
         async function carregarHistorico() {
             const container = document.getElementById('history-container');
-            try {
-                const q = query(collection(db, "usuarios", userId, "historico_testes"), orderBy("data", "desc"));
-                const snap = await getDocs(q);
-                if (snap.empty) return;
-                container.innerHTML = '';
-                snap.forEach(docSnap => {
-                    const d = docSnap.data();
-                    const item = document.createElement('div');
-                    item.className = 'history-item';
-                    item.innerHTML = `
-                        <div class="history-info">
-                            <b>${d.teste}</b>
-                            <span>${d.data.toDate().toLocaleDateString('pt-BR')} • ${d.resultado_texto}</span>
-                        </div>
-                        <button class="btn-download-laudo" id="dl-${docSnap.id}"><i class="fa-solid fa-file-pdf"></i> BAIXAR</button>
-                    `;
-                    container.appendChild(item);
-                    document.getElementById(`dl-${docSnap.id}`).onclick = () => gerarPDFIndividual(d);
-                });
-            } catch (e) { console.error(e); }
+            const q = query(collection(db, "usuarios", userId, "historico_testes"), orderBy("data", "desc"));
+            const snap = await getDocs(q);
+            if (snap.empty) { container.innerHTML = '<div style="text-align:center; padding:40px;">Nenhum laudo encontrado.</div>'; return; }
+            container.innerHTML = '';
+            snap.forEach(docSnap => {
+                const d = docSnap.data();
+                const item = document.createElement('div'); item.className = 'history-item';
+                item.innerHTML = `<div class="history-info"><b>${d.teste}</b><span>Realizado em: ${d.data.toDate().toLocaleDateString('pt-BR')} • ${d.resultado_texto}</span></div>
+                                 <button class="btn-download-laudo" id="dl-${docSnap.id}"><i class="fa-solid fa-file-pdf"></i> BAIXAR LAUDO</button>`;
+                container.appendChild(item);
+                document.getElementById(`dl-${docSnap.id}`).onclick = () => gerarPDFIndividual(d);
+            });
         }
 
         function gerarPDFIndividual(data) {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            doc.setFillColor(15, 23, 42); doc.rect(0, 0, 210, 40, 'F');
-            doc.setTextColor(255); doc.setFontSize(20); doc.text("LAUDO TÉCNICO", 20, 25);
-            doc.setTextColor(15, 23, 42); doc.setFontSize(12);
-            doc.text(`Paciente: ${userName}`, 20, 60);
-            doc.text(`Protocolo: ${data.teste}`, 20, 70);
-            doc.text(`Classificação: ${data.resultado_texto}`, 20, 80);
-            const details = doc.splitTextToSize(`Detalhamento: ${data.detalhes}`, 170);
-            doc.text(details, 20, 95);
+            const { jsPDF } = window.jspdf; const doc = new jsPDF();
+            let y = 60;
+            doc.setFillColor(15, 23, 42); doc.rect(0, 0, 210, 50, 'F');
+            doc.setTextColor(255); doc.setFontSize(22); doc.setFont("helvetica", "bold");
+            doc.text("REEMISSÃO DE LAUDO TÉCNICO", 20, 32);
+            doc.setTextColor(15, 23, 42); doc.setFontSize(14); doc.text("1. IDENTIFICAÇÃO", 20, y);
+            doc.line(20, y+2, 190, y+2); y += 15;
+            doc.setFontSize(11); doc.setFont("helvetica", "normal");
+            doc.text(`Paciente: ${userName}`, 20, y); y += 7;
+            doc.text(`Protocolo: ${data.teste}`, 20, y); y += 15;
+            doc.setFont("helvetica", "bold"); doc.text("2. INTERPRETAÇÃO CLÍNICA:", 20, y); y += 10;
+            doc.setFont("helvetica", "normal");
+            const txt = doc.splitTextToSize(data.interpretation || "Sem descrição adicional disponível.", 175);
+            doc.text(txt, 20, y); y += (txt.length * 6) + 15;
+            doc.setFont("helvetica", "bold"); doc.text("3. CONCLUSÃO TÉCNICA:", 20, y); y += 10;
+            doc.setFont("helvetica", "normal"); doc.text(data.resultado_texto, 20, y); y += 7;
+            doc.text(`Escore Bruto: ${data.detalhes}`, 20, y);
+            doc.text("Dr. Eduardo Pokk | Psicólogo Clínico", 70, 285);
             doc.save(`Laudo_${data.teste_id}.pdf`);
         }
 
-        // Consolidação Global
         document.getElementById('btnConsolidado').onclick = async () => {
-            const btn = document.getElementById('btnConsolidado');
-            btn.disabled = true; btn.innerText = "Calculando...";
+            const btn = document.getElementById('btnConsolidado'); btn.disabled = true; btn.innerText = "Sincronizando...";
             const q = query(collection(db, "usuarios", userId, "historico_testes"), orderBy("data", "desc"));
             const snap = await getDocs(q);
-            const ultimos = {};
-            snap.forEach(doc => { if(!ultimos[doc.data().teste_id]) ultimos[doc.data().teste_id] = doc.data(); });
+            const ultimos = {}; snap.forEach(doc => { if(!ultimos[doc.data().teste_id]) ultimos[doc.data().teste_id] = doc.data(); });
             
             let tw = 0, weight = 0;
             Object.values(ultimos).forEach(res => {
@@ -215,14 +184,31 @@
                 if(t) { tw += ((1 - (res.score_bruto/t.maxScore)) * 100) * t.weight; weight += t.weight; }
             });
             const ibe = Math.round(tw/weight);
+
+            const { jsPDF } = window.jspdf; const doc = new jsPDF();
+            let y = 65;
+            doc.setFillColor(15, 23, 42); doc.rect(0, 0, 210, 60, 'F');
+            doc.setTextColor(255); doc.setFontSize(24); doc.setFont("helvetica", "bold");
+            doc.text("DOSSIÊ NEUROPSICOLÓGICO CONSOLIDADO", 20, 35);
+            doc.setFontSize(10); doc.text(`EMISSÃO GLOBAL: ${new Date().toLocaleDateString('pt-BR')}`, 20, 50);
+
+            doc.setTextColor(15); doc.setFontSize(16); doc.text(`1. ÍNDICE DE BEM-ESTAR GLOBAL (IBE): ${ibe}%`, 20, 85);
+            doc.setDrawColor(200); doc.line(20, 88, 190, 88); y = 105;
             
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            doc.setFillColor(15, 23, 42); doc.rect(0, 0, 210, 50, 'F');
-            doc.setTextColor(255); doc.setFontSize(22); doc.text("DOSSIÊ CONSOLIDADO", 20, 30);
-            doc.setTextColor(15, 23, 42); doc.setFontSize(16); doc.text(`ÍNDICE DE BEM-ESTAR: ${ibe}%`, 20, 70);
-            doc.save("Dossie_Consolidado.pdf");
-            btn.disabled = false; btn.innerText = "GERAR DOSSIÊ GLOBAL";
+            doc.setFontSize(14); doc.setFont("helvetica", "bold"); doc.text("2. MAPEAMENTO POR DOMÍNIO", 20, y); y += 12;
+            Object.values(ultimos).forEach(res => {
+                if (y > 270) { doc.addPage(); y = 20; }
+                doc.setFontSize(10); doc.setFont("helvetica", "bold"); doc.text(`• ${res.teste}:`, 20, y);
+                doc.setFont("helvetica", "normal"); doc.text(res.resultado_texto, 85, y); y += 10;
+            });
+
+            y += 10; if (y > 230) { doc.addPage(); y = 30; }
+            doc.setFontSize(14); doc.setFont("helvetica", "bold"); doc.text("3. ANÁLISE DE INTERCONEXÕES", 20, y); y += 12;
+            const conclusao = "A integração deste histórico permite observar a intersecção de sintomas de atenção, humor e sensorialidade. Este documento fornece evidências qualitativas para a construção do diagnóstico diferencial em ambiente especializado. É imperativo que este consolidado seja validado por um profissional de saúde mental.";
+            doc.text(doc.splitTextToSize(conclusao, 175), 20, y);
+
+            doc.text("Dr. Eduardo Pokk | Psicólogo Clínico", 70, 285);
+            doc.save("Dossie_Consolidado_Global.pdf"); btn.disabled = false; btn.innerText = "GERAR MAPEAMENTO MESTRE";
         };
 
         onAuthStateChanged(auth, (user) => { if (user) carregarHistorico(); });
