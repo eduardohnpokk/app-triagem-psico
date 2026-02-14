@@ -11,6 +11,8 @@
     <title>Painel do Usuário | Portal Neuropsicológico</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
     <style>
         :root { --primary: #0f172a; --bg: #f1f5f9; --white: #ffffff; --accent: #2563eb; --danger: #dc2626; }
@@ -38,6 +40,7 @@
         .banner-content p { margin: 0; opacity: 0.7; font-size: 0.95rem; max-width: 500px; }
         .btn-global { background: var(--accent); color: white; padding: 14px 28px; border-radius: 8px; text-decoration: none; font-weight: 700; border: none; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 10px; }
         .btn-global:hover { background: #1d4ed8; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(37, 99, 235, 0.4); }
+        .btn-global:disabled { background: #475569; cursor: not-allowed; transform: none; }
 
         h1 { margin-bottom: 10px; color: var(--primary); font-size: 1.8rem; }
         .subtitle { color: #64748b; margin-bottom: 30px; font-size: 1rem; }
@@ -98,7 +101,7 @@
                 <h2>Dossiê Consolidado de Saúde Mental</h2>
                 <p>Cruze os dados de todos os seus protocolos realizados e obtenha uma visão neuropsicológica global do seu perfil.</p>
             </div>
-            <button class="btn-global" onclick="alert('O motor de análise está processando seus dados históricos. Em breve o relatório global estará disponível.')">
+            <button class="btn-global" id="btnGerarGlobal">
                 <i class="fa-solid fa-file-contract"></i> GERAR RELATÓRIO GLOBAL
             </button>
         </div>
@@ -111,62 +114,50 @@
                 <div><h3>TDAH Adulto <i class="fa-solid fa-brain"></i></h3><p>Rastreio de desatenção e hiperatividade (ASRS-18).</p></div>
                 <a href="engine.html?t=tdah" class="btn-start">INICIAR PROTOCOLO</a>
             </div>
-
             <div class="card tea">
                 <div><h3>Autismo Adulto <i class="fa-solid fa-puzzle-piece"></i></h3><p>Rastreio de traços do espectro e sensorialidade (RAADS-14).</p></div>
                 <a href="engine.html?t=tea" class="btn-start">INICIAR PROTOCOLO</a>
             </div>
-
             <div class="card ansiedade">
                 <div><h3>Ansiedade <i class="fa-solid fa-bolt"></i></h3><p>Níveis de tensão e preocupação generalizada (GAD-7).</p></div>
                 <a href="engine.html?t=ansiedade" class="btn-start">INICIAR PROTOCOLO</a>
             </div>
-
             <div class="card depressao">
                 <div><h3>Depressão <i class="fa-solid fa-cloud-rain"></i></h3><p>Avaliação de humor, energia e anedonia (PHQ-9).</p></div>
                 <a href="engine.html?t=depressao" class="btn-start">INICIAR PROTOCOLO</a>
             </div>
-
             <div class="card tab">
                 <div><h3>Bipolaridade <i class="fa-solid fa-masks-theater"></i></h3><p>Rastreio de episódios de mania e hipomania (MDQ).</p></div>
                 <a href="engine.html?t=tab" class="btn-start">INICIAR PROTOCOLO</a>
             </div>
-
             <div class="card burnout">
                 <div><h3>Burnout <i class="fa-solid fa-battery-empty"></i></h3><p>Exaustão física e emocional relacionada ao trabalho (CBI).</p></div>
                 <a href="engine.html?t=burnout" class="btn-start">INICIAR PROTOCOLO</a>
             </div>
-
             <div class="card borderline">
                 <div><h3>Borderline <i class="fa-solid fa-heart-crack"></i></h3><p>Instabilidade emocional e relacional (MSI-BPD).</p></div>
                 <a href="engine.html?t=borderline" class="btn-start">INICIAR PROTOCOLO</a>
             </div>
-
             <div class="card fobia">
                 <div><h3>Fobia Social <i class="fa-solid fa-users-slash"></i></h3><p>Medo de julgamento e evitação em contextos sociais (SPIN).</p></div>
                 <a href="engine.html?t=fobia_social" class="btn-start">INICIAR PROTOCOLO</a>
             </div>
-
             <div class="card trauma">
                 <div><h3>Trauma e Estresse <i class="fa-solid fa-burst"></i></h3><p>Sintomas de estresse pós-traumático e vigilância (PCL-5).</p></div>
                 <a href="engine.html?t=trauma" class="btn-start">INICIAR PROTOCOLO</a>
             </div>
-
             <div class="card sono">
                 <div><h3>Qualidade do Sono <i class="fa-solid fa-moon"></i></h3><p>Avaliação de insônia e impacto na funcionalidade (ISI).</p></div>
                 <a href="engine.html?t=sono" class="btn-start">INICIAR PROTOCOLO</a>
             </div>
-
             <div class="card toc">
                 <div><h3>Rastreio de TOC <i class="fa-solid fa-rotate"></i></h3><p>Pensamentos obsessivos e rituais compulsivos (OCI-R).</p></div>
                 <a href="engine.html?t=toc" class="btn-start">INICIAR PROTOCOLO</a>
             </div>
-
             <div class="card substancias">
                 <div><h3>Uso de Substâncias <i class="fa-solid fa-wine-glass"></i></h3><p>Padrões de consumo de álcool e riscos associados (AUDIT-C).</p></div>
                 <a href="engine.html?t=substancias" class="btn-start">INICIAR PROTOCOLO</a>
             </div>
-
             <div class="card autoestima">
                 <div><h3>Autoestima <i class="fa-solid fa-face-smile"></i></h3><p>Avaliação da autoimagem e valor pessoal (Rosenberg).</p></div>
                 <a href="engine.html?t=autoestima" class="btn-start">INICIAR PROTOCOLO</a>
@@ -177,6 +168,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCqDAUEfYarlFkA1u2A-n-SGv_1AjFb7WU",
@@ -189,8 +181,10 @@
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
+        const db = getFirestore(app);
 
         const userName = localStorage.getItem('usuario_nome');
+        const userId = localStorage.getItem('usuario_id');
         if (userName) document.getElementById('user-display').innerText = userName.split(' ')[0];
 
         document.getElementById('btnSair').addEventListener('click', () => {
@@ -199,6 +193,105 @@
                 window.location.href = "index.html";
             });
         });
+
+        // --- MOTOR DE CONSOLIDAÇÃO DE DADOS ---
+        document.getElementById('btnGerarGlobal').onclick = async () => {
+            const btn = document.getElementById('btnGerarGlobal');
+            btn.disabled = true;
+            btn.innerText = "Sincronizando Dados...";
+
+            try {
+                // Busca o histórico completo, do mais novo para o mais antigo
+                const q = query(collection(db, "usuarios", userId, "historico_testes"), orderBy("data", "desc"));
+                const querySnapshot = await getDocs(q);
+                
+                if (querySnapshot.empty) {
+                    alert("Você ainda não realizou nenhum teste para gerar o consolidado.");
+                    return;
+                }
+
+                // Agrupa apenas os resultados MAIS RECENTES de cada teste
+                const ultimosResultados = {};
+                querySnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    if (!ultimosResultados[data.teste_id]) {
+                        ultimosResultados[data.teste_id] = data;
+                    }
+                });
+
+                gerarPDFConsolidado(ultimosResultados);
+            } catch (error) {
+                console.error("Erro ao consolidar:", error);
+                alert("Erro ao processar histórico médico.");
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "GERAR RELATÓRIO GLOBAL";
+            }
+        };
+
+        function gerarPDFConsolidado(dados) {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            const dataEmissao = new Date().toLocaleDateString('pt-BR');
+            let y = 65;
+
+            // Design da Capa
+            doc.setFillColor(15, 23, 42); // Navy do Portal
+            doc.rect(0, 0, 210, 55, 'F');
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(22);
+            doc.setFont("helvetica", "bold");
+            doc.text("MAPA NEUROPSICOLÓGICO GLOBAL", 20, 30);
+            doc.setFontSize(10);
+            doc.setFont("helvetica", "normal");
+            doc.text(`Paciente: ${userName}`, 20, 42);
+            doc.text(`Emissão: ${dataEmissao}`, 160, 42);
+
+            // Tabela de Síntese
+            doc.setTextColor(15, 23, 42);
+            doc.setFontSize(14);
+            doc.setFont("helvetica", "bold");
+            doc.text("1. SÍNTESE DE INDICADORES", 20, 75);
+            doc.setDrawColor(226, 232, 240);
+            doc.line(20, 78, 190, 78);
+            
+            y = 90;
+            doc.setFontSize(10);
+            Object.values(dados).forEach(teste => {
+                if (y > 270) { doc.addPage(); y = 20; }
+                doc.setFont("helvetica", "bold");
+                doc.text(`• ${teste.teste}:`, 20, y);
+                doc.setFont("helvetica", "normal");
+                
+                // Trata textos longos para não cortar no PDF
+                const resultadoTxt = doc.splitTextToSize(teste.resultado_texto, 110);
+                doc.text(resultadoTxt, 75, y);
+                y += (resultadoTxt.length * 5) + 3;
+            });
+
+            // Análise de Comorbidades e Conexões
+            y += 15;
+            if (y > 240) { doc.addPage(); y = 25; }
+            doc.setFontSize(14);
+            doc.setFont("helvetica", "bold");
+            doc.text("2. ANÁLISE DE INTERCONEXÕES CLÍNICAS", 20, y);
+            doc.line(20, y+3, 190, y+3);
+            y += 12;
+            doc.setFontSize(11);
+            doc.setFont("helvetica", "normal");
+            
+            const analiseBase = "A intersecção dos rastreios realizados oferece uma base de dados estatística sobre o funcionamento neuropsicológico do paciente. A presença de sobreposições em diferentes domínios (ex: atenção, humor e sensorialidade) deve ser interpretada como um conjunto de marcadores para a investigação de diagnósticos diferenciais. Este documento consolida percepções de autorrelato e deve ser validado clinicamente por um profissional de saúde mental qualificado.";
+            const analiseSplit = doc.splitTextToSize(analiseBase, 170);
+            doc.text(analiseSplit, 20, y);
+
+            // Rodapé Técnico
+            doc.setFontSize(9);
+            doc.setTextColor(100, 116, 139);
+            doc.text("__________________________________________", 65, 280);
+            doc.text("Dr. Eduardo Pokk | Portal de Rastreio Neuropsicológico", 62, 285);
+
+            doc.save(`Dossie_Global_${userName.replace(/\s+/g, '_')}.pdf`);
+        }
     </script>
 </body>
 </html>
