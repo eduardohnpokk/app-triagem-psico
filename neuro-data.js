@@ -42,14 +42,12 @@ export const Battery = {
             const high = partA >= 4;
             return {
                 score: totalSymp, result: high ? "ALTO RISCO (Indicativo Clínico)" : "BAIXO RISCO",
-                details: `Identificados ${partA}/6 sintomas críticos na triagem primária.`,
-                interpretation: high ? "Escore sugestivo de TDAH. A sobreposição com sintomas de Ansiedade e TEA (AuDHD) é estatisticamente comum e deve ser investigada." : "Sintomas abaixo do limiar clínico.",
+                details: `Identificados ${partA}/6 sintomas críticos na triagem primária e ${totalSymp} indicadores totais.`,
+                interpretation: high ? "Os resultados indicam uma forte presença de sintomas de desatenção e/ou hiperatividade que excedem o ponto de corte clínico para a população adulta. A persistência desses sintomas sugere prejuízos significativos nas funções executivas e na autorregulação, demandando investigação de diagnósticos diferenciais." : "A pontuação registrada encontra-se dentro dos limites da normalidade para a população adulta.",
                 showSuggestions: high
             };
         }
     },
-
-    // --- 2. AUTISMO (RAADS-14) ---
     tea: {
         id: "tea", title: "Autismo Adulto (RAADS-14)", color: "#7c3aed", weight: 1.5, maxScore: 42,
         description: "Rastreio de traços autistas, processamento sensorial e cognição social.",
@@ -63,13 +61,11 @@ export const Battery = {
             return {
                 score: total, result: high ? "ALTA PROBABILIDADE" : "BAIXA PROBABILIDADE",
                 details: `Pontuação: ${total}/42. (Corte clínico: 14).`,
-                interpretation: high ? "Marcadores significativos de neurodivergência compatíveis com o Espectro Autista." : "Traços dentro da curva neurotípica.",
+                interpretation: high ? "O escore total aponta para um perfil neurodivergente com marcadores significativos em domínios de cognição social, processamento sensorial e interesses circunscritos. Tais traços são compatíveis com o Espectro Autista em adultos." : "Traços dentro da curva neurotípica observada.",
                 showSuggestions: high
             };
         }
     },
-
-    // --- 3. FOBIA SOCIAL (SPIN) ---
     fobia_social: {
         id: "fobia_social", title: "Fobia Social (SPIN)", color: "#1e40af", weight: 1.1, maxScore: 68,
         description: "Avaliação profunda de ansiedade social e medo de julgamento.",
@@ -79,38 +75,47 @@ export const Battery = {
         calculate: (answers) => {
             const total = answers.reduce((a, b) => a + b, 0);
             const high = total >= 19;
-            return { score: total, result: high ? "Risco Moderado/Alto" : "Risco Baixo", details: `Escore total de ${total}.`, interpretation: high ? "Sintomatologia de ansiedade social significativa." : "Perfil social funcional.", showSuggestions: high };
+            return { 
+                score: total, result: high ? "Risco Moderado/Alto" : "Risco Baixo", 
+                details: `Escore total de ${total}. Ponto de corte: 19.`, 
+                interpretation: high ? "Sintomatologia de ansiedade social significativa, indicando sofrimento clinicamente relevante em situações de exposição e avaliação social." : "Perfil social funcional.", 
+                showSuggestions: high 
+            };
         }
     },
-
-    // --- 4. ANSIEDADE (GAD-7) ---
     ansiedade: {
         id: "ansiedade", title: "Ansiedade (GAD-7)", color: "#0ea5e9", weight: 1.2, maxScore: 21,
         suggestions: ["depressao", "trauma", "sono"],
         options: ["Nenhuma vez", "Vários dias", "Mais da metade", "Quase todos os dias"],
-        questions: [{text:"Nervoso/Tenso."}, {text:"Incontrolabilidade."}, {text:"Preocupação excessiva."}, {text:"Dificuldade relaxar."}, {text:"Inquietude."}, {text:"Irritabilidade."}, {text:"Medo do pior."}],
+        questions: [{text:"Sentir-se nervoso, ansioso ou muito tenso."}, {text:"Não ser capaz de impedir ou de controlar as preocupações."}, {text:"Preocupar-se muito com diversas coisas."}, {text:"Dificuldade para relaxar."}, {text:"Ficar tão agitado que é difícil permanecer sentado."}, {text:"Ficar facilmente aborrecido ou irritado."}, {text:"Sentir medo como se algo terrível fosse acontecer."}],
         calculate: (answers) => {
             const total = answers.reduce((a, b) => a + b, 0);
             let res = total <= 4 ? "Mínima" : total <= 9 ? "Leve" : total <= 14 ? "Moderada" : "Grave";
-            return { score: total, result: `Ansiedade ${res}`, details: `Total: ${total} pontos.`, interpretation: `Ansiedade de nível ${res.toLowerCase()}.`, showSuggestions: total >= 10 };
+            return { 
+                score: total, result: `Ansiedade ${res}`, 
+                details: `Total: ${total} pontos.`, 
+                interpretation: `O nível de ansiedade registrado como ${res.toLowerCase()} aponta para um padrão de preocupação persistente que pode impactar a produtividade e o bem-estar somático.`, 
+                showSuggestions: total >= 10 
+            };
         }
     },
-
-    // --- 5. DEPRESSÃO (PHQ-9) ---
     depressao: {
         id: "depressao", title: "Depressão (PHQ-9)", color: "#475569", weight: 1.5, maxScore: 27,
         suggestions: ["tab", "sono", "autoestima"],
         options: ["Nenhuma vez", "Vários dias", "Mais da metade", "Quase todos os dias"],
-        questions: [{text:"Anedonia."}, {text:"Desesperança."}, {text:"Sono alterado."}, {text:"Fadiga."}, {text:"Apetite alterado."}, {text:"Fracasso pessoal."}, {text:"Desconcentração."}, {text:"Agitação/Lentidão."}, {text:"Ideação suicida."}],
+        questions: [{text:"Pouco interesse ou prazer em fazer as coisas."}, {text:"Sentir-se triste, deprimido ou sem esperança."}, {text:"Dificuldade para dormir ou dormir demais."}, {text:"Sentir-se cansado ou com pouca energia."}, {text:"Falta de apetite ou comer demais."}, {text:"Sentir-se mal consigo mesmo ou um fracasso."}, {text:"Dificuldade para se concentrar."}, {text:"Lentidão ou agitação perceptível."}, {text:"Pensamentos de que seria melhor morrer."}],
         calculate: (answers) => {
             const total = answers.reduce((a, b) => a + b, 0);
             const risk = answers[8] > 0;
             let res = total <= 4 ? "Mínima" : total <= 9 ? "Leve" : total <= 14 ? "Moderada" : total <= 19 ? "Moderada Grave" : "Grave";
-            return { score: total, result: `Depressão ${res}${risk ? " (⚠️ RISCO)" : ""}`, details: `Total: ${total} pontos. Ideação: ${risk ? "Sim" : "Não"}.`, interpretation: `Sintomatologia depressiva ${res.toLowerCase()}.`, showSuggestions: total >= 10 || risk };
+            return { 
+                score: total, result: `Depressão ${res}${risk ? " (⚠️ RISCO)" : ""}`, 
+                details: `Total: ${total} pontos. Presença de ideação: ${risk ? "SIM" : "NÃO"}.`, 
+                interpretation: `Perfil compatível com sintomatologia depressiva de nível ${res.toLowerCase()}. A detecção de marcadores de risco no item 9 exige acompanhamento profissional prioritário.`, 
+                showSuggestions: total >= 10 || risk 
+            };
         }
     },
-
-    // --- 6. TRAUMA (PCL-5) ---
     trauma: {
         id: "trauma", title: "Trauma (PCL-5)", color: "#991b1b", weight: 1.5, maxScore: 80,
         description: "Protocolo padrão-ouro para rastreio de Estresse Pós-Traumático.",
@@ -120,11 +125,14 @@ export const Battery = {
         calculate: (answers) => {
             const total = answers.reduce((a, b) => a + b, 0);
             const high = total >= 33;
-            return { score: total, result: high ? "ALTO RISCO (TEPT)" : "BAIXO RISCO", details: `Escore: ${total}/80.`, interpretation: high ? "Sintomatologia compatível com Estresse Pós-Traumático." : "Sem sinais clínicos de trauma persistente.", showSuggestions: high };
+            return { 
+                score: total, result: high ? "ALTO RISCO (TEPT)" : "BAIXO RISCO", 
+                details: `Escore: ${total}/80. Ponto de corte técnico: 33.`, 
+                interpretation: high ? "Indicadores sugestivos de Transtorno de Estresse Pós-Traumático (TEPT). O perfil aponta para a persistência de sintomas intrusivos e hiperestimulação autonômica." : "Ausência de marcadores clínicos de trauma persistente.", 
+                showSuggestions: high 
+            };
         }
     },
-
-    // --- 7. TOC (OCI-R) ---
     toc: {
         id: "toc", title: "Rastreio de TOC (OCI-R)", color: "#065f46", weight: 1.3, maxScore: 72,
         description: "Investigação de obsessões e compulsões.",
@@ -134,11 +142,14 @@ export const Battery = {
         calculate: (answers) => {
             const total = answers.reduce((a, b) => a + b, 0);
             const high = total >= 21;
-            return { score: total, result: high ? "INDICATIVO DE TOC" : "BAIXO RISCO", details: `Escore: ${total}/72.`, interpretation: high ? "Presença de padrões obsessivo-compulsivos." : "Abaixo do limiar.", showSuggestions: high };
+            return { 
+                score: total, result: high ? "INDICATIVO DE TOC" : "BAIXO RISCO", 
+                details: `Escore: ${total}/72. Corte clínico: 21.`, 
+                interpretation: high ? "Presença de padrões obsessivo-compulsivos que impactam o funcionamento cotidiano. Necessária avaliação de diferenciação para rituais de TEA." : "Sintomatologia abaixo do limiar clínico.", 
+                showSuggestions: high 
+            };
         }
     },
-
-    // --- 8. SONO (ISI) ---
     sono: {
         id: "sono", title: "Qualidade do Sono (ISI)", color: "#1e1b4b", weight: 1.2, maxScore: 28,
         suggestions: ["depressao", "burnout", "ansiedade"],
@@ -147,11 +158,14 @@ export const Battery = {
         calculate: (answers) => {
             const total = answers.reduce((a, b) => a + b, 0);
             let res = total <= 7 ? "Ausente" : total <= 14 ? "Subclínica" : total <= 21 ? "Moderada" : "Grave";
-            return { score: total, result: `Insônia ${res}`, details: `Escore: ${total}/28.`, interpretation: `Privação de sono como fator agravante de humor.`, showSuggestions: total >= 15 };
+            return { 
+                score: total, result: `Insônia ${res}`, 
+                details: `Escore: ${total}/28.`, 
+                interpretation: `A privação de sono detectada atua como um fator de desregulação emocional e prejuízo cognitivo direto nas funções de atenção e memória.`, 
+                showSuggestions: total >= 15 
+            };
         }
     },
-
-    // --- 9. AUTOESTIMA (Rosenberg) ---
     autoestima: {
         id: "autoestima", title: "Autoestima (Rosenberg)", color: "#db2777", weight: 1.0, maxScore: 30,
         suggestions: ["depressao", "fobia_social"],
@@ -162,11 +176,14 @@ export const Battery = {
             let total = 0;
             answers.forEach((idx, i) => { total += Battery.autoestima.questions[i].inv ? mapInv[idx] : map[idx]; });
             const low = total <= 15;
-            return { score: total, result: low ? "Autoestima Baixa" : "Autoestima Saudável", details: `Escore: ${total}/30.`, interpretation: low ? "Níveis baixos de autoestima detectados." : "Nível saudável.", showSuggestions: low };
+            return { 
+                score: total, result: low ? "Autoestima Baixa" : "Autoestima Saudável", 
+                details: `Escore: ${total}/30.`, 
+                interpretation: low ? "A fragilidade na autoimagem detectada é um fator de vulnerabilidade para quadros ansiosos e depressivos." : "Níveis de autoestima dentro da faixa de funcionalidade.", 
+                showSuggestions: low 
+            };
         }
     },
-
-    // --- 10. SUBSTÂNCIAS (AUDIT) ---
     substancias: {
         id: "substancias", title: "Uso de Substâncias (AUDIT)", color: "#4c1d95", weight: 1.3, maxScore: 40,
         suggestions: ["tab", "borderline", "trauma"],
@@ -175,11 +192,14 @@ export const Battery = {
         calculate: (answers) => {
             const total = answers.reduce((a, b) => a + b, 0);
             const high = total >= 8;
-            return { score: total, result: high ? "CONSUMO DE RISCO" : "BAIXO RISCO", details: `Escore: ${total}/40.`, interpretation: high ? "Padrão de consumo prejudicial identificado." : "Consumo controlado.", showSuggestions: high };
+            return { 
+                score: total, result: high ? "CONSUMO DE RISCO" : "BAIXO RISCO", 
+                details: `Escore: ${total}/40.`, 
+                interpretation: high ? "O padrão de consumo identificado aponta para riscos à integridade física e mental, sugerindo possível uso de substâncias como mecanismo de enfrentamento desadaptativo." : "Padrão de consumo dentro dos limites de baixo risco.", 
+                showSuggestions: high 
+            };
         }
     },
-
-    // --- 11. BIPOLARIDADE (MDQ) ---
     tab: {
         id: "tab", title: "Bipolaridade (MDQ)", color: "#6366f1", weight: 1.4, maxScore: 13,
         suggestions: ["depressao", "borderline", "substancias"],
@@ -188,11 +208,14 @@ export const Battery = {
         calculate: (answers) => {
             const symp = answers.slice(0, 13).filter(a => a === 1).length;
             const pos = symp >= 7 && answers[13] === 1 && answers[14] === 1;
-            return { score: symp, result: pos ? "TRIAGEM POSITIVA" : "TRIAGEM NEGATIVA", details: `Sintomas: ${symp}/13.`, interpretation: pos ? "Indicativos de episódios de ativação de humor." : "Critérios não preenchidos.", showSuggestions: pos };
+            return { 
+                score: symp, result: pos ? "TRIAGEM POSITIVA" : "TRIAGEM NEGATIVA", 
+                details: `Sintomas: ${symp}/13. Critérios de tempo e impacto preenchidos.`, 
+                interpretation: pos ? "Presença de episódios de ativação de humor compatíveis com mania ou hipomania. Fundamental investigar histórico familiar." : "Não foram preenchidos os critérios mínimos para triagem de TAB.", 
+                showSuggestions: pos 
+            };
         }
     },
-
-    // --- 12. BURNOUT (CBI) ---
     burnout: {
         id: "burnout", title: "Burnout (CBI)", color: "#ea580c", weight: 1.1, maxScore: 100,
         suggestions: ["ansiedade", "depressao", "sono"],
@@ -201,20 +224,28 @@ export const Battery = {
         calculate: (answers) => {
             const vals = [0, 25, 50, 75, 100];
             const avg = answers.reduce((a, b) => a + vals[b], 0) / 7;
-            return { score: Math.round(avg), result: avg < 50 ? "Baixo Risco" : "Alto Risco", details: `Índice: ${Math.round(avg)}%.`, interpretation: `Nível de esgotamento considerado ${avg >= 50 ? "alto" : "controlado"}.`, showSuggestions: avg >= 50 };
+            return { 
+                score: Math.round(avg), result: avg < 50 ? "Baixo Risco" : "Alto Risco", 
+                details: `Índice de Esgotamento: ${Math.round(avg)}%.`, 
+                interpretation: `Nível de estresse crônico laboral elevado, indicando esgotamento das reservas emocionais e físicas.`, 
+                showSuggestions: avg >= 50 
+            };
         }
     },
-
-    // --- 13. BORDERLINE (MSI-BPD) ---
     borderline: {
         id: "borderline", title: "Borderline (MSI-BPD)", color: "#be185d", weight: 1.4, maxScore: 10,
         suggestions: ["tab", "trauma", "substancias"],
         options: ["Não", "Sim"],
-        questions: [{text:"Relações instáveis."}, {text:"Suicidabilidade/Mutilação."}, {text:"Impulsividade."}, {text:"Instabilidade afetiva."}, {text:"Abandono."}, {text:"Identidade."}, {text:"Vazio."}, {text:"Raiva."}, {text:"Paranoia."}, {text:"Autodestruição."}],
+        questions: [{text:"Relações instáveis."}, {text:"Suicidabilidade/Mutilação."}, {text:"Impulsividade."}, {text:"Instabilidade afetiva."}, {text:"Medo de abandono."}, {text:"Perturbação da identidade."}, {text:"Vazio crônico."}, {text:"Raiva intensa."}, {text:"Paranoia sob estresse."}, {text:"Autodestruição."}],
         calculate: (answers) => {
             const total = answers.reduce((a, b) => a + b, 0);
             const high = total >= 7;
-            return { score: total, result: high ? "ALTA PROBABILIDADE" : "BAIXA PROBABILIDADE", details: `Escore: ${total}/10.`, interpretation: high ? "Indicadores de desregulação emocional severa." : "Abaixo do limiar.", showSuggestions: high };
+            return { 
+                score: total, result: high ? "ALTA PROBABILIDADE" : "BAIXA PROBABILIDADE", 
+                details: `Escore: ${total}/10. Ponto de corte: 7.`, 
+                interpretation: high ? "Marcadores significativos de desregulação emocional e instabilidade relacional que sugerem um funcionamento de personalidade limítrofe." : "Traços abaixo do limiar clínico.", 
+                showSuggestions: high 
+            };
         }
     }
 };
