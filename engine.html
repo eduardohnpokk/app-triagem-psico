@@ -124,7 +124,7 @@
                 btn.onclick = () => saveAnswer(idx); 
                 container.appendChild(btn);
             });
-            window.scrollTo(0,0); // Garante visibilidade em perguntas longas
+            window.scrollTo(0,0);
         }
 
         function saveAnswer(val) {
@@ -149,9 +149,10 @@
                         teste: currentTest.title,
                         teste_id: currentTest.id,
                         data: new Date(),
-                        score_bruto: analysisResult.score, // CRUCIAL PARA O IBE
+                        score_bruto: analysisResult.score,
                         resultado_texto: analysisResult.result,
                         detalhes: analysisResult.details,
+                        interpretation: analysisResult.interpretation,
                         respostas_raw: answers
                     });
                 } catch (e) { console.error("Erro ao salvar:", e); }
@@ -164,6 +165,7 @@
                 const suggCont = document.getElementById('suggestions-container');
                 const suggList = document.getElementById('suggestions-list');
                 suggCont.style.display = 'block';
+                suggList.innerHTML = '';
                 
                 currentTest.suggestions.forEach(sId => {
                     const sTest = Battery[sId];
@@ -190,62 +192,106 @@
             const dataEmissao = new Date().toLocaleDateString('pt-BR');
             let y = 60;
 
-            doc.setFillColor(15, 23, 42); doc.rect(0, 0, 210, 50, 'F');
-            doc.setTextColor(255); doc.setFontSize(22); doc.setFont("helvetica", "bold");
-            doc.text("DOSSIÊ TÉCNICO NEUROPSICOLÓGICO", 20, 32);
-            doc.setFontSize(9); doc.setFont("helvetica", "normal");
-            doc.text(`ID: ${Math.random().toString(36).substr(2, 9).toUpperCase()}`, 170, 15);
-            doc.text(`DATA: ${dataEmissao}`, 170, 25);
+            // Design do Dossiê - Cabeçalho
+            doc.setFillColor(15, 23, 42); 
+            doc.rect(0, 0, 210, 50, 'F');
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(22);
+            doc.setFont("helvetica", "bold");
+            doc.text("DOSSIÊ TÉCNICO DE RASTREIO", 20, 32);
+            doc.setFontSize(9);
+            doc.setFont("helvetica", "normal");
+            doc.text(`REGISTRO: ${Math.random().toString(36).substr(2, 9).toUpperCase()}`, 170, 15);
+            doc.text(`EMISSÃO: ${dataEmissao}`, 170, 22);
 
-            doc.setTextColor(15, 23, 42); doc.setFontSize(14); doc.setFont("helvetica", "bold");
-            doc.text("1. IDENTIFICAÇÃO", 20, y);
-            doc.setDrawColor(226); doc.line(20, y+2, 190, y+2);
-            y += 12; doc.setFontSize(11); doc.setFont("helvetica", "normal");
-            doc.text(`Paciente: ${userName}`, 20, y);
-            y += 7; doc.text(`Protocolo: ${currentTest.title}`, 20, y);
+            // 1. Identificação do Paciente
+            doc.setTextColor(15, 23, 42);
+            doc.setFontSize(14);
+            doc.setFont("helvetica", "bold");
+            doc.text("1. IDENTIFICAÇÃO DO PACIENTE", 20, y);
+            doc.setDrawColor(226, 232, 240);
+            doc.line(20, y+2, 190, y+2);
+            y += 12;
+            doc.setFontSize(11);
+            doc.setFont("helvetica", "normal");
+            doc.text(`Nome: ${userName}`, 20, y);
+            y += 7;
+            doc.text(`Protocolo Aplicado: ${currentTest.title}`, 20, y);
             y += 15;
 
-            doc.setFontSize(14); doc.setFont("helvetica", "bold");
-            doc.text("2. ANÁLISE QUALITATIVA", 20, y);
+            // 2. Análise Técnica e Qualitativa
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(14);
+            doc.text("2. ANÁLISE QUALITATIVA E INTERPRETAÇÃO", 20, y);
             doc.line(20, y+2, 190, y+2);
-            y += 12; doc.setFontSize(12);
-            doc.text(`Classificação: ${analysisResult.result}`, 20, y);
-            y += 8; doc.setFontSize(11); doc.setFont("helvetica", "normal");
-            const interText = doc.splitTextToSize(`Interpretação: ${analysisResult.interpretation}`, 170);
+            y += 12;
+            doc.setFontSize(12);
+            doc.text(`CLASSIFICAÇÃO RESULTANTE: ${analysisResult.result}`, 20, y);
+            y += 10;
+            doc.setFontSize(11);
+            doc.setFont("helvetica", "bold");
+            doc.text("Descrição Diagnóstica:", 20, y);
+            y += 7;
+            doc.setFont("helvetica", "normal");
+            const interText = doc.splitTextToSize(analysisResult.interpretation, 175);
             doc.text(interText, 20, y);
             y += (interText.length * 6) + 10;
+            
+            doc.setFont("helvetica", "bold");
+            doc.text("Resumo de Escala (Escore):", 20, y);
+            y += 7;
+            doc.setFont("helvetica", "normal");
+            doc.text(analysisResult.details, 20, y);
+            y += 15;
 
-            if (analysisResult.showSuggestions && currentTest.suggestions) {
+            // 3. Cruzamento e Comorbidades
+            if (analysisResult.showSuggestions) {
                 if (y > 230) { doc.addPage(); y = 30; }
-                doc.setFontSize(14); doc.setFont("helvetica", "bold");
-                doc.text("3. CRUZAMENTO E COMORBIDADES", 20, y);
+                doc.setFont("helvetica", "bold");
+                doc.setFontSize(14);
+                doc.text("3. MATRIZ DE CORRELAÇÃO CLÍNICA", 20, y);
                 doc.line(20, y+2, 190, y+2);
-                y += 12; doc.setFontSize(10); doc.setFont("helvetica", "normal");
-                const sugTxt = "Com base nos marcadores identificados, recomenda-se a investigação dos seguintes domínios complementares:";
-                doc.text(doc.splitTextToSize(sugTxt, 170), 20, y);
-                y += 10;
+                y += 12;
+                doc.setFontSize(10);
+                doc.setFont("helvetica", "normal");
+                const sugTxt = "Com base nos indicadores identificados, o perfil apresenta sobreposição estatística com outros domínios neuropsicológicos. Recomenda-se a investigação diferencial dos seguintes protocolos:";
+                const splitSug = doc.splitTextToSize(sugTxt, 175);
+                doc.text(splitSug, 20, y);
+                y += (splitSug.length * 6) + 5;
+
                 currentTest.suggestions.forEach(id => {
                     const testSug = Battery[id];
                     if(testSug) {
-                        doc.setFont("helvetica", "bold"); doc.text(`> ${testSug.title}:`, 25, y);
-                        doc.setFont("helvetica", "normal"); doc.text(` ${testSug.description}`, 25 + doc.getTextWidth(`> ${testSug.title}:`), y);
+                        doc.setFont("helvetica", "bold");
+                        doc.text(`> ${testSug.title}:`, 25, y);
+                        doc.setFont("helvetica", "normal");
+                        doc.text(` ${testSug.description}`, 25 + doc.getTextWidth(`> ${testSug.title}:`), y);
                         y += 7;
                     }
                 });
+                y += 10;
             }
 
-            if (y > 240) { doc.addPage(); y = 30; }
-            doc.setFontSize(13); doc.setFont("helvetica", "bold");
+            // 4. Encaminhamento e Conduta
+            if (y > 230) { doc.addPage(); y = 30; }
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(14);
             doc.text("4. ENCAMINHAMENTO E CONDUTA", 20, y);
             doc.line(20, y+2, 190, y+2);
-            y += 12; doc.setFontSize(10); doc.setFont("helvetica", "normal");
-            const conduta = "Este documento baseia-se no autorrelato e serve como suporte clínico inicial. É imperativo que os resultados sejam validados por um psicólogo ou psiquiatra para o fechamento do diagnóstico diferencial.";
-            doc.text(doc.splitTextToSize(conduta, 170), 20, y);
+            y += 12;
+            doc.setFontSize(10);
+            doc.setFont("helvetica", "normal");
+            const conduta = "Este documento é um relatório de triagem baseado em autorrelato e escalas validadas. Os resultados indicam a necessidade de uma investigação clínica presencial com profissional especializado (Psicólogo Neuropsicólogo ou Psiquiatra) para fechamento de diagnóstico diferencial e elaboração de plano terapêutico. Este dossiê não substitui a consulta profissional.";
+            const splitConduta = doc.splitTextToSize(conduta, 175);
+            doc.text(splitConduta, 20, y);
 
-            doc.setFontSize(10); doc.setTextColor(15, 23, 42);
+            // Rodapé
+            doc.setFontSize(10);
+            doc.setTextColor(15, 23, 42);
             doc.text("__________________________________________", 60, 275);
-            doc.text("Dr. Eduardo Pokk | Especialista em TI & Psicologia", 55, 282);
-            doc.save(`Laudo_${currentTest.id}_${userName.replace(/\s+/g, '_')}.pdf`);
+            doc.text("Dr. Eduardo Pokk | Psicólogo Clínico", 78, 282);
+            
+            doc.save(`Dossie_${currentTest.id}_${userName.replace(/\s+/g, '_')}.pdf`);
         };
 
         loadQuestion();
