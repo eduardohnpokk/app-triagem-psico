@@ -27,8 +27,11 @@
         .result-title { font-size: 1.8rem; font-weight: 800; margin-bottom: 10px; }
         .btn-action { background: var(--primary); color: white; padding: 15px 30px; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-block; margin-top: 10px; cursor: pointer; border: none; font-size: 1rem; width: 100%; box-sizing: border-box; transition: 0.2s; }
         .btn-pdf { background: #16a34a; margin-top: 20px; }
+        .btn-pdf:hover { background: #15803d; }
         .suggestion-box { margin-top: 30px; padding-top: 20px; border-top: 2px dashed #e2e8f0; text-align: left; }
         .suggestion-title { font-size: 0.9rem; font-weight: 700; color: var(--accent); text-transform: uppercase; margin-bottom: 15px; display: block; }
+        .btn-suggest { background: #eff6ff; color: var(--accent); border: 1px solid #bfdbfe; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+        .btn-suggest:hover { background: var(--accent); color: white; }
         @keyframes fadeIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
     </style>
 </head>
@@ -138,7 +141,6 @@
             const { jsPDF } = window.jspdf; const doc = new jsPDF();
             let y = 60;
 
-            // Design do Dossiê - Cabeçalho
             doc.setFillColor(15, 23, 42); doc.rect(0, 0, 210, 50, 'F');
             doc.setTextColor(255, 255, 255);
             doc.setFontSize(22); doc.setFont("helvetica", "bold");
@@ -147,37 +149,32 @@
             doc.text(`REGISTRO: ${Math.random().toString(36).substr(2, 9).toUpperCase()}`, 170, 15);
             doc.text(`EMISSÃO: ${new Date().toLocaleDateString('pt-BR')}`, 170, 22);
 
-            // 1. Identificação
             doc.setTextColor(15, 23, 42); doc.setFontSize(14); doc.setFont("helvetica", "bold");
             doc.text("1. IDENTIFICAÇÃO E METODOLOGIA", 20, y);
             doc.setDrawColor(226); doc.line(20, y+2, 190, y+2);
             y += 12; doc.setFontSize(11); doc.setFont("helvetica", "normal");
             doc.text(`Paciente: ${userName}`, 20, y); y += 7;
-            doc.text(`Protocolo Aplicado: ${currentTest.title}`, 20, y); y += 7;
-            doc.text(`Metodologia: Triagem por escala de autorrelato baseada em critérios do DSM-5.`, 20, y); y += 15;
+            doc.text(`Protocolo: ${currentTest.title}`, 20, y); y += 7;
+            doc.text(`Metodologia: Triagem por escala validada de autorrelato.`, 20, y); y += 15;
 
-            // 2. Análise Técnica Profunda
-            doc.setFont("helvetica", "bold"); doc.setFontSize(14);
+            doc.setFontSize(14); doc.setFont("helvetica", "bold");
             doc.text("2. ANÁLISE QUALITATIVA E INTERPRETAÇÃO", 20, y);
             doc.line(20, y+2, 190, y+2); y += 12;
             doc.setFontSize(12); doc.text(`CLASSIFICAÇÃO RESULTANTE: ${analysisResult.result}`, 20, y); y += 10;
-            doc.setFontSize(11); doc.setFont("helvetica", "bold"); doc.text("Interpretação Clínica Detalhada:", 20, y); y += 7;
+            doc.setFontSize(11); doc.setFont("helvetica", "bold"); doc.text("Interpretação Clínica:", 20, y); y += 7;
             doc.setFont("helvetica", "normal");
             const interText = doc.splitTextToSize(analysisResult.interpretation, 175);
             doc.text(interText, 20, y); y += (interText.length * 6) + 12;
-            
-            doc.setFont("helvetica", "bold"); doc.text("Resumo de Evidências (Escore):", 20, y); y += 7;
-            doc.setFont("helvetica", "normal");
-            doc.text(analysisResult.details, 20, y); y += 15;
+            doc.setFont("helvetica", "bold"); doc.text("Sumário de Evidências:", 20, y); y += 7;
+            doc.setFont("helvetica", "normal"); doc.text(analysisResult.details, 20, y); y += 15;
 
-            // 3. Cruzamento e Comorbidades
             if (analysisResult.showSuggestions) {
                 if (y > 230) { doc.addPage(); y = 30; }
-                doc.setFont("helvetica", "bold"); doc.setFontSize(14);
-                doc.text("3. MATRIZ DE CORRELAÇÃO CLÍNICA", 20, y);
+                doc.setFontSize(14); doc.setFont("helvetica", "bold");
+                doc.text("3. MATRIZ DE CORRELAÇÃO E COMORBIDADES", 20, y);
                 doc.line(20, y+2, 190, y+2); y += 12;
                 doc.setFontSize(10); doc.setFont("helvetica", "normal");
-                const sugTxt = "Com base nos indicadores identificados, este perfil apresenta sobreposição estatística com outros domínios neuropsicológicos. Recomenda-se investigação diferencial nos seguintes protocolos:";
+                const sugTxt = "Com base nos marcadores identificados, recomenda-se investigação diferencial nos seguintes domínios:";
                 doc.text(doc.splitTextToSize(sugTxt, 175), 20, y); y += 15;
                 currentTest.suggestions.forEach(id => {
                     const ts = Battery[id];
@@ -187,19 +184,17 @@
                 y += 10;
             }
 
-            // 4. Conduta Técnica
             if (y > 240) { doc.addPage(); y = 30; }
-            doc.setFont("helvetica", "bold"); doc.setFontSize(14);
+            doc.setFontSize(13); doc.setFont("helvetica", "bold");
             doc.text("4. DIRECIONAMENTO E CONDUTA TÉCNICA", 20, y);
             doc.line(20, y+2, 190, y+2); y += 12;
             doc.setFontSize(10); doc.setFont("helvetica", "normal");
-            const conduta = "Este dossiê é uma ferramenta de triagem inicial e baseia-se exclusivamente no autorrelato. Não substitui a avaliação clínica presencial. Os indicadores apontados indicam a necessidade de uma investigação clínica presencial com profissional especializado (Psicólogo Neuropsicólogo ou Psiquiatra) para fechamento de quadro clínico e conduta terapêutica.";
+            const conduta = "Este dossiê é uma ferramenta de triagem inicial e baseia-se exclusivamente no autorrelato. Não substitui a avaliação clínica presencial. Os indicadores apontados indicam a necessidade de validação por profissional habilitado (Psicólogo ou Psiquiatra) para fins diagnósticos e terapêuticos.";
             doc.text(doc.splitTextToSize(conduta, 175), 20, y);
 
-            // Rodapé Especialista
             doc.setFontSize(10); doc.setTextColor(15, 23, 42);
             doc.text("__________________________________________", 60, 275);
-            doc.text("Dr. Eduardo Pokk | Especialista em TI & Psicologia Clínica", 53, 282);
+            doc.text("Dr. Eduardo Pokk | Psicólogo Clínico e Especialista em Recursos Humanos", 43, 282);
             doc.save(`Dossie_${currentTest.id}_${userName.replace(/\s+/g, '_')}.pdf`);
         };
         loadQuestion();
