@@ -35,12 +35,24 @@
         .alert-security p { margin: 0; font-weight: 600; font-size: 0.9rem; }
 
         /* Módulo de Consolidação (Banner Especialista) */
-        .banner-global { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); color: white; padding: 35px; border-radius: 16px; margin-bottom: 40px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 10px 20px -5px rgba(0,0,0,0.2); }
+        .banner-global { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); color: white; padding: 35px; border-radius: 16px; margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 10px 20px -5px rgba(0,0,0,0.2); }
         .banner-content h2 { margin: 0 0 8px 0; font-size: 1.6rem; letter-spacing: -0.5px; }
         .banner-content p { margin: 0; opacity: 0.7; font-size: 0.95rem; max-width: 500px; }
         .btn-global { background: var(--accent); color: white; padding: 14px 28px; border-radius: 8px; text-decoration: none; font-weight: 700; border: none; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 10px; }
         .btn-global:hover { background: #1d4ed8; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(37, 99, 235, 0.4); }
         .btn-global:disabled { background: #475569; cursor: not-allowed; transform: none; box-shadow: none; }
+
+        /* SEÇÃO DE HISTÓRICO INDIVIDUAL (Aba Solicitada) */
+        .history-section { background: white; padding: 25px; border-radius: 16px; margin-bottom: 40px; border: 1px solid #e2e8f0; }
+        .history-title { font-size: 1.2rem; font-weight: 800; color: var(--primary); margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+        .history-list { display: flex; flex-direction: column; gap: 12px; max-height: 350px; overflow-y: auto; padding-right: 10px; }
+        .history-item { display: flex; justify-content: space-between; align-items: center; padding: 18px; border-radius: 10px; background: #f8fafc; border: 1px solid #e2e8f0; transition: 0.2s; }
+        .history-item:hover { background: #f1f5f9; border-color: var(--accent); }
+        .history-info b { display: block; color: var(--primary); font-size: 1rem; margin-bottom: 4px; }
+        .history-info span { font-size: 0.85rem; color: #64748b; }
+        .btn-download-laudo { background: #16a34a; color: white; padding: 10px 18px; border-radius: 6px; font-size: 0.85rem; font-weight: 700; border: none; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: 0.2s; }
+        .btn-download-laudo:hover { background: #15803d; transform: scale(1.02); }
+        .no-data { text-align: center; color: #94a3b8; padding: 30px; font-size: 0.95rem; font-style: italic; }
 
         h1 { margin-bottom: 10px; color: var(--primary); font-size: 1.8rem; }
         .subtitle { color: #64748b; margin-bottom: 30px; font-size: 1rem; }
@@ -73,7 +85,7 @@
 
         @media (max-width: 768px) {
             .banner-global { flex-direction: column; text-align: center; gap: 20px; }
-            .banner-content p { margin: 0 auto; }
+            .history-item { flex-direction: column; text-align: center; gap: 15px; }
         }
     </style>
 </head>
@@ -93,7 +105,7 @@
         
         <div class="alert-security">
             <i class="fa-solid fa-shield-halved"></i>
-            <p>Não empreste sua conta para outras pessoas realizarem os testes, isso vai estragar seu rastreio consolidado.</p>
+            <p>Atenção: Não empreste sua conta para outras pessoas realizarem os testes, isso vai estragar seu rastreio consolidado.</p>
         </div>
 
         <div class="banner-global">
@@ -106,80 +118,38 @@
             </button>
         </div>
 
+        <div class="history-section">
+            <div class="history-title">
+                <i class="fa-solid fa-folder-open" style="color:var(--accent)"></i> Meus Relatórios Individuais
+            </div>
+            <div id="history-container" class="history-list">
+                <div class="no-data">Sincronizando seu histórico clínico...</div>
+            </div>
+        </div>
+
         <h1>Bateria de Protocolos</h1>
         <p class="subtitle">Selecione o rastreio clínico desejado para iniciar a avaliação.</p>
         
         <div class="grid">
-            <div class="card tdah">
-                <div><h3>TDAH Adulto <i class="fa-solid fa-brain"></i></h3><p>Escala ASRS-18 com critérios da OMS.</p></div>
-                <a href="engine.html?t=tdah" class="btn-start">INICIAR PROTOCOLO</a>
-            </div>
-
-            <div class="card tea">
-                <div><h3>Autismo Adulto <i class="fa-solid fa-puzzle-piece"></i></h3><p>Escala RAADS-14 (Espectro Autista).</p></div>
-                <a href="engine.html?t=tea" class="btn-start">INICIAR PROTOCOLO</a>
-            </div>
-
-            <div class="card ansiedade">
-                <div><h3>Ansiedade <i class="fa-solid fa-bolt"></i></h3><p>Escala GAD-7 (Ansiedade Generalizada).</p></div>
-                <a href="engine.html?t=ansiedade" class="btn-start">INICIAR PROTOCOLO</a>
-            </div>
-
-            <div class="card depressao">
-                <div><h3>Depressão <i class="fa-solid fa-cloud-rain"></i></h3><p>Escala PHQ-9 (Humor e Vitalidade).</p></div>
-                <a href="engine.html?t=depressao" class="btn-start">INICIAR PROTOCOLO</a>
-            </div>
-
-            <div class="card tab">
-                <div><h3>Bipolaridade <i class="fa-solid fa-masks-theater"></i></h3><p>Protocolo MDQ (Oscilação de Humor).</p></div>
-                <a href="engine.html?t=tab" class="btn-start">INICIAR PROTOCOLO</a>
-            </div>
-
-            <div class="card burnout">
-                <div><h3>Burnout <i class="fa-solid fa-battery-empty"></i></h3><p>Escala CBI (Exaustão Profissional).</p></div>
-                <a href="engine.html?t=burnout" class="btn-start">INICIAR PROTOCOLO</a>
-            </div>
-
-            <div class="card borderline">
-                <div><h3>Borderline <i class="fa-solid fa-heart-crack"></i></h3><p>Protocolo MSI-BPD (Instabilidade).</p></div>
-                <a href="engine.html?t=borderline" class="btn-start">INICIAR PROTOCOLO</a>
-            </div>
-
-            <div class="card fobia">
-                <div><h3>Fobia Social <i class="fa-solid fa-users-slash"></i></h3><p>Escala SPIN (Ansiedade Social).</p></div>
-                <a href="engine.html?t=fobia_social" class="btn-start">INICIAR PROTOCOLO</a>
-            </div>
-
-            <div class="card trauma">
-                <div><h3>Trauma e Estresse <i class="fa-solid fa-burst"></i></h3><p>Sintomas de Estresse Pós-Traumático (PCL-5).</p></div>
-                <a href="engine.html?t=trauma" class="btn-start">INICIAR PROTOCOLO</a>
-            </div>
-
-            <div class="card sono">
-                <div><h3>Qualidade do Sono <i class="fa-solid fa-moon"></i></h3><p>Avaliação de Insônia e Funcionalidade (ISI).</p></div>
-                <a href="engine.html?t=sono" class="btn-start">INICIAR PROTOCOLO</a>
-            </div>
-
-            <div class="card toc">
-                <div><h3>Rastreio de TOC <i class="fa-solid fa-rotate"></i></h3><p>Pensamentos obsessivos e rituais (OCI-R).</p></div>
-                <a href="engine.html?t=toc" class="btn-start">INICIAR PROTOCOLO</a>
-            </div>
-
-            <div class="card substancias">
-                <div><h3>Uso de Substâncias <i class="fa-solid fa-wine-glass"></i></h3><p>Padrões de risco no consumo de álcool (AUDIT).</p></div>
-                <a href="engine.html?t=substancias" class="btn-start">INICIAR PROTOCOLO</a>
-            </div>
-
-            <div class="card autoestima">
-                <div><h3>Autoestima <i class="fa-solid fa-face-smile"></i></h3><p>Escala de Rosenberg (Autoimagem).</p></div>
-                <a href="engine.html?t=autoestima" class="btn-start">INICIAR PROTOCOLO</a>
-            </div>
+            <div class="card tdah"><div><h3>TDAH Adulto <i class="fa-solid fa-brain"></i></h3><p>Escala ASRS-18 com critérios da OMS.</p></div><a href="engine.html?t=tdah" class="btn-start">INICIAR PROTOCOLO</a></div>
+            <div class="card tea"><div><h3>Autismo Adulto <i class="fa-solid fa-puzzle-piece"></i></h3><p>Escala RAADS-14.</p></div><a href="engine.html?t=tea" class="btn-start">INICIAR PROTOCOLO</a></div>
+            <div class="card ansiedade"><div><h3>Ansiedade <i class="fa-solid fa-bolt"></i></h3><p>Escala GAD-7.</p></div><a href="engine.html?t=ansiedade" class="btn-start">INICIAR PROTOCOLO</a></div>
+            <div class="card depressao"><div><h3>Depressão <i class="fa-solid fa-cloud-rain"></i></h3><p>Escala PHQ-9.</p></div><a href="engine.html?t=depressao" class="btn-start">INICIAR PROTOCOLO</a></div>
+            <div class="card tab"><div><h3>Bipolaridade <i class="fa-solid fa-masks-theater"></i></h3><p>Protocolo MDQ.</p></div><a href="engine.html?t=tab" class="btn-start">INICIAR PROTOCOLO</a></div>
+            <div class="card burnout"><div><h3>Burnout <i class="fa-solid fa-battery-empty"></i></h3><p>Escala CBI.</p></div><a href="engine.html?t=burnout" class="btn-start">INICIAR PROTOCOLO</a></div>
+            <div class="card borderline"><div><h3>Borderline <i class="fa-solid fa-heart-crack"></i></h3><p>Protocolo MSI-BPD.</p></div><a href="engine.html?t=borderline" class="btn-start">INICIAR PROTOCOLO</a></div>
+            <div class="card fobia"><div><h3>Fobia Social <i class="fa-solid fa-users-slash"></i></h3><p>Escala SPIN (Ansiedade Social).</p></div><a href="engine.html?t=fobia_social" class="btn-start">INICIAR PROTOCOLO</a></div>
+            <div class="card trauma"><div><h3>Trauma e Estresse <i class="fa-solid fa-burst"></i></h3><p>Sintomas de Estresse Pós-Traumático (PCL-5).</p></div><a href="engine.html?t=trauma" class="btn-start">INICIAR PROTOCOLO</a></div>
+            <div class="card sono"><div><h3>Qualidade do Sono <i class="fa-solid fa-moon"></i></h3><p>Avaliação de Insônia e Funcionalidade (ISI).</p></div><a href="engine.html?t=sono" class="btn-start">INICIAR PROTOCOLO</a></div>
+            <div class="card toc"><div><h3>Rastreio de TOC <i class="fa-solid fa-rotate"></i></h3><p>Pensamentos obsessivos e rituais (OCI-R).</p></div><a href="engine.html?t=toc" class="btn-start">INICIAR PROTOCOLO</a></div>
+            <div class="card substancias"><div><h3>Uso de Substâncias <i class="fa-solid fa-wine-glass"></i></h3><p>Padrões de risco no consumo de álcool (AUDIT).</p></div><a href="engine.html?t=substancias" class="btn-start">INICIAR PROTOCOLO</a></div>
+            <div class="card autoestima"><div><h3>Autoestima <i class="fa-solid fa-face-smile"></i></h3><p>Escala de Rosenberg (Autoimagem).</p></div><a href="engine.html?t=autoestima" class="btn-start">INICIAR PROTOCOLO</a></div>
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         import { getFirestore, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
         import { Battery } from './neuro-data.js';
 
@@ -202,39 +172,99 @@
 
         document.getElementById('btnSair').onclick = () => signOut(auth).then(() => { localStorage.clear(); window.location.href = "index.html"; });
 
-        // --- MOTOR DE CONSOLIDAÇÃO DO DOSSIÊ GLOBAL ---
-        document.getElementById('btnConsolidado').onclick = async () => {
-            const btn = document.getElementById('btnConsolidado');
-            btn.disabled = true;
-            btn.innerText = "Sincronizando Dados...";
-
+        // --- MOTOR DE HISTÓRICO (Relatórios Individuais) ---
+        async function carregarHistorico() {
+            const container = document.getElementById('history-container');
             try {
-                // Busca o histórico completo, do mais novo para o mais antigo
                 const q = query(collection(db, "usuarios", userId, "historico_testes"), orderBy("data", "desc"));
-                const querySnapshot = await getDocs(q);
+                const snap = await getDocs(q);
                 
-                if (querySnapshot.empty) {
-                    alert("Você ainda não realizou protocolos suficientes para gerar o dossiê.");
+                if (snap.empty) {
+                    container.innerHTML = '<div class="no-data">Nenhum teste realizado até o momento.</div>';
                     return;
                 }
 
-                // Agrupa apenas os resultados MAIS RECENTES de cada teste para evitar poluição
+                container.innerHTML = '';
+                snap.forEach(docSnap => {
+                    const d = docSnap.data();
+                    const dataFormatada = d.data.toDate().toLocaleDateString('pt-BR');
+                    
+                    const item = document.createElement('div');
+                    item.className = 'history-item';
+                    item.innerHTML = `
+                        <div class="history-info">
+                            <b>${d.teste}</b>
+                            <span>Realizado em: ${dataFormatada} • Conclusão: ${d.resultado_texto}</span>
+                        </div>
+                        <button class="btn-download-laudo" id="btn-dl-${docSnap.id}">
+                            <i class="fa-solid fa-file-pdf"></i> BAIXAR LAUDO
+                        </button>
+                    `;
+                    container.appendChild(item);
+                    document.getElementById(`btn-dl-${docSnap.id}`).onclick = () => gerarPDFIndividual(d);
+                });
+            } catch (e) { container.innerHTML = '<div class="no-data">Erro ao carregar dados históricos.</div>'; }
+        }
+
+        function gerarPDFIndividual(data) {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            const dataOriginal = data.data.toDate().toLocaleDateString('pt-BR');
+            let y = 50;
+
+            doc.setFillColor(15, 23, 42); doc.rect(0, 0, 210, 40, 'F');
+            doc.setTextColor(255); doc.setFontSize(22); doc.setFont("helvetica", "bold");
+            doc.text("LAUDO TÉCNICO DE RASTREIO", 20, 25);
+            doc.setFontSize(10); doc.setFont("helvetica", "normal");
+            doc.text(`Registro Original: ${dataOriginal}`, 160, 25);
+
+            doc.setTextColor(15, 23, 42); doc.setFontSize(14); doc.text("1. IDENTIFICAÇÃO", 20, y);
+            doc.setDrawColor(226); doc.line(20, y+2, 190, y+2);
+            y += 12;
+            doc.setFontSize(11); doc.text(`Paciente: ${userName}`, 20, y);
+            y += 7;
+            doc.text(`Protocolo Aplicado: ${data.teste}`, 20, y);
+            
+            y += 15;
+            doc.setFont("helvetica", "bold"); doc.setFontSize(14); doc.text("2. ANÁLISE QUALITATIVA", 20, y);
+            doc.line(20, y+2, 190, y+2);
+            y += 12;
+            doc.setFontSize(12); doc.text(`Classificação Resultante: ${data.resultado_texto}`, 20, y);
+            y += 8;
+            doc.setFontSize(11); doc.setFont("helvetica", "normal");
+            const detailText = doc.splitTextToSize(`Detalhamento Técnico: ${data.detalhes}`, 170);
+            doc.text(detailText, 20, y);
+
+            y += (detailText.length * 6) + 20;
+            doc.setFontSize(9); doc.setTextColor(100);
+            const disclaimer = "Este documento baseia-se no autorrelato do paciente. Não constitui diagnóstico definitivo isolado.";
+            doc.text(doc.splitTextToSize(disclaimer, 170), 20, y);
+
+            doc.setTextColor(15, 23, 42); doc.setFontSize(10);
+            doc.text("Dr. Eduardo Pokk | Psicólogo Clínico", 75, 285);
+            doc.save(`Laudo_${data.teste_id}_${userName.replace(/\s+/g, '_')}.pdf`);
+        }
+
+        // --- MOTOR DE CONSOLIDAÇÃO GLOBAL ---
+        document.getElementById('btnConsolidado').onclick = async () => {
+            const btn = document.getElementById('btnConsolidado');
+            btn.disabled = true; btn.innerText = "Calculando Mapeamento...";
+
+            try {
+                const q = query(collection(db, "usuarios", userId, "historico_testes"), orderBy("data", "desc"));
+                const querySnapshot = await getDocs(q);
+                if (querySnapshot.empty) { alert("Realize protocolos individuais primeiro."); return; }
+
                 const ultimosResultados = {};
                 querySnapshot.forEach((doc) => {
                     const data = doc.data();
-                    if (!ultimosResultados[data.teste_id]) {
-                        ultimosResultados[data.teste_id] = data;
-                    }
+                    if (!ultimosResultados[data.teste_id]) ultimosResultados[data.teste_id] = data;
                 });
 
-                // Cálculo do Índice de Bem-Estar (IBE) - Ciência de Dados aplicada
-                let totalWeightedHealth = 0; 
-                let totalWeight = 0;
-                
+                let totalWeightedHealth = 0; let totalWeight = 0;
                 Object.values(ultimosResultados).forEach(res => {
                     const tInfo = Battery[res.teste_id];
                     if (tInfo) {
-                        // Calcula o percentual de funcionalidade (Invertendo a lógica do transtorno)
                         const scorePercent = (res.score_bruto / tInfo.maxScore);
                         const functionalScore = (1 - scorePercent) * 100;
                         totalWeightedHealth += (functionalScore * tInfo.weight);
@@ -244,86 +274,40 @@
 
                 const ibeFinal = Math.round(totalWeightedHealth / totalWeight);
                 gerarPDFConsolidado(ultimosResultados, ibeFinal);
-
-            } catch (error) {
-                console.error("Erro na consolidação:", error);
-                alert("Falha ao processar histórico clínico.");
-            } finally {
-                btn.disabled = false;
-                btn.innerText = "GERAR RELATÓRIO GLOBAL";
-            }
+            } catch (error) { alert("Erro ao processar dados."); } finally { btn.disabled = false; btn.innerText = "GERAR RELATÓRIO GLOBAL"; }
         };
 
         function gerarPDFConsolidado(dados, ibe) {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
-            const dataEmissao = new Date().toLocaleDateString('pt-BR');
-            let y = 65;
-
-            // Design da Capa Master
-            doc.setFillColor(15, 23, 42); // Navy Profissional
-            doc.rect(0, 0, 210, 60, 'F');
-            doc.setTextColor(255);
-            doc.setFontSize(24);
-            doc.setFont("helvetica", "bold");
+            doc.setFillColor(15, 23, 42); doc.rect(0, 0, 210, 60, 'F');
+            doc.setTextColor(255); doc.setFontSize(24); doc.setFont("helvetica", "bold");
             doc.text("MAPA NEUROPSICOLÓGICO CONSOLIDADO", 20, 35);
-            doc.setFontSize(11);
-            doc.setFont("helvetica", "normal");
-            doc.text(`Paciente: ${userName} | Emissão: ${dataEmissao}`, 20, 50);
+            doc.setFontSize(11); doc.setFont("helvetica", "normal");
+            doc.text(`Paciente: ${userName} | Emissão: ${new Date().toLocaleDateString('pt-BR')}`, 20, 50);
 
-            // Módulo IBE (Destaque do Relatório)
-            doc.setTextColor(15, 23, 42);
-            doc.setFontSize(16);
-            doc.setFont("helvetica", "bold");
-            doc.text("1. ÍNDICE DE BEM-ESTAR GLOBAL (IBE)", 20, 80);
-            doc.setFontSize(32);
-            doc.text(`${ibe}%`, 160, 80);
-            doc.setDrawColor(226, 232, 240);
-            doc.line(20, 83, 190, 83);
-            doc.setFontSize(10);
-            doc.setFont("helvetica", "normal");
-            const ibeDesc = "O IBE representa o nível de funcionalidade preservada com base nos rastreios realizados. Quanto maior o índice, menor a presença de sintomatologia clínica nos domínios testados.";
-            doc.text(doc.splitTextToSize(ibeDesc, 130), 20, 92);
-
-            // Listagem Cirúrgica dos Testes
-            y = 115;
-            doc.setFontSize(14);
-            doc.setFont("helvetica", "bold");
-            doc.text("2. SÍNTESE POR DOMÍNIO", 20, y);
-            doc.line(20, y+3, 190, y+3);
-            y += 12;
+            doc.setTextColor(15, 23, 42); doc.setFontSize(16); doc.setFont("helvetica", "bold");
+            doc.text(`1. ÍNDICE DE BEM-ESTAR GLOBAL: ${ibe}%`, 20, 80);
+            doc.setDrawColor(200); doc.line(20, 83, 190, 83);
             
+            let y = 100;
+            doc.setFontSize(12); doc.text("2. SÍNTESE POR PROTOCOLO", 20, y);
+            y += 10;
             Object.values(dados).forEach(res => {
                 if (y > 270) { doc.addPage(); y = 30; }
-                doc.setFontSize(11);
-                doc.setFont("helvetica", "bold");
+                doc.setFontSize(10); doc.setFont("helvetica", "bold");
                 doc.text(`• ${res.teste}:`, 20, y);
                 doc.setFont("helvetica", "normal");
                 doc.text(`${res.resultado_texto}`, 80, y);
                 y += 8;
             });
 
-            // Análise de Comorbidades (A Inteligência do Cruzamento)
-            y += 15;
-            if (y > 240) { doc.addPage(); y = 25; }
-            doc.setFontSize(14);
-            doc.setFont("helvetica", "bold");
-            doc.text("3. ANÁLISE DE INTERCONEXÕES CLÍNICAS", 20, y);
-            doc.line(20, y+3, 190, y+3);
-            y += 12;
-            doc.setFontSize(10);
-            doc.setFont("helvetica", "normal");
-            const conclusao = "A integração deste histórico permite observar a intersecção entre sintomas de atenção, regulação emocional, processamento sensorial e padrões de sono. Este documento fornece evidências qualitativas fundamentais para o direcionamento do diagnóstico diferencial em ambiente especializado. É imperativo que este consolidado seja validado por um profissional de saúde mental.";
-            doc.text(doc.splitTextToSize(conclusao, 170), 20, y);
-
-            // Rodapé de Autoridade
-            doc.setFontSize(9);
-            doc.setTextColor(100, 116, 139);
-            doc.text("__________________________________________", 65, 280);
-            doc.text("Dr. Eduardo Pokk | Portal de Rastreio Neuropsicológico", 62, 285);
-
+            doc.setFontSize(10); doc.setTextColor(100);
+            doc.text("Dr. Eduardo Pokk | Especialista em TI & Psicologia", 65, 285);
             doc.save(`Dossie_Consolidado_${userName.replace(/\s+/g, '_')}.pdf`);
         }
+
+        onAuthStateChanged(auth, (user) => { if (user) carregarHistorico(); });
     </script>
 </body>
 </html>
