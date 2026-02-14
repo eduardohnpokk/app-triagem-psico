@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
     <script>
-        // Segurança
+        // Segurança de Acesso
         const checkUser = localStorage.getItem('usuario_nome');
         if (!checkUser) window.location.href = "index.html";
     </script>
@@ -13,56 +13,71 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
-        :root { --primary: #0f172a; --bg: #f1f5f9; --white: #ffffff; }
+        :root { --primary: #0f172a; --bg: #f1f5f9; --white: #ffffff; --accent: #2563eb; --danger: #dc2626; }
         body { font-family: 'Inter', sans-serif; background-color: var(--bg); color: #334155; margin: 0; }
 
-        header { background: var(--primary); padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; color: white; }
+        header { background: var(--primary); padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; color: white; position: sticky; top: 0; z-index: 100; }
         .brand { font-weight: 800; font-size: 1.1rem; color: white; text-decoration: none; }
         
         .header-right { display: flex; align-items: center; gap: 20px; }
         .user-info { font-size: 0.9rem; opacity: 0.9; }
         
-        .btn-logout {
-            background: rgba(255,255,255,0.1);
-            border: 1px solid rgba(255,255,255,0.2);
-            color: white;
-            padding: 5px 15px;
-            border-radius: 4px;
-            font-size: 0.8rem;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-        .btn-logout:hover { background: #dc2626; border-color: #dc2626; } /* Vermelho ao passar o mouse */
+        .btn-logout { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; padding: 5px 15px; border-radius: 4px; font-size: 0.8rem; cursor: pointer; transition: 0.2s; }
+        .btn-logout:hover { background: var(--danger); border-color: var(--danger); }
         
         .container { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
-        h1 { margin-bottom: 10px; color: var(--primary); }
-        p.subtitle { color: #64748b; margin-bottom: 40px; }
 
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+        /* Alerta de Segurança */
+        .alert-security { background: #fef2f2; border: 1px solid #fee2e2; padding: 15px 25px; border-radius: 12px; margin-bottom: 25px; display: flex; align-items: center; gap: 15px; color: #991b1b; }
+        .alert-security i { font-size: 1.2rem; }
+        .alert-security p { margin: 0; font-weight: 600; font-size: 0.9rem; }
+
+        /* Banner Consolidado */
+        .banner-global { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); color: white; padding: 35px; border-radius: 16px; margin-bottom: 40px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 10px 20px -5px rgba(0,0,0,0.2); }
+        .banner-content h2 { margin: 0 0 8px 0; font-size: 1.6rem; letter-spacing: -0.5px; }
+        .banner-content p { margin: 0; opacity: 0.7; font-size: 0.95rem; max-width: 500px; }
+        .btn-global { background: var(--accent); color: white; padding: 14px 28px; border-radius: 8px; text-decoration: none; font-weight: 700; border: none; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 10px; }
+        .btn-global:hover { background: #1d4ed8; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(37, 99, 235, 0.4); }
+
+        h1 { margin-bottom: 10px; color: var(--primary); font-size: 1.8rem; }
+        .subtitle { color: #64748b; margin-bottom: 30px; font-size: 1rem; }
+
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
         
         .card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); transition: 0.3s; border-left: 5px solid #cbd5e1; display: flex; flex-direction: column; justify-content: space-between; }
         .card:hover { transform: translateY(-5px); box-shadow: 0 10px 15px rgba(0,0,0,0.1); }
         
+        /* Cores Clínicas */
         .card.tdah { border-left-color: #2563eb; }
         .card.tea { border-left-color: #7c3aed; }
-        .card.ahsd { border-left-color: #d97706; }
         .card.ansiedade { border-left-color: #0ea5e9; }
         .card.depressao { border-left-color: #475569; }
         .card.burnout { border-left-color: #ea580c; }
         .card.tab { border-left-color: #6366f1; }
         .card.borderline { border-left-color: #be185d; }
+        .card.fobia { border-left-color: #1e40af; }
+        .card.trauma { border-left-color: #991b1b; }
+        .card.sono { border-left-color: #1e1b4b; }
+        .card.toc { border-left-color: #065f46; }
+        .card.substancias { border-left-color: #4c1d95; }
+        .card.autoestima { border-left-color: #db2777; }
         
-        .card h3 { margin-top: 0; display: flex; justify-content: space-between; align-items: center; font-size: 1.2rem; }
-        .card p { font-size: 0.95rem; color: #64748b; margin-bottom: 25px; line-height: 1.5; }
+        .card h3 { margin-top: 0; display: flex; justify-content: space-between; align-items: center; font-size: 1.1rem; color: var(--primary); }
+        .card p { font-size: 0.85rem; color: #64748b; margin-bottom: 20px; line-height: 1.5; min-height: 40px; }
         
-        .btn-start { display: block; width: 100%; padding: 12px 20px; background: #f1f5f9; color: #0f172a; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 0.9rem; transition: 0.2s; text-align: center; }
-        .btn-start:hover { background: var(--primary); color: white; }
+        .btn-start { display: block; width: 100%; padding: 12px; background: #f8fafc; color: var(--primary); text-decoration: none; border-radius: 6px; font-weight: 700; font-size: 0.85rem; transition: 0.2s; text-align: center; border: 1px solid #e2e8f0; }
+        .btn-start:hover { background: var(--primary); color: white; border-color: var(--primary); }
+
+        @media (max-width: 768px) {
+            .banner-global { flex-direction: column; text-align: center; gap: 20px; }
+            .banner-content p { margin: 0 auto; }
+        }
     </style>
 </head>
 <body>
 
     <header>
-        <a href="index.html" class="brand">Eduardo Pokk | Portal</a>
+        <a href="dashboard.html" class="brand">Eduardo Pokk | Portal</a>
         <div class="header-right">
             <div class="user-info">
                 <i class="fa-solid fa-circle-user"></i> <span id="user-display">Usuário</span>
@@ -72,41 +87,89 @@
     </header>
 
     <div class="container">
-        <h1>Área de Testes</h1>
-        <p class="subtitle">Selecione uma ferramenta para iniciar sua avaliação.</p>
+        
+        <div class="alert-security">
+            <i class="fa-solid fa-shield-halved"></i>
+            <p>Atenção: Não empreste sua conta para outras pessoas realizarem os testes. Isso compromete a precisão técnica e o rastreio do seu Dossiê Consolidado.</p>
+        </div>
+
+        <div class="banner-global">
+            <div class="banner-content">
+                <h2>Dossiê Consolidado de Saúde Mental</h2>
+                <p>Cruze os dados de todos os seus protocolos realizados e obtenha uma visão neuropsicológica global do seu perfil.</p>
+            </div>
+            <button class="btn-global" onclick="alert('O motor de análise está processando seus dados históricos. Em breve o relatório global estará disponível.')">
+                <i class="fa-solid fa-file-contract"></i> GERAR RELATÓRIO GLOBAL
+            </button>
+        </div>
+
+        <h1>Bateria de Protocolos</h1>
+        <p class="subtitle">Selecione o rastreio clínico desejado para iniciar a avaliação.</p>
         
         <div class="grid">
             <div class="card tdah">
-                <div><h3>TDAH Adulto <i class="fa-solid fa-brain" style="color:#2563eb;"></i></h3><p>Escala ASRS-18 com critérios da OMS.</p></div>
-                <a href="engine.html?t=tdah" class="btn-start">Iniciar Teste</a>
+                <div><h3>TDAH Adulto <i class="fa-solid fa-brain"></i></h3><p>Rastreio de desatenção e hiperatividade (ASRS-18).</p></div>
+                <a href="engine.html?t=tdah" class="btn-start">INICIAR PROTOCOLO</a>
             </div>
+
             <div class="card tea">
-                <div><h3>Autismo (TEA) <i class="fa-solid fa-puzzle-piece" style="color:#7c3aed;"></i></h3><p>Escala RAADS-14 (Espectro Autista).</p></div>
-                <a href="engine.html?t=tea" class="btn-start">Iniciar Teste</a>
+                <div><h3>Autismo Adulto <i class="fa-solid fa-puzzle-piece"></i></h3><p>Rastreio de traços do espectro e sensorialidade (RAADS-14).</p></div>
+                <a href="engine.html?t=tea" class="btn-start">INICIAR PROTOCOLO</a>
             </div>
-            <div class="card ahsd">
-                <div><h3>Altas Habilidades <i class="fa-solid fa-lightbulb" style="color:#d97706;"></i></h3><p>Investigação de Superdotação.</p></div>
-                <a href="engine.html?t=ahsd" class="btn-start">Iniciar Teste</a>
-            </div>
+
             <div class="card ansiedade">
-                <div><h3>Ansiedade <i class="fa-solid fa-bolt" style="color:#0ea5e9;"></i></h3><p>Escala GAD-7 (Ansiedade Generalizada).</p></div>
-                <a href="engine.html?t=ansiedade" class="btn-start">Iniciar Teste</a>
+                <div><h3>Ansiedade <i class="fa-solid fa-bolt"></i></h3><p>Níveis de tensão e preocupação generalizada (GAD-7).</p></div>
+                <a href="engine.html?t=ansiedade" class="btn-start">INICIAR PROTOCOLO</a>
             </div>
+
             <div class="card depressao">
-                <div><h3>Depressão <i class="fa-solid fa-cloud-rain" style="color:#475569;"></i></h3><p>Escala PHQ-9 (Humor e Vitalidade).</p></div>
-                <a href="engine.html?t=depressao" class="btn-start">Iniciar Teste</a>
+                <div><h3>Depressão <i class="fa-solid fa-cloud-rain"></i></h3><p>Avaliação de humor, energia e anedonia (PHQ-9).</p></div>
+                <a href="engine.html?t=depressao" class="btn-start">INICIAR PROTOCOLO</a>
             </div>
-            <div class="card burnout">
-                <div><h3>Burnout <i class="fa-solid fa-battery-empty" style="color:#ea580c;"></i></h3><p>Escala CBI (Exaustão Profissional).</p></div>
-                <a href="engine.html?t=burnout" class="btn-start">Iniciar Teste</a>
-            </div>
+
             <div class="card tab">
-                <div><h3>Bipolaridade <i class="fa-solid fa-masks-theater" style="color:#6366f1;"></i></h3><p>Protocolo MDQ (Oscilação de Humor).</p></div>
-                <a href="engine.html?t=tab" class="btn-start">Iniciar Teste</a>
+                <div><h3>Bipolaridade <i class="fa-solid fa-masks-theater"></i></h3><p>Rastreio de episódios de mania e hipomania (MDQ).</p></div>
+                <a href="engine.html?t=tab" class="btn-start">INICIAR PROTOCOLO</a>
             </div>
+
+            <div class="card burnout">
+                <div><h3>Burnout <i class="fa-solid fa-battery-empty"></i></h3><p>Exaustão física e emocional relacionada ao trabalho (CBI).</p></div>
+                <a href="engine.html?t=burnout" class="btn-start">INICIAR PROTOCOLO</a>
+            </div>
+
             <div class="card borderline">
-                <div><h3>Borderline <i class="fa-solid fa-heart-crack" style="color:#be185d;"></i></h3><p>Protocolo MSI-BPD (Instabilidade).</p></div>
-                <a href="engine.html?t=borderline" class="btn-start">Iniciar Teste</a>
+                <div><h3>Borderline <i class="fa-solid fa-heart-crack"></i></h3><p>Instabilidade emocional e relacional (MSI-BPD).</p></div>
+                <a href="engine.html?t=borderline" class="btn-start">INICIAR PROTOCOLO</a>
+            </div>
+
+            <div class="card fobia">
+                <div><h3>Fobia Social <i class="fa-solid fa-users-slash"></i></h3><p>Medo de julgamento e evitação em contextos sociais (SPIN).</p></div>
+                <a href="engine.html?t=fobia_social" class="btn-start">INICIAR PROTOCOLO</a>
+            </div>
+
+            <div class="card trauma">
+                <div><h3>Trauma e Estresse <i class="fa-solid fa-burst"></i></h3><p>Sintomas de estresse pós-traumático e vigilância (PCL-5).</p></div>
+                <a href="engine.html?t=trauma" class="btn-start">INICIAR PROTOCOLO</a>
+            </div>
+
+            <div class="card sono">
+                <div><h3>Qualidade do Sono <i class="fa-solid fa-moon"></i></h3><p>Avaliação de insônia e impacto na funcionalidade (ISI).</p></div>
+                <a href="engine.html?t=sono" class="btn-start">INICIAR PROTOCOLO</a>
+            </div>
+
+            <div class="card toc">
+                <div><h3>Rastreio de TOC <i class="fa-solid fa-rotate"></i></h3><p>Pensamentos obsessivos e rituais compulsivos (OCI-R).</p></div>
+                <a href="engine.html?t=toc" class="btn-start">INICIAR PROTOCOLO</a>
+            </div>
+
+            <div class="card substancias">
+                <div><h3>Uso de Substâncias <i class="fa-solid fa-wine-glass"></i></h3><p>Padrões de consumo de álcool e riscos associados (AUDIT-C).</p></div>
+                <a href="engine.html?t=substancias" class="btn-start">INICIAR PROTOCOLO</a>
+            </div>
+
+            <div class="card autoestima">
+                <div><h3>Autoestima <i class="fa-solid fa-face-smile"></i></h3><p>Avaliação da autoimagem e valor pessoal (Rosenberg).</p></div>
+                <a href="engine.html?t=autoestima" class="btn-start">INICIAR PROTOCOLO</a>
             </div>
         </div>
     </div>
