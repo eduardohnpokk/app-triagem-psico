@@ -10,13 +10,13 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     
     <style>
-        :root { --primary: #0f172a; --bg: #f8fafc; --white: #fff; --accent: #2563eb; }
+        :root { --primary: #0f172a; --bg: #f8fafc; --white: #fff; --accent: #2563eb; --success: #16a34a; }
         body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--primary); display: flex; flex-direction: column; min-height: 100vh; margin: 0; }
         
-        .test-header { padding: 20px; text-align: center; background: white; border-bottom: 1px solid #e2e8f0; }
+        .test-header { padding: 20px; text-align: center; background: white; border-bottom: 1px solid #e2e8f0; position: sticky; top: 0; z-index: 10; }
         .test-title { font-size: 1.2rem; font-weight: 800; color: var(--primary); }
         
-        .test-container { max-width: 700px; margin: 40px auto; padding: 20px; flex: 1; width: 100%; }
+        .test-container { max-width: 700px; margin: 40px auto; padding: 20px; flex: 1; width: 100%; box-sizing: border-box; }
         .card { background: var(--white); padding: 40px; border-radius: 16px; box-shadow: 0 10px 30px -10px rgba(0,0,0,0.1); text-align: center; }
         
         .progress-track { background: #e2e8f0; height: 6px; border-radius: 3px; margin-bottom: 30px; overflow: hidden; }
@@ -34,12 +34,12 @@
         .result-desc { font-size: 1.1rem; color: #64748b; margin-bottom: 30px; }
         
         .btn-action { background: var(--primary); color: white; padding: 15px 30px; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-block; margin-top: 10px; cursor: pointer; border: none; font-size: 1rem; width: 100%; box-sizing: border-box; transition: 0.2s; }
-        .btn-pdf { background: #16a34a; margin-top: 20px; }
+        .btn-pdf { background: var(--success); margin-top: 20px; }
         .btn-pdf:hover { background: #15803d; }
 
-        .suggestion-box { margin-top: 30px; padding-top: 20px; border-top: 2px dashed #e2e8f0; text-align: left; }
-        .suggestion-title { font-size: 0.9rem; font-weight: 700; color: var(--accent); text-transform: uppercase; margin-bottom: 15px; display: block; }
-        .btn-suggest { background: #eff6ff; color: var(--accent); border: 1px solid #bfdbfe; margin-bottom: 8px; }
+        .suggestion-box { margin-top: 30px; padding-top: 25px; border-top: 2px dashed #e2e8f0; text-align: left; }
+        .suggestion-title { font-size: 0.9rem; font-weight: 700; color: var(--accent); text-transform: uppercase; margin-bottom: 15px; display: block; letter-spacing: 1px; }
+        .btn-suggest { background: #eff6ff; color: var(--accent); border: 1px solid #bfdbfe; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
         .btn-suggest:hover { background: var(--accent); color: white; }
         
         @keyframes fadeIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
@@ -61,13 +61,13 @@
         </div>
 
         <div class="card result-box" id="result-card">
-            <i class="fa-solid fa-clipboard-check" style="font-size: 4rem; color: #16a34a; margin-bottom: 20px;"></i>
+            <i class="fa-solid fa-clipboard-check" style="font-size: 4rem; color: var(--success); margin-bottom: 20px;"></i>
             <div class="result-title" id="res-title">Análise Completa</div>
             <p class="result-desc" id="res-desc">O dossiê técnico detalhado foi gerado com as correlações clínicas.</p>
             
-            <div style="background:#f1f5f9; padding:15px; border-radius:8px; margin-bottom:20px; text-align:left;">
-                <strong style="display:block; margin-bottom:5px; color:#334155;">Conclusão Preliminar:</strong>
-                <span id="res-detail" style="font-family:monospace; color:#475569;">...</span>
+            <div style="background:#f1f5f9; padding:20px; border-radius:12px; margin-bottom:20px; text-align:left;">
+                <strong style="display:block; margin-bottom:8px; color:#334155; font-size: 0.9rem; text-transform: uppercase;">Conclusão Preliminar:</strong>
+                <span id="res-detail" style="font-family:monospace; color:#475569; line-height: 1.6;">...</span>
             </div>
 
             <button id="btnDownloadPDF" class="btn-action btn-pdf">
@@ -75,11 +75,11 @@
             </button>
 
             <div id="suggestions-container" class="suggestion-box" style="display:none;">
-                <span class="suggestion-title"><i class="fa-solid fa-route"></i> Próximos Passos Recomendados:</span>
+                <span class="suggestion-title"><i class="fa-solid fa-route"></i> Sugestões de Próximos Passos:</span>
                 <div id="suggestions-list"></div>
             </div>
 
-            <button class="btn-action" style="margin-top:20px;" onclick="window.location.href='dashboard.html'">Voltar ao Painel</button>
+            <button class="btn-action" style="margin-top:25px;" onclick="window.location.href='dashboard.html'">Voltar ao Painel Principal</button>
         </div>
 
     </div>
@@ -96,10 +96,11 @@
         const userName = localStorage.getItem('usuario_nome') || "Paciente";
 
         if (!currentTest) {
-            alert("Erro: Teste não encontrado.");
+            alert("Erro: Protocolo não localizado.");
             window.location.href = "dashboard.html";
         }
 
+        // Setup Inicial do Protocolo
         document.getElementById('header-title').innerText = currentTest.title;
         document.querySelector('.progress-fill').style.backgroundColor = currentTest.color;
 
@@ -109,11 +110,14 @@
 
         function loadQuestion() {
             const q = currentTest.questions[currentQIndex];
-            const pct = ((currentQIndex) / currentTest.questions.length) * 100;
+            
+            // Atualização da Barra de Progresso
+            const pct = (currentQIndex / currentTest.questions.length) * 100;
             document.getElementById('progress').style.width = `${pct}%`;
             document.getElementById('q-counter').innerText = `QUESTÃO ${currentQIndex + 1} DE ${currentTest.questions.length}`;
             document.getElementById('q-text').innerText = q.text;
 
+            // Renderização das Opções Baseadas no neuro-data.js
             const container = document.getElementById('opts');
             container.innerHTML = '';
 
@@ -124,6 +128,8 @@
                 btn.onclick = () => saveAnswer(idx); 
                 container.appendChild(btn);
             });
+            
+            window.scrollTo(0, 0); // Melhora UX em escalas longas
         }
 
         function saveAnswer(val) {
@@ -140,26 +146,36 @@
             document.getElementById('quiz-card').style.display = 'none';
             document.getElementById('result-card').style.display = 'block';
 
+            // 1. Processamento da Inteligência Clínica
             analysisResult = currentTest.calculate(answers);
 
+            // 2. Registro no Histórico do Firebase (Alimentação do Dashboard e IBE)
             if (userId) {
                 try {
                     await addDoc(collection(doc(db, "usuarios", userId), "historico_testes"), {
                         teste: currentTest.title,
                         teste_id: currentTest.id,
                         data: new Date(),
-                        score_bruto: analysisResult.score,
+                        score_bruto: analysisResult.score, // Crucial para o cálculo do IBE
                         resultado_texto: analysisResult.result,
                         detalhes: analysisResult.details,
                         respostas_raw: answers
                     });
-                } catch (e) { console.error("Erro ao salvar:", e); }
+                } catch (e) { console.error("Falha ao registrar histórico:", e); }
             }
 
+            // 3. Exibição Dinâmica do Resultado
             document.getElementById('res-title').innerText = analysisResult.result;
             document.getElementById('res-detail').innerText = analysisResult.details;
             
-            // Renderiza Sugestões se houver
+            // Lógica de Cores por Gravidade
+            if (analysisResult.result.includes("ALTO") || analysisResult.result.includes("PROBABILIDADE") || analysisResult.result.includes("POSITIVA") || analysisResult.result.includes("Grave")) {
+                document.getElementById('res-title').style.color = "#dc2626";
+            } else {
+                document.getElementById('res-title').style.color = "var(--success)";
+            }
+
+            // 4. Ativação da Matriz de Cruzamento (Sugestões)
             if (analysisResult.showSuggestions && currentTest.suggestions) {
                 const suggCont = document.getElementById('suggestions-container');
                 const suggList = document.getElementById('suggestions-list');
@@ -170,39 +186,37 @@
                     if (sTest) {
                         const sBtn = document.createElement('button');
                         sBtn.className = 'btn-action btn-suggest';
-                        sBtn.innerHTML = `<i class="fa-solid fa-arrow-right"></i> Realizar ${sTest.title}`;
+                        sBtn.innerHTML = `<span><i class="fa-solid fa-file-medical"></i> ${sTest.title}</span> <i class="fa-solid fa-chevron-right"></i>`;
                         sBtn.onclick = () => window.location.href = `engine.html?t=${sId}`;
                         suggList.appendChild(sBtn);
                     }
                 });
             }
-
-            if (analysisResult.result.includes("ALTO") || analysisResult.result.includes("PROBABILIDADE") || analysisResult.result.includes("POSITIVA") || analysisResult.result.includes("Grave")) {
-                document.getElementById('res-title').style.color = "#dc2626";
-            } else {
-                document.getElementById('res-title').style.color = "#16a34a";
-            }
         }
 
+        // --- MOTOR DE GERAÇÃO DE DOSSIÊ TÉCNICO (PDF) ---
         document.getElementById('btnDownloadPDF').onclick = () => {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
             const dataEmissao = new Date().toLocaleDateString('pt-BR');
-            let y = 50;
+            let y = 55;
 
+            // Cabeçalho Navy de Autoridade
             doc.setFillColor(15, 23, 42);
-            doc.rect(0, 0, 210, 40, 'F');
+            doc.rect(0, 0, 210, 45, 'F');
             doc.setTextColor(255, 255, 255);
             doc.setFontSize(22);
             doc.setFont("helvetica", "bold");
-            doc.text("DOSSIÊ TÉCNICO NEUROPSICOLÓGICO", 20, 25);
-            doc.setFontSize(10);
+            doc.text("DOSSIÊ TÉCNICO NEUROPSICOLÓGICO", 20, 28);
+            doc.setFontSize(9);
             doc.setFont("helvetica", "normal");
             doc.text(`ID: ${Math.random().toString(36).substr(2, 9).toUpperCase()}`, 170, 15);
-            doc.text(`Data: ${dataEmissao}`, 170, 25);
+            doc.text(`DATA: ${dataEmissao}`, 170, 25);
 
+            // 1. Dados Cadastrais
             doc.setTextColor(15, 23, 42);
-            doc.setFontSize(14);
+            doc.setFontSize(13);
+            doc.setFont("helvetica", "bold");
             doc.text("1. IDENTIFICAÇÃO DO PACIENTE", 20, y);
             doc.setDrawColor(226, 232, 240);
             doc.line(20, y+2, 190, y+2);
@@ -211,11 +225,12 @@
             doc.setFont("helvetica", "normal");
             doc.text(`Nome: ${userName}`, 20, y);
             y += 7;
-            doc.text(`Protocolo Aplicado: ${currentTest.title}`, 20, y);
+            doc.text(`Protocolo Clínico: ${currentTest.title}`, 20, y);
             y += 15;
 
+            // 2. Análise Quantitativa
             doc.setFont("helvetica", "bold");
-            doc.setFontSize(14);
+            doc.setFontSize(13);
             doc.text("2. ANÁLISE QUANTITATIVA E QUALITATIVA", 20, y);
             doc.line(20, y+2, 190, y+2);
             y += 12;
@@ -224,7 +239,7 @@
             y += 8;
             doc.setFontSize(11);
             doc.setFont("helvetica", "normal");
-            doc.text(`Escore Bruto / Dados Técnicos: ${analysisResult.details}`, 20, y);
+            doc.text(`Escore Bruto / Sumário: ${analysisResult.details}`, 20, y);
             y += 10;
             
             doc.setFont("helvetica", "bold");
@@ -233,17 +248,19 @@
             doc.setFont("helvetica", "normal");
             const interText = doc.splitTextToSize(analysisResult.interpretation, 170);
             doc.text(interText, 20, y);
-            y += (interText.length * 6) + 10;
+            y += (interText.length * 6) + 15;
 
+            // 3. Comorbidades e Sugestões (Somente se houver risco)
             if (analysisResult.showSuggestions && currentTest.suggestions) {
+                if (y > 230) { doc.addPage(); y = 30; }
                 doc.setFont("helvetica", "bold");
-                doc.setFontSize(14);
+                doc.setFontSize(13);
                 doc.text("3. CRUZAMENTO DE DADOS E COMORBIDADES", 20, y);
                 doc.line(20, y+2, 190, y+2);
                 y += 12;
-                doc.setFontSize(11);
+                doc.setFontSize(10);
                 doc.setFont("helvetica", "normal");
-                const sugText = "Com base nos marcadores identificados, recomenda-se a realização dos seguintes protocolos complementares para exclusão de diagnósticos diferenciais ou confirmação de comorbidades:";
+                const sugText = "Com base nos marcadores de risco detectados, recomenda-se a realização dos seguintes rastreios complementares para fins de diagnóstico diferencial e investigação de comorbidades prevalentes:";
                 const splitSug = doc.splitTextToSize(sugText, 170);
                 doc.text(splitSug, 20, y);
                 y += (splitSug.length * 6) + 5;
@@ -261,25 +278,29 @@
                 y += 10;
             }
 
-            if (y > 230) { doc.addPage(); y = 30; }
+            // 4. Encaminhamento Final
+            if (y > 220) { doc.addPage(); y = 30; }
             doc.setFont("helvetica", "bold");
-            doc.setFontSize(14);
+            doc.setFontSize(13);
             doc.text("4. ENCAMINHAMENTO E CONDUTA", 20, y);
             doc.line(20, y+2, 190, y+2);
             y += 12;
             doc.setFontSize(10);
             doc.setFont("helvetica", "normal");
-            const conduta = "Os resultados obtidos sugerem a necessidade de avaliação especializada. Este documento serve como base para o profissional de saúde mental iniciar a investigação diagnóstica profunda. Não deve ser utilizado de forma isolada para fechamento de diagnóstico ou automedicação.";
+            const conduta = "Os resultados obtidos através desta ferramenta de autorrelato indicam a necessidade de uma avaliação especializada aprofundada. Este documento serve como material de suporte para o profissional de saúde mental (Psicólogo ou Psiquiatra) iniciar o raciocínio clínico. Não deve ser utilizado de forma isolada para autodiagnóstico ou automedicação.";
             const splitConduta = doc.splitTextToSize(conduta, 170);
             doc.text(splitConduta, 20, y);
 
+            // Rodapé de Especialista
             doc.setFontSize(10);
             doc.setTextColor(15, 23, 42);
             doc.text("__________________________________________", 60, 275);
-            doc.text("Dr. Eduardo Pokk | Especialista em TI & Psicologia", 55, 282);
+            doc.text("Dr. Eduardo Pokk | Psicólogo Clínico & Especialista", 53, 282);
+            
             doc.save(`Dossie_Clinico_${userName.replace(/\s+/g, '_')}.pdf`);
         };
 
+        // Inicialização do Motor
         loadQuestion();
     </script>
 </body>
