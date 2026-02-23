@@ -4,5 +4,4 @@ Allow: /
 Disallow: /dashboard.html
 Disallow: /engine.html
 
-# Aponta o caminho oficial do seu mapa para o robô
-Sitemap: https://portal-eduardo-pokk.web.app/sitemap.xml
+Sitemap: https://app-triagem-psico.vercel.app/sitemap.xml
